@@ -12,19 +12,73 @@ django.setup()
 
 from game.models import CartoonCharacter
 
-def get_wikipedia_image(character_name, show_name):
+SHOW_TO_FANDOM = {
+    "Peppa Pig": "peppapig.fandom.com",
+    "The Backyardigans": "backyardigans.fandom.com",
+    "Max & Ruby": "maxandruby.fandom.com",
+    "Dora the Explorer": "dora.fandom.com",
+    "Mickey Mouse Clubhouse": "mickeymouse.fandom.com",
+    "Family Guy": "familyguy.fandom.com",
+    "South Park": "southpark.fandom.com",
+    "The Simpsons": "simpsons.fandom.com",
+    "Futurama": "futurama.fandom.com",
+    "Rick and Morty": "rickandmorty.fandom.com",
+    "American Dad": "americandad.fandom.com",
+    "The Fairly OddParents": "fairlyoddparents.fandom.com",
+    "Adventure Time": "adventuretime.fandom.com",
+    "Regular Show": "regularshow.fandom.com",
+    "Foster's Home for Imaginary Friends": "fostershomeforimaginaryfriends.fandom.com",
+    "Codename Kids Next Door": "knd.fandom.com",
+    "Bob's Burgers": "bobsburgers.fandom.com",
+    "Dexter's Laboratory": "dexterslab.fandom.com",
+    "SpongeBob SquarePants": "spongebob.fandom.com",
+    "Ed Edd n Eddy": "ed.fandom.com",
+    "The Amazing World of Gumball": "gumball.fandom.com",
+    "The Powerpuff Girls": "powerpuffgirls.fandom.com",
+    "Jimmy Neutron Boy Genius": "jimmyneutron.fandom.com",
+    "Teen Titans": "teentitans.fandom.com",
+    "The Flintstones": "flintstones.fandom.com",
+    "Avatar The Last Airbender": "avatar.fandom.com",
+    "Gravity Falls": "gravityfalls.fandom.com",
+    "Ben 10": "ben10.fandom.com",
+    "Kim Possible": "kimpossible.fandom.com",
+    "Rugrats": "rugrats.fandom.com",
+    "The Grim Adventures of Billy & Mandy": "grimadventures.fandom.com",
+    "The Marvelous Misadventures of Flapjack": "flapjack.fandom.com",
+    "Teenage Mutant Ninja Turtles": "tmnt.fandom.com",
+    "My Life as a Teenage Robot": "mlaatr.fandom.com",
+    "Danny Phantom": "dannyphantom.fandom.com",
+    "Scooby-Doo": "scoobydoo.fandom.com",
+    "Big Mouth": "bigmouth.fandom.com",
+    "The Looney Tunes Show": "looneytunes.fandom.com",
+    "Brickleberry": "brickleberry.fandom.com",
+    "Rocko's Modern Life": "rockosmodernlife.fandom.com",
+    "Phineas and Ferb": "phineasandferb.fandom.com",
+    "Fish Hooks": "fishhooks.fandom.com",
+}
+
+def get_fandom_image(character_name, show_name):
     try:
-        url = f"https://en.wikipedia.org/wiki/{character_name.replace(' ', '_')}"
-        response = requests.get(url)
+        # Get the Fandom domain for the show, default to None if not in list
+        fandom_domain = SHOW_TO_FANDOM.get(show_name)
+        if not fandom_domain:
+            print(f"No Fandom wiki found for show: {show_name}")
+            return None
+        
+        url = f"https://{fandom_domain}/wiki/{character_name.replace(' ', '_')}"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()  # Raise exception for bad status codes
         soup = BeautifulSoup(response.text, 'html.parser')
-        infobox = soup.find('table', class_='infobox')
+        
+        # Find infobox image (Fandom uses 'pi-image-thumbnail' for high-quality images)
+        infobox = soup.find('aside', class_='portable-infobox')
         if infobox:
-            img = infobox.find('img')
+            img = infobox.find('img', class_='pi-image-thumbnail')
             if img and 'src' in img.attrs:
-                return f"https:{img['src']}"
+                return img['src']
         return None
     except Exception as e:
-        print(f"Error scraping image for {character_name}: {e}")
+        print(f"Error fetching image for {character_name} from {show_name}: {e}")
         return None
 
 def populate_cartoon_data():
@@ -3667,18 +3721,15 @@ def populate_cartoon_data():
   }
 ]
         
-
     print(f"Total entries in Cdata: {len(Cdata)}")
     unique_data = {entry["name"]: entry for entry in Cdata}.values()
     print(f"Unique entries after deduplication: {len(unique_data)}")
     
-    # Clear existing data
     CartoonCharacter.objects.all().delete()
     
-    # Populate with image URLs
     for data in unique_data:
-        image_url = get_wikipedia_image(data["name"], data["show"])
-        data["image_url"] = image_url  # Add fetched image URL
+        image_url = get_fandom_image(data["name"], data["show"])
+        data["image_url"] = image_url
         CartoonCharacter.objects.get_or_create(**data)
         print(f"Added {data['name']} with image: {image_url}")
     
