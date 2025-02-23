@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Characters - Cartoon Guesser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #00ccff;
+            font-size: 2.5em;
+            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
+        }
+        .character-list {
+            max-width: 1200px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .character-card {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+        .character-card img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .character-card p {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #b0b0b0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #00ccff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #00b3e6;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Characters</h1>
+    <div class="character-list">
+        {% for character in characters %}
+            <div class="character-card">
+                <img src="{{ character.image_url|default:'https://via.placeholder.com/100' }}" alt="{{ character.name }}">
+                <p><strong>Name:</strong> {{ character.name }}</p>
+                <p><strong>Show:</strong> {{ character.show }}</p>
+                <p><strong>Network:</strong> {{ character.network }}</p>
+                <p><strong>Main/Side:</strong> {{ character.is_main|yesno:"Main,Side" }}</p>
+                <p><strong>Release Year:</strong> {{ character.release_year }}</p>
+                <p><strong>Still Airing:</strong> {{ character.still_airing|yesno:"Yes,No" }}</p>
+                <p><strong>Gender:</strong> {{ character.gender }}</p>
+            </div>
+        {% empty %}
+            <p>No characters found.</p>
+        {% endfor %}
+    </div>
+    <button onclick="window.location.href='/'">Back to Game</button>
+</body>
+</html>

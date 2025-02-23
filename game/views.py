@@ -55,6 +55,13 @@ def unlimited(request):
     }
     return render(request, 'game/index.html', context)
 
+def characters_list(request):
+    all_characters = CartoonCharacter.objects.all().order_by('name')
+    context = {
+        'characters': all_characters
+    }
+    return render(request, 'game/characters.html', context)
+
 def guess(request):
     if request.method == 'POST':
         mode = request.POST.get('mode', 'daily')
@@ -85,20 +92,24 @@ def guess(request):
             result = {
                 'name': guessed_char.name,
                 'network': network_correct,
+                'network_value': guessed_char.network,
                 'network_partial': network_partial,
                 'show': guessed_char.show == current_character.show,
+                'show_value': guessed_char.show,
                 'is_main': guessed_char.is_main,
                 'main_correct': main_correct,
                 'release_year': guessed_char.release_year == current_character.release_year,
-                'guessed_year': guessed_char.release_year,
+                'year_value': guessed_char.release_year,
                 'daily_year': current_character.release_year,
                 'still_airing': guessed_char.still_airing,
                 'airing_correct': airing_correct,
                 'gender': guessed_char.gender == current_character.gender,
+                'gender_value': guessed_char.gender,
                 'image_url': guessed_char.image_url,
                 'correct': guessed_char.id == current_character.id,
                 'guess_count': len(guesses) + 1,
-                'mode': mode
+                'mode': mode,
+                'current_character_id': current_character.id if mode == 'unlimited' else None
             }
             if guess_name not in guesses:
                 guesses.append(guess_name)
@@ -121,11 +132,13 @@ def win(request):
     if mode == 'daily':
         daily_character = get_daily_character()
     else:  # unlimited
-        guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        daily_character = get_random_character(guessed_ids)
-        if daily_character:
-            request.session['current_character_id-unlimited'] = daily_character.id
+        current_character_id = request.session.get('current_character_id-unlimited')
+        daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
+        guessed_ids = request.session.get('guessed_ids-unlimited', [])
+        new_character = get_random_character(guessed_ids)
+        if new_character:
+            request.session['current_character_id-unlimited'] = new_character.id
     
     context = {
         'character': daily_character,
@@ -138,11 +151,13 @@ def lose(request):
     if mode == 'daily':
         daily_character = get_daily_character()
     else:  # unlimited
-        guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        daily_character = get_random_character(guessed_ids)
-        if daily_character:
-            request.session['current_character_id-unlimited'] = daily_character.id
+        current_character_id = request.session.get('current_character_id-unlimited')
+        daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
+        guessed_ids = request.session.get('guessed_ids-unlimited', [])
+        new_character = get_random_character(guessed_ids)
+        if new_character:
+            request.session['current_character_id-unlimited'] = new_character.id
     
     context = {
         'character': daily_character,

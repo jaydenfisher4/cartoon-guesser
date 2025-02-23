@@ -148,6 +148,7 @@
     <div class="mode-select">
         <button onclick="window.location.href='/'">Daily Mode</button>
         <button onclick="window.location.href='/unlimited/'">Unlimited Mode</button>
+        <button onclick="window.location.href='/characters/'">All Characters</button>
     </div>
     <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
     <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
@@ -264,19 +265,16 @@
                 }
                 const row = document.createElement('div');
                 row.className = 'grid';
-                let yearIndicator = '✓';
-                if (!data.release_year) {
-                    yearIndicator = data.guessed_year < data.daily_year ? '↑' : '↓';
-                }
+                let yearIndicator = data.release_year ? '' : (data.guessed_year < data.daily_year ? ' ↑' : ' ↓');
                 row.innerHTML = `
                     <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
-                    <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network ? '✓' : (data.network_partial ? '~' : '✗')}</div>
-                    <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show ? '✓' : '✗'}</div>
+                    <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network_value}</div>
+                    <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show_value}</div>
                     <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
-                    <div class="cell ${data.release_year ? 'correct' : (data.guessed_year < data.daily_year ? 'partial' : 'partial')}"><span class="icon">📅</span>${yearIndicator}</div>
+                    <div class="cell ${data.release_year ? 'correct' : 'partial'}"><span class="icon">📅</span>${data.year_value}${yearIndicator}</div>
                     <div class="cell ${data.airing_correct ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
-                    <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender ? '✓' : '✗'}</div>
+                    <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender_value}</div>
                 `;
                 guessesContainer.appendChild(row);
                 guessCount = data.guess_count;
@@ -296,7 +294,7 @@
         }
 
         function giveUp() {
-            window.location.href = mode === 'daily' ? '/lose/' : '/';
+            window.location.href = `/lose/?mode=${mode}`;
         }
 
         function resetGame() {
