@@ -4,6 +4,11 @@ from .models import CartoonCharacter
 from datetime import date
 import hashlib
 import random
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def get_daily_character():
     characters = CartoonCharacter.objects.all()
@@ -11,20 +16,23 @@ def get_daily_character():
         return None
     today = date.today().isoformat()
     index = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(characters)
+    logger.debug(f"Daily character selected: {characters[index].name} ({characters[index].release_year})")
     return characters[index]
 
 def get_random_character(exclude_ids=None):
     characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
     if not characters:
         return None
-    return random.choice(characters)
+    chosen = random.choice(characters)
+    logger.debug(f"Random character selected: {chosen.name} ({chosen.release_year})")
+    return chosen
 
 def index(request):
     daily_character = get_daily_character()
     all_characters = CartoonCharacter.objects.all()
     guesses = request.session.get('guesses-daily', [])
     all_characters_data = [char.name for char in all_characters]
-    request.session['last_mode'] = 'daily'  # Track last mode
+    request.session['last_mode'] = 'daily'
     
     context = {
         'character': daily_character,
@@ -47,7 +55,7 @@ def unlimited(request):
     current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
     all_characters = CartoonCharacter.objects.all()
     all_characters_data = [char.name for char in all_characters]
-    request.session['last_mode'] = 'unlimited'  # Track last mode
+    request.session['last_mode'] = 'unlimited'
     
     context = {
         'character': current_character,
@@ -59,11 +67,10 @@ def unlimited(request):
 
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
-    # Data for filters
     shows = sorted(set(char.show for char in all_characters))
     networks = sorted(set(char.network for char in all_characters))
     years = sorted(set(char.release_year for char in all_characters))
-    last_mode = request.session.get('last_mode', 'daily')  # Default to daily if not set
+    last_mode = request.session.get('last_mode', 'daily')
     
     context = {
         'characters': all_characters,
@@ -101,6 +108,7 @@ def guess(request):
             )
             main_correct = guessed_char.is_main == current_character.is_main
             airing_correct = guessed_char.still_airing == current_character.still_airing
+            logger.debug(f"Guess: {guessed_char.name} ({guessed_char.release_year}), Target: {current_character.name} ({current_character.release_year})")
             result = {
                 'name': guessed_char.name,
                 'network': network_correct,
@@ -148,9 +156,14 @@ def win(request):
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
+        # Force reset to ensure new character
         new_character = get_random_character(guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
+            logger.debug(f"New unlimited character after win: {new_character.name} ({new_character.release_year})")
+        else:
+            logger.warning("No new character available for unlimited mode")
+            del request.session['current_character_id-unlimited']  # Reset if no character
     
     context = {
         'character': daily_character,
@@ -167,9 +180,14 @@ def lose(request):
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
+        # Force reset to ensure new character
         new_character = get_random_character(guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
+            logger.debug(f"New unlimited character after loss: {new_character.name} ({new_character.release_year})")
+        else:
+            logger.warning("No new character available for unlimited mode")
+            del request.session['current_character_id-unlimited']  # Reset if no character
     
     context = {
         'character': daily_character,

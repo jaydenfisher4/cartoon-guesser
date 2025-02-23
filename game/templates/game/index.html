@@ -23,6 +23,21 @@
             font-size: 1.2em;
             margin: 5px 0;
         }
+        .timer-container {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+            display: inline-block;
+        }
+        #timer {
+            font-size: 1.5em;
+            color: #00ccff;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
+        }
         .grid-container {
             max-width: 1000px;
             margin: 30px auto;
@@ -151,6 +166,9 @@
         <button onclick="window.location.href='/characters/'">All Characters</button>
     </div>
     <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
+    <div class="timer-container">
+        <span id="timer">Next Daily Character: --:--:--</span>
+    </div>
     <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
     
     <div class="grid-container">
@@ -206,9 +224,28 @@
         const guessesContainer = document.getElementById('guesses-container');
         const winSound = document.getElementById('win-sound');
         const loseSound = document.getElementById('lose-sound');
+        const timerDisplay = document.getElementById('timer');
         let guessCount = guesses.length;
 
         guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
+
+        // Timer function (counts down to midnight UTC)
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+            tomorrow.setUTCHours(0, 0, 0, 0);
+            const timeLeft = tomorrow - now;
+
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            timerDisplay.textContent = `Next Daily Character: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (mode !== 'daily') timerDisplay.style.display = 'none'; // Hide in unlimited mode
+        }
+        if (mode === 'daily') setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call
 
         input.addEventListener('input', function() {
             const value = this.value.toLowerCase();
@@ -244,7 +281,7 @@
 
         function submitGuess() {
             const guess = input.value.trim();
-            if (!guess || (mode === 'daily' && guessCount >= 15)) return;
+            if (!guess || guessCount >= 15) return;
             fetch('/guess/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
@@ -267,8 +304,9 @@
                 row.className = 'grid';
                 let yearIndicator = '';
                 if (!data.release_year) {
-                    yearIndicator = data.guessed_year < data.daily_year ? ' ↑' : ' ↓';
+                    yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
                 }
+                console.log(`Guess: ${data.name} (${data.year_value}), Target Year: ${data.daily_year}, Indicator: ${yearIndicator}`);
                 row.innerHTML = `
                     <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
@@ -285,7 +323,7 @@
                 if (data.correct && mode === 'unlimited') {
                     guessesContainer.innerHTML = '';
                     guessCount = 0;
-                    guessCounter.textContent = `Guesses: 0`;
+                    guessCounter.textContent = 'Guesses: 0';
                 }
                 input.value = '';
                 autocompleteList.style.display = 'none';
