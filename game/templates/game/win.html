@@ -23,6 +23,12 @@
             font-size: 1.5em;
             color: #b0b0b0;
         }
+        img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
         button {
             padding: 10px 20px;
             font-size: 1em;
@@ -46,10 +52,13 @@
 </head>
 <body onload="document.getElementById('win-sound').play()">
     <h1>You Win!</h1>
-    <p>Congratulations! You guessed today's character: <strong>{{ character.name }}</strong></p>
+    <p>Congratulations! You guessed today's character:</p>
+    <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
+    <p><strong>{{ character.name }}</strong></p>
     <p>From: <em>{{ character.show }}</em> on {{ character.network }}</p>
     <button onclick="window.location.href='/'">Play Again</button>
 
+    {% load static %}
     <audio id="win-sound" src="{% static 'success.mp3' %}" autoplay></audio>
 </body>
 </html>

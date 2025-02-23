@@ -136,12 +136,22 @@
             gap: 10px;
             justify-content: center;
         }
+        .mode-select {
+            margin: 20px auto;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
     <h1>Cartoon Guesser</h1>
-    <p>A new character every day. Can you guess today’s?</p>
-    <p id="guess-counter">Guesses: 0/15</p>
+    <div class="mode-select">
+        <button onclick="window.location.href='/'">Daily Mode</button>
+        <button onclick="window.location.href='/unlimited/'">Unlimited Mode</button>
+    </div>
+    <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
+    <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
     
     <div class="grid-container">
         <div class="grid" id="header-row">
@@ -177,6 +187,7 @@
 
     <script>
         let guesses, allCharacters;
+        const mode = "{{ mode }}";
         try {
             guesses = JSON.parse(document.getElementById('guesses-data').textContent || '[]');
             allCharacters = JSON.parse(document.getElementById('all-characters').textContent || '[]');
@@ -197,7 +208,7 @@
         const loseSound = document.getElementById('lose-sound');
         let guessCount = guesses.length;
 
-        guessCounter.textContent = `Guesses: ${guessCount}/15`;
+        guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
 
         input.addEventListener('input', function() {
             const value = this.value.toLowerCase();
@@ -233,11 +244,11 @@
 
         function submitGuess() {
             const guess = input.value.trim();
-            if (!guess || guessCount >= 15) return;
+            if (!guess || (mode === 'daily' && guessCount >= 15)) return;
             fetch('/guess/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
-                body: 'guess=' + encodeURIComponent(guess)
+                body: 'guess=' + encodeURIComponent(guess) + '&mode=' + mode
             })
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -263,14 +274,19 @@
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
                     <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network ? '✓' : (data.network_partial ? '~' : '✗')}</div>
                     <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show ? '✓' : '✗'}</div>
-                    <div class="cell ${data.is_main ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
+                    <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
                     <div class="cell ${data.release_year ? 'correct' : (data.guessed_year < data.daily_year ? 'partial' : 'partial')}"><span class="icon">📅</span>${yearIndicator}</div>
                     <div class="cell ${data.still_airing ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
                     <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender ? '✓' : '✗'}</div>
                 `;
                 guessesContainer.appendChild(row);
                 guessCount = data.guess_count;
-                guessCounter.textContent = `Guesses: ${guessCount}/15`;
+                guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
+                if (data.correct && mode === 'unlimited') {
+                    guessesContainer.innerHTML = '';
+                    guessCount = 0;
+                    guessCounter.textContent = `Guesses: 0`;
+                }
                 input.value = '';
                 autocompleteList.style.display = 'none';
             })
@@ -281,14 +297,14 @@
         }
 
         function giveUp() {
-            window.location.href = '/lose/';
+            window.location.href = mode === 'daily' ? '/lose/' : '/';
         }
 
         function resetGame() {
             fetch('/guess/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
-                body: 'reset=true'
+                body: 'reset=true&mode=' + mode
             })
             .then(() => {
                 location.reload();

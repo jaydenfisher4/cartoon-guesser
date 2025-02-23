@@ -23,6 +23,12 @@
             font-size: 1.5em;
             color: #b0b0b0;
         }
+        img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
         button {
             padding: 10px 20px;
             font-size: 1em;
@@ -48,10 +54,13 @@
 </head>
 <body onload="document.getElementById('lose-sound').play()">
     <h1>Game Over!</h1>
-    <p>You ran out of guesses. Today's character was: <strong>{{ character.name }}</strong></p>
+    <p>You ran out of guesses. Today's character was:</p>
+    <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
+    <p><strong>{{ character.name }}</strong></p>
     <p>From: <em>{{ character.show }}</em> on {{ character.network }}</p>
     <button onclick="window.location.href='/'">Try Again</button>
 
+    {% load static %}
     <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}" autoplay></audio>
 </body>
 </html>
