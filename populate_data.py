@@ -2,6 +2,8 @@ import os
 import sys
 import django
 from django.conf import settings
+import requests
+from bs4 import BeautifulSoup
 
 # Setup Django environment
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -9,6 +11,21 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cartoon_guesser.settings')
 django.setup()
 
 from game.models import CartoonCharacter
+
+def get_wikipedia_image(character_name, show_name):
+    try:
+        url = f"https://en.wikipedia.org/wiki/{character_name.replace(' ', '_')}"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        infobox = soup.find('table', class_='infobox')
+        if infobox:
+            img = infobox.find('img')
+            if img and 'src' in img.attrs:
+                return f"https:{img['src']}"
+        return None
+    except Exception as e:
+        print(f"Error scraping image for {character_name}: {e}")
+        return None
 
 def populate_cartoon_data():
     Cdata = [
@@ -3652,18 +3669,18 @@ def populate_cartoon_data():
         
 
     print(f"Total entries in Cdata: {len(Cdata)}")
-    
-    # Deduplicate by name (keep the last entry for each name)
     unique_data = {entry["name"]: entry for entry in Cdata}.values()
-    
     print(f"Unique entries after deduplication: {len(unique_data)}")
     
-    # Clear existing data to avoid conflicts
+    # Clear existing data
     CartoonCharacter.objects.all().delete()
     
-    # Populate database
+    # Populate with image URLs
     for data in unique_data:
+        image_url = get_wikipedia_image(data["name"], data["show"])
+        data["image_url"] = image_url  # Add fetched image URL
         CartoonCharacter.objects.get_or_create(**data)
+        print(f"Added {data['name']} with image: {image_url}")
     
     print(f"Database populated with {len(unique_data)} unique characters.")
     print(f"Total characters in database: {CartoonCharacter.objects.count()}")
