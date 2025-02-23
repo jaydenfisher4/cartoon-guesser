@@ -265,7 +265,10 @@
                 }
                 const row = document.createElement('div');
                 row.className = 'grid';
-                let yearIndicator = data.release_year ? '' : (data.guessed_year < data.daily_year ? ' ↑' : ' ↓');
+                let yearIndicator = '';
+                if (!data.release_year) {
+                    yearIndicator = data.guessed_year < data.daily_year ? ' ↓' : ' ↑';
+                }
                 row.innerHTML = `
                     <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>

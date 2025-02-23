@@ -17,6 +17,34 @@
             font-size: 2.5em;
             text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
         }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        input, select {
+            padding: 8px;
+            font-size: 1em;
+            border: 2px solid #404040;
+            border-radius: 5px;
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #00ccff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #00b3e6;
+        }
         .character-list {
             max-width: 1200px;
             margin: 30px auto;
@@ -42,27 +70,77 @@
             font-size: 1em;
             color: #b0b0b0;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #00ccff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #00b3e6;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <h1>All Characters</h1>
-    <div class="character-list">
+    <div class="controls">
+        <input type="text" id="search-input" placeholder="Search by name...">
+        <select id="show-filter">
+            <option value="">All Shows</option>
+            {% for show in shows %}
+                <option value="{{ show }}">{{ show }}</option>
+            {% endfor %}
+        </select>
+        <select id="network-filter">
+            <option value="">All Networks</option>
+            {% for network in networks %}
+                <option value="{{ network }}">{{ network }}</option>
+            {% endfor %}
+        </select>
+        <select id="year-filter">
+            <option value="">All Years</option>
+            {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+        <select id="main-filter">
+            <option value="">Main/Side</option>
+            <option value="true">Main</option>
+            <option value="false">Side</option>
+        </select>
+        <select id="airing-filter">
+            <option value="">Still Airing</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+        <select id="gender-filter">
+            <option value="">All Genders</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+        <select id="sort-by">
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="show-asc">Show (A-Z)</option>
+            <option value="show-desc">Show (Z-A)</option>
+            <option value="network-asc">Network (A-Z)</option>
+            <option value="network-desc">Network (Z-A)</option>
+            <option value="year-asc">Year (Oldest)</option>
+            <option value="year-desc">Year (Newest)</option>
+            <option value="main-asc">Main First</option>
+            <option value="main-desc">Side First</option>
+            <option value="airing-asc">Still Airing First</option>
+            <option value="airing-desc">Not Airing First</option>
+            <option value="gender-asc">Gender (A-Z)</option>
+            <option value="gender-desc">Gender (Z-A)</option>
+        </select>
+        <button id="back-to-game">Back to Game</button>
+    </div>
+    <div class="character-list" id="character-list">
         {% for character in characters %}
-            <div class="character-card">
+            <div class="character-card" 
+                 data-name="{{ character.name|lower }}" 
+                 data-show="{{ character.show|lower }}" 
+                 data-network="{{ character.network|lower }}" 
+                 data-year="{{ character.release_year }}" 
+                 data-main="{{ character.is_main|lower }}" 
+                 data-airing="{{ character.still_airing|lower }}" 
+                 data-gender="{{ character.gender|lower }}">
                 <img src="{{ character.image_url|default:'https://via.placeholder.com/100' }}" alt="{{ character.name }}">
                 <p><strong>Name:</strong> {{ character.name }}</p>
                 <p><strong>Show:</strong> {{ character.show }}</p>
@@ -76,6 +154,109 @@
             <p>No characters found.</p>
         {% endfor %}
     </div>
-    <button onclick="window.location.href='/'">Back to Game</button>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const showFilter = document.getElementById('show-filter');
+        const networkFilter = document.getElementById('network-filter');
+        const yearFilter = document.getElementById('year-filter');
+        const mainFilter = document.getElementById('main-filter');
+        const airingFilter = document.getElementById('airing-filter');
+        const genderFilter = document.getElementById('gender-filter');
+        const sortBy = document.getElementById('sort-by');
+        const characterList = document.getElementById('character-list');
+        const backButton = document.getElementById('back-to-game');
+        const cards = Array.from(characterList.getElementsByClassName('character-card'));
+        const lastMode = "{{ last_mode }}";
+
+        function filterAndSort() {
+            const search = searchInput.value.toLowerCase();
+            const show = showFilter.value.toLowerCase();
+            const network = networkFilter.value.toLowerCase();
+            const year = yearFilter.value;
+            const main = mainFilter.value.toLowerCase();
+            const airing = airingFilter.value.toLowerCase();
+            const gender = genderFilter.value.toLowerCase();
+            const [sortField, sortDir] = sortBy.value.split('-');
+
+            // Filter
+            let filteredCards = cards.filter(card => {
+                return (
+                    (!search || card.dataset.name.includes(search)) &&
+                    (!show || card.dataset.show === show) &&
+                    (!network || card.dataset.network === network) &&
+                    (!year || card.dataset.year === year) &&
+                    (!main || card.dataset.main === main) &&
+                    (!airing || card.dataset.airing === airing) &&
+                    (!gender || card.dataset.gender === gender)
+                );
+            });
+
+            // Sort
+            filteredCards.sort((a, b) => {
+                let aValue, bValue;
+                switch (sortField) {
+                    case 'name':
+                        aValue = a.dataset.name;
+                        bValue = b.dataset.name;
+                        break;
+                    case 'show':
+                        aValue = a.dataset.show;
+                        bValue = b.dataset.show;
+                        break;
+                    case 'network':
+                        aValue = a.dataset.network;
+                        bValue = b.dataset.network;
+                        break;
+                    case 'year':
+                        aValue = parseInt(a.dataset.year);
+                        bValue = parseInt(b.dataset.year);
+                        break;
+                    case 'main':
+                        aValue = a.dataset.main === 'true' ? 1 : 0;
+                        bValue = b.dataset.main === 'true' ? 1 : 0;
+                        break;
+                    case 'airing':
+                        aValue = a.dataset.airing === 'true' ? 1 : 0;
+                        bValue = b.dataset.airing === 'true' ? 1 : 0;
+                        break;
+                    case 'gender':
+                        aValue = a.dataset.gender;
+                        bValue = b.dataset.gender;
+                        break;
+                }
+                if (sortDir === 'asc') {
+                    return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+                } else {
+                    return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+                }
+            });
+
+            // Update display
+            cards.forEach(card => card.classList.add('hidden'));
+            filteredCards.forEach(card => {
+                card.classList.remove('hidden');
+                characterList.appendChild(card);
+            });
+        }
+
+        // Event listeners for filtering and sorting
+        searchInput.addEventListener('input', filterAndSort);
+        showFilter.addEventListener('change', filterAndSort);
+        networkFilter.addEventListener('change', filterAndSort);
+        yearFilter.addEventListener('change', filterAndSort);
+        mainFilter.addEventListener('change', filterAndSort);
+        airingFilter.addEventListener('change', filterAndSort);
+        genderFilter.addEventListener('change', filterAndSort);
+        sortBy.addEventListener('change', filterAndSort);
+
+        // Event listener for back button
+        backButton.addEventListener('click', function() {
+            window.location.href = lastMode === 'daily' ? '/' : '/unlimited/';
+        });
+
+        // Initial sort
+        filterAndSort();
+    </script>
 </body>
 </html>

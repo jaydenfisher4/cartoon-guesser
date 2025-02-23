@@ -24,6 +24,7 @@ def index(request):
     all_characters = CartoonCharacter.objects.all()
     guesses = request.session.get('guesses-daily', [])
     all_characters_data = [char.name for char in all_characters]
+    request.session['last_mode'] = 'daily'  # Track last mode
     
     context = {
         'character': daily_character,
@@ -46,6 +47,7 @@ def unlimited(request):
     current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
     all_characters = CartoonCharacter.objects.all()
     all_characters_data = [char.name for char in all_characters]
+    request.session['last_mode'] = 'unlimited'  # Track last mode
     
     context = {
         'character': current_character,
@@ -57,8 +59,18 @@ def unlimited(request):
 
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
+    # Data for filters
+    shows = sorted(set(char.show for char in all_characters))
+    networks = sorted(set(char.network for char in all_characters))
+    years = sorted(set(char.release_year for char in all_characters))
+    last_mode = request.session.get('last_mode', 'daily')  # Default to daily if not set
+    
     context = {
-        'characters': all_characters
+        'characters': all_characters,
+        'shows': shows,
+        'networks': networks,
+        'years': years,
+        'last_mode': last_mode
     }
     return render(request, 'game/characters.html', context)
 
