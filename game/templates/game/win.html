@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -52,13 +51,21 @@
 </head>
 <body onload="document.getElementById('win-sound').play()">
     <h1>You Win!</h1>
-    <p>Congratulations! You guessed today's character:</p>
+    <p>Congratulations! You guessed <span id="mode-text"></span> character:</p>
     <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
     <p><strong>{{ character.name }}</strong></p>
     <p>From: <em>{{ character.show }}</em> on {{ character.network }}</p>
-    <button onclick="window.location.href='/'">Play Again</button>
+    <button id="play-again">Play Again</button>
 
     {% load static %}
     <audio id="win-sound" src="{% static 'success.mp3' %}" autoplay></audio>
+
+    <script>
+        const mode = "{{ mode }}";
+        document.getElementById('mode-text').textContent = mode === 'daily' ? "today's" : "the";
+        document.getElementById('play-again').addEventListener('click', function() {
+            window.location.href = mode === 'daily' ? '/' : '/unlimited/';
+        });
+    </script>
 </body>
 </html>

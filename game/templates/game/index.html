@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -276,7 +275,7 @@
                     <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show ? '✓' : '✗'}</div>
                     <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
                     <div class="cell ${data.release_year ? 'correct' : (data.guessed_year < data.daily_year ? 'partial' : 'partial')}"><span class="icon">📅</span>${yearIndicator}</div>
-                    <div class="cell ${data.still_airing ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
+                    <div class="cell ${data.airing_correct ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
                     <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender ? '✓' : '✗'}</div>
                 `;
                 guessesContainer.appendChild(row);
