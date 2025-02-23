@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -165,8 +166,8 @@
     {{ all_characters|json_script:"all-characters"|safe }}
 
     <!-- Audio for win/lose -->
-    <audio id="win-sound" src="https://www.myinstants.com/media/sounds/success-fanfare-trumpets.mp3"></audio>
-    <audio id="lose-sound" src="https://www.myinstants.com/media/sounds/sad-trombone.mp3"></audio>
+    <audio id="win-sound" src="{% static 'success.mp3' %}"></audio>
+<audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}"></audio>
 
     <script>
         let guesses, allCharacters;
