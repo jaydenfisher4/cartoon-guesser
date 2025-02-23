@@ -267,7 +267,7 @@
                 row.className = 'grid';
                 let yearIndicator = '';
                 if (!data.release_year) {
-                    yearIndicator = data.guessed_year < data.daily_year ? ' ↓' : ' ↑';
+                    yearIndicator = data.guessed_year < data.daily_year ? ' ↑' : ' ↓';
                 }
                 row.innerHTML = `
                     <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
