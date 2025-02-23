@@ -53,12 +53,13 @@ def guess(request):
                 'daily_year': daily_character.release_year,
                 'still_airing': guessed_char.still_airing == daily_character.still_airing,
                 'gender': guessed_char.gender == daily_character.gender,
+                'image_url': guessed_char.image_url,  # Already included
                 'correct': guessed_char.id == daily_character.id,
-                'guess_count': len(guesses) + 1  # Send current guess count
+                'guess_count': len(guesses) + 1
             }
             if guess_name not in guesses:
                 guesses.append(guess_name)
-                request.session['guesses'] = guesses[:15]  # Increased to 15
+                request.session['guesses'] = guesses[:15]
             if result['correct']:
                 return JsonResponse({'redirect': '/win/'})
             elif len(guesses) >= 15:
@@ -70,14 +71,8 @@ def guess(request):
 
 def win(request):
     daily_character = get_daily_character()
-    context = {
-        'character': daily_character
-    }
-    return render(request, 'game/win.html', context)
+    return render(request, 'game/win.html', {'character': daily_character})
 
 def lose(request):
     daily_character = get_daily_character()
-    context = {
-        'character': daily_character
-    }
-    return render(request, 'game/lose.html', context)
+    return render(request, 'game/lose.html', {'character': daily_character})

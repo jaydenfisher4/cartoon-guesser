@@ -1,9 +1,10 @@
 import os
 import sys
 import django
-from django.conf import settings
 import requests
 from bs4 import BeautifulSoup
+from django.conf import settings
+from googleapiclient.discovery import build
 
 # Setup Django environment
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -12,6 +13,7 @@ django.setup()
 
 from game.models import CartoonCharacter
 
+# Map shows to their Fandom wiki domains
 SHOW_TO_FANDOM = {
     "Peppa Pig": "peppapig.fandom.com",
     "The Backyardigans": "backyardigans.fandom.com",
@@ -31,10 +33,10 @@ SHOW_TO_FANDOM = {
     "Codename Kids Next Door": "knd.fandom.com",
     "Bob's Burgers": "bobsburgers.fandom.com",
     "Dexter's Laboratory": "dexterslab.fandom.com",
-    "SpongeBob SquarePants": "spongebob.fandom.com",
+    "SpongeBob SquarePants": "spongebob.fandom.com",  # Fixed typo
     "Ed Edd n Eddy": "ed.fandom.com",
     "The Amazing World of Gumball": "gumball.fandom.com",
-    "The Powerpuff Girls": "powerpuffgirls.fandom.com",
+    "The Powerpuff Girls": "powerpuffgirls.fandom.com",  # Fixed typo
     "Jimmy Neutron Boy Genius": "jimmyneutron.fandom.com",
     "Teen Titans": "teentitans.fandom.com",
     "The Flintstones": "flintstones.fandom.com",
@@ -57,9 +59,12 @@ SHOW_TO_FANDOM = {
     "Fish Hooks": "fishhooks.fandom.com",
 }
 
+# Optional: Google Custom Search API (add if using)
+GOOGLE_API_KEY = "AIzaSyBxTmvw2PT3rw9ZooYbVHTRCg6d5DGPeAU"  # Replace or set in Render env
+SEARCH_ENGINE_ID = "44d23cc5653264415"  # Replace or set in Render env
+
 def get_fandom_image(character_name, show_name):
     try:
-        # Get the Fandom domain for the show, default to None if not in list
         fandom_domain = SHOW_TO_FANDOM.get(show_name)
         if not fandom_domain:
             print(f"No Fandom wiki found for show: {show_name}")
@@ -67,20 +72,39 @@ def get_fandom_image(character_name, show_name):
         
         url = f"https://{fandom_domain}/wiki/{character_name.replace(' ', '_')}"
         response = requests.get(url, timeout=10)
-        response.raise_for_status()  # Raise exception for bad status codes
+        response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Find infobox image (Fandom uses 'pi-image-thumbnail' for high-quality images)
+        # Try infobox first (primary image)
         infobox = soup.find('aside', class_='portable-infobox')
         if infobox:
-            img = infobox.find('img', class_='pi-image-thumbnail')
+            img = infobox.find('img', class_='pi-image-thumbnail') or infobox.find('img')
             if img and 'src' in img.attrs:
                 return img['src']
+        
+        # Fallback: First significant image on page
+        img = soup.find('img', class_=['image', 'thumbimage'])
+        if img and 'src' in img.attrs:
+            return img['src']
+        
+        print(f"No image found for {character_name} on {fandom_domain}")
         return None
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print(f"Error fetching image for {character_name} from {show_name}: {e}")
         return None
 
+def get_google_image(character_name, show_name):
+    try:
+        service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
+        query = f"{character_name} {show_name} character image official"
+        result = service.cse().list(q=query, cx=SEARCH_ENGINE_ID, searchType="image", num=1).execute()
+        if 'items' in result and len(result['items']) > 0:
+            return result['items'][0]['link']
+        return None
+    except Exception as e:
+        print(f"Google search failed for {character_name}: {e}")
+        return None
+    
 def populate_cartoon_data():
     Cdata = [
   {
@@ -3729,6 +3753,9 @@ def populate_cartoon_data():
     
     for data in unique_data:
         image_url = get_fandom_image(data["name"], data["show"])
+
+        if not image_url:
+            image_url = get_google_image(data["name"], data["show"])
         data["image_url"] = image_url
         CartoonCharacter.objects.get_or_create(**data)
         print(f"Added {data['name']} with image: {image_url}")

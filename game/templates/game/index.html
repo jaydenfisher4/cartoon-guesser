@@ -25,7 +25,7 @@
             margin: 5px 0;
         }
         .grid-container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 30px auto;
             background-color: #2a2a2a;
             padding: 15px;
@@ -34,7 +34,7 @@
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: 100px repeat(7, 1fr);
             gap: 8px;
         }
         .cell {
@@ -45,6 +45,11 @@
             background-color: #333333;
             transition: transform 0.2s ease;
             word-wrap: break-word;
+        }
+        .cell img {
+            max-width: 80px;
+            height: auto;
+            border-radius: 5px;
         }
         .cell:hover {
             transform: scale(1.05);
@@ -140,6 +145,7 @@
     
     <div class="grid-container">
         <div class="grid" id="header-row">
+            <div class="cell header"><span class="icon">🖼️</span>Image</div>
             <div class="cell header"><span class="icon">👤</span>Name</div>
             <div class="cell header"><span class="icon">📺</span>Network</div>
             <div class="cell header"><span class="icon">🎬</span>Show</div>
@@ -165,9 +171,9 @@
     {{ guesses|json_script:"guesses-data"|safe }}
     {{ all_characters|json_script:"all-characters"|safe }}
 
-    <!-- Audio for win/lose -->
+    {% load static %}
     <audio id="win-sound" src="{% static 'success.mp3' %}"></audio>
-<audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}"></audio>
+    <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}"></audio>
 
     <script>
         let guesses, allCharacters;
@@ -239,7 +245,7 @@
             })
             .then(data => {
                 if (data.redirect) {
-                    window.location.href = data.redirect; // Redirect to win/lose screen
+                    window.location.href = data.redirect;
                     return;
                 }
                 if (data.error) {
@@ -253,6 +259,7 @@
                     yearIndicator = data.guessed_year < data.daily_year ? '↑' : '↓';
                 }
                 row.innerHTML = `
+                    <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
                     <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network ? '✓' : (data.network_partial ? '~' : '✗')}</div>
                     <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show ? '✓' : '✗'}</div>
