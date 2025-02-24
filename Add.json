@@ -1,0 +1,722 @@
+[
+  {
+      "name": "Bluey",
+      "show": "Bluey",
+      "network": "ABC Kids",
+      "is_main": true,
+      "release_year": 2018,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://2.bp.blogspot.com/-IbDFUv2ZglE/W6Gv79TlcBI/AAAAAAAAXD0/p8ncVfpToGU09phM9VI9bmHQ-Y3xDgzRACLcBGAs/s1600/Bluey-TV-Series-ABC-Kids-Bluey-Character-waving.jpg"
+  },
+  {
+      "name": "Bingo",
+      "show": "Bluey",
+      "network": "ABC Kids",
+      "is_main": false,
+      "release_year": 2018,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://www.bluey.tv/wp-content/uploads/2023/07/B2.png"
+  },
+  {
+      "name": "Tom",
+      "show": "Tom and Jerry",
+      "network": "Cartoon Network",
+      "is_main": true,
+      "release_year": 1940,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "http://purepng.com/public/uploads/large/purepng.com-tom-and-jerrytom-and-jerrytomjerryanimated-seriesin-1940characters-17015286595981qkzu.png"
+  },
+  {
+      "name": "Jerry",
+      "show": "Tom and Jerry",
+      "network": "Cartoon Network",
+      "is_main": true,
+      "release_year": 1940,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://i.pinimg.com/originals/85/58/29/85582987f7125e4868fdcb28661e934f.png"
+  },
+  {
+      "name": "Austin",
+      "show": "The Backyardigans",
+      "network": "Nick Jr.",
+      "is_main": true,
+      "release_year": 2004,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://vignette3.wikia.nocookie.net/thebackyardigansencyclopedia/images/6/6f/The_Backyardigans_Austin_Laughing_Nickelodeon_Nick_Jr._Character_Image.png/revision/latest?cb=20160705175825"
+  },
+  {
+      "name": "Johnny Test",
+      "show": "Johnny Test",
+      "network": "Cartoon Network",
+      "is_main": true,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Susan Test",
+      "show": "Johnny Test",
+      "network": "Cartoon Network",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://img1.wikia.nocookie.net/__cb20110416213649/johnnytest/images/9/95/Susan.png"
+  },
+  {
+      "name": "Mary Test",
+      "show": "Johnny Test",
+      "network": "Cartoon Network",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://images3.wikia.nocookie.net/__cb20110416213652/johnnytest/images/a/aa/Mary.png"
+  },
+  {
+      "name": "Dukey",
+      "show": "Johnny Test",
+      "network": "Cartoon Network",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://w7.pngwing.com/pngs/321/992/png-transparent-television-show-dukey-johnny-test-animated-cartoon-cartoon-network-exam-miscellaneous-television-boy.png"
+  },
+  {
+      "name": "Otis",
+      "show": "Back at the Barnyard",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2007,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://static.miraheze.org/greatcharacterswiki/thumb/4/4a/OtisTheCow.png/300px-OtisTheCow.png"
+  },
+  {
+      "name": "Pig",
+      "show": "Back at the Barnyard",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2007,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://img1.wikia.nocookie.net/__cb20130907091939/barnyard/images/b/b5/Barnyard_Movie_Pig.jpg"
+  },
+  {
+      "name": "Blue",
+      "show": "Blue's Clues",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 1996,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://vignette.wikia.nocookie.net/thebluescluesencyclopedia/images/5/55/Blues-Clues-and-You-Blue.jpg/revision/latest/scale-to-width-down/2000?cb=20190831170833"
+  },
+  {
+      "name": "Steve",
+      "show": "Blue's Clues",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 1996,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/thebluescluesencyclopedia/images/3/3b/Blue's_Clues_Steve_2D.png/revision/latest?cb=20171211211245"
+  },
+  {
+      "name": "Skipper",
+      "show": "The Penguins of Madagascar",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2008,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://img4.wikia.nocookie.net/__cb20121120132328/penguinsofmadagascar/images/9/99/Skipper_2.jpg"
+  },
+  {
+      "name": "Kowalski",
+      "show": "The Penguins of Madagascar",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2008,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://static.wikia.nocookie.net/penguinsofmadagascar/images/d/d3/KowalskiNew.png/revision/latest/scale-to-width-down/1200?cb=20211124232503"
+  },
+  {
+      "name": "Rico",
+      "show": "The Penguins of Madagascar",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2008,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/p__/images/5/54/Rico03.png/revision/latest?cb=20170516033804&path-prefix=protagonist"
+  },
+  {
+      "name": "Private",
+      "show": "The Penguins of Madagascar",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2008,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://static2.wikia.nocookie.net/__cb20121120132345/penguinsofmadagascar/images/3/37/Private_2.jpg"
+  },
+  {
+      "name": "Curious George",
+      "show": "Curious George",
+      "network": "PBS Kids",
+      "is_main": true,
+      "release_year": 2006,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/curious-george/images/d/d8/Curious_George.png/revision/latest?cb=20180109005518"
+  },
+  {
+      "name": "The Man in the Yellow Hat",
+      "show": "Curious George",
+      "network": "PBS Kids",
+      "is_main": false,
+      "release_year": 2006,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/curious-george/images/f/fd/Ted_(2019).jpg/revision/latest?cb=20200114022334"
+  },
+  {
+      "name": "Fanboy",
+      "show": "Fanboy & Chum Chum",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2009,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://www.tvguide.com/a/img/catalog/provider/1/1/1-442863809.jpg"
+  },
+  {
+      "name": "Chum Chum",
+      "show": "Fanboy & Chum Chum",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2009,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://static.wikia.nocookie.net/fbandcc/images/f/f6/Yfhfd.jpg/revision/latest?cb=20120902000617"
+  },
+  {
+      "name": "Kai-Lan",
+      "show": "Ni Hao, Kai-Lan",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2007,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://vignette.wikia.nocookie.net/nihaokailan/images/0/08/Kai_lan.png/revision/latest?cb=20130912221227"
+  },
+  {
+      "name": "Rintoo",
+      "show": "Ni Hao, Kai-Lan",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2007,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://images4.fanpop.com/image/photos/21600000/Kai-Lan-and-Rintoo-ni-hao-kai-lan-21617893-1024-1024.jpg"
+  },
+  {
+      "name": "Clifford",
+      "show": "Clifford",
+      "network": "PBS Kids",
+      "is_main": true,
+      "release_year": 2000,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://img2.wikia.nocookie.net/__cb20131006055214/clifford/images/d/d1/Clifford4.png"
+  },
+  {
+      "name": "Emily Elizabeth",
+      "show": "Clifford",
+      "network": "PBS Kids",
+      "is_main": false,
+      "release_year": 2000,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://img3.wikia.nocookie.net/__cb20130929152232/clifford/images/d/d5/Emily2.png"
+  },
+  {
+      "name": "Bob the Builder",
+      "show": "Bob the Builder",
+      "network": "Nick Jr.",
+      "is_main": true,
+      "release_year": 1998,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://i.pinimg.com/originals/0b/a3/77/0ba377cf0a8d0eb5f4fee0c52ff575ab.jpg"
+  },
+  {
+      "name": "Wendy",
+      "show": "Bob the Builder",
+      "network": "Nick Jr.",
+      "is_main": false,
+      "release_year": 1998,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://static.miraheze.org/greatcharacterswiki/thumb/d/de/Wendy1.png/640px-Wendy1.png"
+  },
+  {
+      "name": "Pink Panther",
+      "show": "Pink Panther",
+      "network": "MGM",
+      "is_main": true,
+      "release_year": 1963,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://i.pinimg.com/originals/86/00/ad/8600ad29902c6f6e27c30e40d3603f2f.jpg"
+  },
+  {
+      "name": "Inspector Clouseau",
+      "show": "Pink Panther",
+      "network": "MGM",
+      "is_main": false,
+      "release_year": 1963,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://img.etsystatic.com/il/697f64/1099956440/il_570xN.1099956440_c4cv.jpg"
+  },
+  {
+      "name": "Wubbzy",
+      "show": "Wow Wow Wubbzy!",
+      "network": "Nick Jr.",
+      "is_main": true,
+      "release_year": 2006,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://images.wikia.com/annoyingorangefanon/images/0/04/Wubbzy.jpg"
+  },
+  {
+      "name": "Walden",
+      "show": "Wow Wow Wubbzy!",
+      "network": "Nick Jr.",
+      "is_main": false,
+      "release_year": 2006,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/p__/images/4/40/Walden_(Wow!_Wow!_Wubbzy!).png/revision/latest?cb=20200803032825&path-prefix=protagonist"
+  },
+  {
+      "name": "Daizy",
+      "show": "Wow Wow Wubbzy!",
+      "network": "Nick Jr.",
+      "is_main": false,
+      "release_year": 2006,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://vignette.wikia.nocookie.net/wubbzy/images/d/d9/Daizy.png/revision/latest?cb=20200605043721"
+  },
+  {
+      "name": "Little Bill",
+      "show": "Little Bill",
+      "network": "Noggin",
+      "is_main": true,
+      "release_year": 1999,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://static.wikia.nocookie.net/littlebill/images/8/86/Little_Bill_002HR.png/revision/latest/scale-to-width-down/1200?cb=20150909130513"
+  },
+  {
+      "name": "Little Bill's Mom",
+      "show": "Little Bill",
+      "network": "Noggin",
+      "is_main": false,
+      "release_year": 1999,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://i.ytimg.com/vi/pXN9b2USbiE/maxresdefault.jpg"
+  },
+  {
+      "name": "Little Bill's Dad",
+      "show": "Little Bill",
+      "network": "Noggin",
+      "is_main": false,
+      "release_year": 1999,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://www.pngmart.com/files/22/Little-Bill-PNG-HD-Isolated.png"
+  },
+  {
+      "name": "Dudley Puppy",
+      "show": "T.U.F.F. Puppy",
+      "network": "Nickelodeon",
+      "is_main": true,
+      "release_year": 2010,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://vignette2.wikia.nocookie.net/tuffpuppy/images/b/b8/Dudley.PNG/revision/latest?cb=20111015115107"
+  },
+  {
+      "name": "Kitty Katswell",
+      "show": "T.U.F.F. Puppy",
+      "network": "Nickelodeon",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://vignette2.wikia.nocookie.net/tuffpuppy/images/0/0a/Kitty_Katswell.jpg/revision/latest?cb=20140211013326"
+  },
+  {
+      "name": "Twilight Sparkle",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": true,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://3.bp.blogspot.com/-EZChWVniHDc/UtAYD1FB4hI/AAAAAAAAAec/xo2En-anbNM/s1600/ts16.png"
+  },
+  {
+      "name": "Rainbow Dash",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "http://static1.wikia.nocookie.net/__cb20140114011114/maditsmadfunny/images/4/41/Rainbow_Dash_3.png"
+  },
+  {
+      "name": "Applejack",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://4.bp.blogspot.com/-ZZ96bprrMEo/Wh8RrLOd9fI/AAAAAAABNUg/WsLlQT_NbqEBvy9Rw15vIoQz4i0qn73_QCKgBGAs/s1600/Applejack_by_vexorb-d4jlkc1.png"
+  },
+  {
+      "name": "Pinkie Pie",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "http://images6.fanpop.com/image/photos/36900000/Pinkie-Pie-my-little-pony-friendship-is-magic-36959179-1280-1377.png"
+  },
+  {
+      "name": "Fluttershy",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Rarity",
+      "show": "My Little Pony: Friendship Is Magic",
+      "network": "Discovery Family",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": true,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Big Bird",
+      "show": "Sesame Street",
+      "network": "Sesame Workshop",
+      "is_main": true,
+      "release_year": 1969,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Elmo",
+      "show": "Sesame Street",
+      "network": "Sesame Workshop",
+      "is_main": true,
+      "release_year": 1969,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://www.pngitem.com/pimgs/m/3-30315_elmo-sesame-street-cartoon-hd-png-download.png"
+  },
+  {
+      "name": "Cookie Monster",
+      "show": "Sesame Street",
+      "network": "Sesame Workshop",
+      "is_main": false,
+      "release_year": 1969,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://www.nicepng.com/png/detail/434-4345546_cookie-monster-sesame-street-character-clipart.png"
+  },
+  {
+      "name": "Oscar the Grouch",
+      "show": "Sesame Street",
+      "network": "Sesame Workshop",
+      "is_main": false,
+      "release_year": 1969,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://easydrawingguides.com/wp-content/uploads/2019/03/how-to-draw-Oscar-the-grouch-from-sesame-street-featured-image-1200.png"
+  },
+  {
+      "name": "Garfield",
+      "show": "Garfield and Friends",
+      "network": "CBS",
+      "is_main": true,
+      "release_year": 1988,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/XVaYSP0NxoJLCTYtSVHvTA/1600x900.jpg"
+  },
+  {
+      "name": "Odie",
+      "show": "Garfield and Friends",
+      "network": "CBS",
+      "is_main": false,
+      "release_year": 1988,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://d1ejxu6vysztl5.cloudfront.net/characters/odie-image-29095233_1024x.jpg"
+  },
+  {
+      "name": "Jon Arbuckle",
+      "show": "Garfield and Friends",
+      "network": "CBS",
+      "is_main": false,
+      "release_year": 1988,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/garfield/images/f/f2/Jon_Q._Arbuckle.jpg/revision/latest?cb=20161218055015"
+  },
+  {
+      "name": "Leo",
+      "show": "Little Einsteins",
+      "network": "Disney Channel",
+      "is_main": true,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/littleeinsteinspedia/images/1/1a/LE_Leo_02.jpg/revision/latest?cb=20130721220318"
+  },
+  {
+      "name": "Quincy",
+      "show": "Little Einsteins",
+      "network": "Disney Channel",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/disney/images/0/0a/Little_Einsteins_-_Quincy_-_Render.png/revision/latest?cb=20160520184646"
+  },
+  {
+      "name": "Annie",
+      "show": "Little Einsteins",
+      "network": "Disney Channel",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Roger",
+      "show": "Little Einsteins",
+      "network": "Disney Channel",
+      "is_main": false,
+      "release_year": 2005,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://m.media-amazon.com/images/M/MV5BZmUwMGM5OTMtMzljOC00NGUzLTk2ZmUtODk4NjE4MzFkOGY3XkEyXkFqcGdeQXVyNjk4MTcwNTc@._V1_.jpg"
+  },
+  {
+      "name": "Caillou",
+      "show": "Caillou",
+      "network": "PBS Kids",
+      "is_main": true,
+      "release_year": 1997,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://www.cartoonpics.net/data/media/86/caillou_characters.gif"
+  },
+  {
+      "name": "Rosie",
+      "show": "Caillou",
+      "network": "PBS Kids",
+      "is_main": false,
+      "release_year": 1997,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Caillou's Mom",
+      "show": "Caillou",
+      "network": "PBS Kids",
+      "is_main": false,
+      "release_year": 1997,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Caillou's Dad",
+      "show": "Caillou",
+      "network": "PBS Kids",
+      "is_main": false,
+      "release_year": 1997,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Charlie Brown",
+      "show": "Peanuts",
+      "network": "CBS",
+      "is_main": true,
+      "release_year": 1965,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Snoopy",
+      "show": "Peanuts",
+      "network": "CBS",
+      "is_main": true,
+      "release_year": 1965,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Lucy",
+      "show": "Peanuts",
+      "network": "CBS",
+      "is_main": false,
+      "release_year": 1965,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://sketchok.com/images/articles/01-cartoons/000-va/85/11.jpg"
+  },
+  {
+      "name": "Linus",
+      "show": "Peanuts",
+      "network": "CBS",
+      "is_main": false,
+      "release_year": 1965,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://i.pinimg.com/originals/a6/9b/c1/a69bc1a3e553d5f057c7ea1c1fa4c613.png"
+  },
+  {
+      "name": "Sally",
+      "show": "Peanuts",
+      "network": "CBS",
+      "is_main": false,
+      "release_year": 1965,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://w7.pngwing.com/pngs/323/661/png-transparent-sally-brown-peanuts-female-character-illustration-sally-lucy-van-pelt-charlie-brown-linus-van-pelt-snoopy-sally-the-peanuts-movie-cartoon-child-toddler-cartoons.png"
+  },
+  {
+      "name": "Lilo",
+      "show": "Lilo & Stitch",
+      "network": "Disney Channel",
+      "is_main": true,
+      "release_year": 2003,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "http://3.bp.blogspot.com/-XcmS6pjNsSo/T8us7Fj-StI/AAAAAAAAEG8/_MVDtbo6gr0/s1600/Free_disney_Lilo_and_Stitch_cartoon_pictures_5.jpg"
+  },
+  {
+      "name": "Stitch",
+      "show": "Lilo & Stitch",
+      "network": "Disney Channel",
+      "is_main": true,
+      "release_year": 2003,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://orig00.deviantart.net/ec0c/f/2016/273/d/e/lilo_and_stitch__stitch_by_skyfallerart-dajgdv2.jpg"
+  },
+  {
+      "name": "Nani",
+      "show": "Lilo & Stitch",
+      "network": "Disney Channel",
+      "is_main": false,
+      "release_year": 2003,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://s-media-cache-ak0.pinimg.com/736x/bc/cd/cd/bccdcd58c3487bd6f28eacb65ce0b039.jpg"
+  },
+  {
+      "name": "Thomas",
+      "show": "Thomas the Tank Engine",
+      "network": "Channel 5",
+      "is_main": true,
+      "release_year": 1984,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://vignette.wikia.nocookie.net/ttte/images/3/3a/ThomasCGIPromo17.jpg/revision/latest?cb=20140716092759"
+  },
+  {
+      "name": "Percy",
+      "show": "Thomas the Tank Engine",
+      "network": "Channel 5",
+      "is_main": false,
+      "release_year": 1984,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://vignette2.wikia.nocookie.net/ttte/images/1/1a/PlayfulPercy!.png/revision/latest?cb=20151210183830"
+  },
+  {
+      "name": "James",
+      "show": "Thomas the Tank Engine",
+      "network": "Channel 5",
+      "is_main": false,
+      "release_year": 1984,
+      "still_airing": true,
+      "gender": "Male",
+      "image_url": "https://www.clipartkey.com/mpngs/m/222-2220826_clipart-of-james-the-tank-engine-thomas-and.png"
+  },
+  {
+      "name": "Milli",
+      "show": "Team Umizoomi",
+      "network": "Nick Jr.",
+      "is_main": true,
+      "release_year": 2010,
+      "still_airing": false,
+      "gender": "Female",
+      "image_url": "https://via.placeholder.com/150?text=No+Image"
+  },
+  {
+      "name": "Geo",
+      "show": "Team Umizoomi",
+      "network": "Nick Jr.",
+      "is_main": true,
+      "release_year": 2010,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "http://4.bp.blogspot.com/-9Pv873sfqUg/Uii_XLG2nEI/AAAAAAAAVK4/k69gJp4dJiM/s1600/geo.png"
+  },
+  {
+      "name": "Bot",
+      "show": "Team Umizoomi",
+      "network": "Nick Jr.",
+      "is_main": false,
+      "release_year": 2010,
+      "still_airing": false,
+      "gender": "Male",
+      "image_url": "https://static.wikia.nocookie.net/teamumizoomi/images/8/8c/Bot_sticker.png/revision/latest?cb=20230908013236"
+  }
+]
