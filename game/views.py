@@ -101,11 +101,10 @@ def guess(request):
         
         try:
             guessed_char = CartoonCharacter.objects.get(name__iexact=guess_name)
-            network_correct = guessed_char.network == current_character.network
-            network_partial = not network_correct and (
-                guessed_char.network in current_character.network or
-                current_character.network in guessed_char.network
-            )
+            guess_networks = set(guessed_char.network.split(', '))
+            target_networks = set(current_character.network.split(', '))
+            network_correct = guess_networks == target_networks
+            network_partial = not network_correct and bool(guess_networks & target_networks)  # Check for any overlap
             main_correct = guessed_char.is_main == current_character.is_main
             airing_correct = guessed_char.still_airing == current_character.still_airing
             logger.debug(f"Guess: {guessed_char.name} ({guessed_char.release_year}), Target: {current_character.name} ({current_character.release_year})")
@@ -156,14 +155,13 @@ def win(request):
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        # Force reset to ensure new character
         new_character = get_random_character(guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
             logger.debug(f"New unlimited character after win: {new_character.name} ({new_character.release_year})")
         else:
             logger.warning("No new character available for unlimited mode")
-            del request.session['current_character_id-unlimited']  # Reset if no character
+            del request.session['current_character_id-unlimited']
     
     context = {
         'character': daily_character,
@@ -180,14 +178,13 @@ def lose(request):
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        # Force reset to ensure new character
         new_character = get_random_character(guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
             logger.debug(f"New unlimited character after loss: {new_character.name} ({new_character.release_year})")
         else:
             logger.warning("No new character available for unlimited mode")
-            del request.session['current_character_id-unlimited']  # Reset if no character
+            del request.session['current_character_id-unlimited']
     
     context = {
         'character': daily_character,

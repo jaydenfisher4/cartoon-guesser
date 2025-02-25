@@ -51,7 +51,7 @@
         }
     </style>
 </head>
-<body onload="document.getElementById('lose-sound').play()">
+<body>
     <h1>Game Over!</h1>
     <p>You ran out of guesses. <span id="mode-text"></span> character was:</p>
     <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
@@ -60,11 +60,13 @@
     <button id="try-again">Try Again</button>
 
     {% load static %}
-    <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}" autoplay></audio>
+    <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}" preload="auto"></audio>
 
     <script>
         const mode = "{{ mode }}";
         document.getElementById('mode-text').textContent = mode === 'daily' ? "Today's" : "The";
+        const loseSound = document.getElementById('lose-sound');
+        loseSound.play().catch(error => console.log("Lose sound error:", error));
         document.getElementById('try-again').addEventListener('click', function() {
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });

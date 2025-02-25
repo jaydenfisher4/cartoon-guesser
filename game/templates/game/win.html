@@ -49,7 +49,7 @@
         }
     </style>
 </head>
-<body onload="document.getElementById('win-sound').play()">
+<body>
     <h1>You Win!</h1>
     <p>Congratulations! You guessed <span id="mode-text"></span> character:</p>
     <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
@@ -58,11 +58,13 @@
     <button id="play-again">Play Again</button>
 
     {% load static %}
-    <audio id="win-sound" src="{% static 'success.mp3' %}" autoplay></audio>
+    <audio id="win-sound" src="{% static 'success.mp3' %}" preload="auto"></audio>
 
     <script>
         const mode = "{{ mode }}";
         document.getElementById('mode-text').textContent = mode === 'daily' ? "today's" : "the";
+        const winSound = document.getElementById('win-sound');
+        winSound.play().catch(error => console.log("Win sound error:", error));
         document.getElementById('play-again').addEventListener('click', function() {
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });
