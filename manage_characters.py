@@ -65,14 +65,12 @@ def update_character_images(characters_data):
     """Update the image URLs for existing characters in the database."""
     for character_data in characters_data:
         try:
-            # Check for required fields: name and image_url
             if 'name' not in character_data or 'image_url' not in character_data:
                 raise ValueError("Each character must have 'name' and 'image_url'")
             
             name = character_data['name']
             new_image_url = character_data['image_url']
             
-            # Find the character in the database
             character = CartoonCharacter.objects.get(name__iexact=name)
             character.image_url = new_image_url
             character.save()
@@ -84,12 +82,42 @@ def update_character_images(characters_data):
         except Exception as e:
             print(f"Unexpected error updating character '{character_data.get('name', 'Unknown')}': {e}")
 
+def export_characters_to_json(output_file):
+    """Export all CartoonCharacter data from the database to a JSON file in the specified format."""
+    try:
+        # Fetch all characters from the database
+        characters = CartoonCharacter.objects.all()
+        
+        # Prepare data in the requested format
+        export_data = [
+            {
+                "name": character.name,
+                "show": character.show,
+                "network": character.network,
+                "is_main": character.is_main,
+                "release_year": character.release_year,
+                "still_airing": character.still_airing,
+                "gender": character.gender,
+                "image_url": character.image_url
+            }
+            for character in characters
+        ]
+        
+        # Write to file with pretty printing
+        with open(output_file, 'w') as f:
+            json.dump(export_data, f, indent=2, separators=(',', ': '))
+        
+        print(f"Successfully exported {len(export_data)} characters to '{output_file}'.")
+    except Exception as e:
+        print(f"Error exporting data to '{output_file}': {e}")
+
 def main():
     print("Cartoon Character Manager")
     print("1. Remove characters")
     print("2. Add characters")
     print("3. Update character images")
-    choice = input("Enter choice (1, 2, or 3): ").strip()
+    print("4. Export all characters to JSON")
+    choice = input("Enter choice (1, 2, 3, or 4): ").strip()
     
     if choice == '1':
         print("Enter character names as a JSON list (e.g., ['SpongeBob SquarePants', 'Patrick Star']) or 'file' to load from a JSON file:")
@@ -160,8 +188,14 @@ def main():
                 return
         update_character_images(characters_data)
     
+    elif choice == '4':
+        output_file = input("Enter the path for the output JSON file (e.g., 'characters.json'): ").strip()
+        if not output_file:
+            output_file = 'characters.json'  # Default filename if none provided
+        export_characters_to_json(output_file)
+    
     else:
-        print("Invalid choice. Please enter 1, 2, or 3.")
+        print("Invalid choice. Please enter 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     main()
