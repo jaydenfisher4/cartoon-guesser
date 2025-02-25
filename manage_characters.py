@@ -61,11 +61,35 @@ def add_characters(characters_data):
         except Exception as e:
             print(f"Unexpected error adding character '{character_data.get('name', 'Unknown')}': {e}")
 
+def update_character_images(characters_data):
+    """Update the image URLs for existing characters in the database."""
+    for character_data in characters_data:
+        try:
+            # Check for required fields: name and image_url
+            if 'name' not in character_data or 'image_url' not in character_data:
+                raise ValueError("Each character must have 'name' and 'image_url'")
+            
+            name = character_data['name']
+            new_image_url = character_data['image_url']
+            
+            # Find the character in the database
+            character = CartoonCharacter.objects.get(name__iexact=name)
+            character.image_url = new_image_url
+            character.save()
+            print(f"Updated image for '{name}' to '{new_image_url}'.")
+        except CartoonCharacter.DoesNotExist:
+            print(f"Character '{name}' not found in the database.")
+        except ValueError as e:
+            print(f"Error updating character '{character_data.get('name', 'Unknown')}': {e}")
+        except Exception as e:
+            print(f"Unexpected error updating character '{character_data.get('name', 'Unknown')}': {e}")
+
 def main():
     print("Cartoon Character Manager")
     print("1. Remove characters")
     print("2. Add characters")
-    choice = input("Enter choice (1 or 2): ").strip()
+    print("3. Update character images")
+    choice = input("Enter choice (1, 2, or 3): ").strip()
     
     if choice == '1':
         print("Enter character names as a JSON list (e.g., ['SpongeBob SquarePants', 'Patrick Star']) or 'file' to load from a JSON file:")
@@ -113,8 +137,31 @@ def main():
                 return
         add_characters(characters_data)
     
+    elif choice == '3':
+        print("Enter character image updates as a JSON list (e.g., [{'name': 'SpongeBob', 'image_url': 'new_url'}, ...]) or 'file' to load from a JSON file:")
+        json_input = input("JSON data: ").strip()
+        if json_input.lower() == 'file':
+            file_path = input("Enter the path to the JSON file: ").strip()
+            try:
+                with open(file_path, 'r') as f:
+                    characters_data = json.load(f)
+                if not isinstance(characters_data, list):
+                    raise ValueError("File must contain a JSON list of character objects")
+            except Exception as e:
+                print(f"Error reading file: {e}")
+                return
+        else:
+            try:
+                characters_data = json.loads(json_input)
+                if not isinstance(characters_data, list):
+                    raise ValueError("Input must be a JSON list of character objects")
+            except json.JSONDecodeError as e:
+                print(f"Invalid JSON: {e}")
+                return
+        update_character_images(characters_data)
+    
     else:
-        print("Invalid choice. Please enter 1 or 2.")
+        print("Invalid choice. Please enter 1, 2, or 3.")
 
 if __name__ == "__main__":
     main()
