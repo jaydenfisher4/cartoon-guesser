@@ -87,7 +87,13 @@
         </select>
         <select id="network-filter">
             <option value="">All Networks</option>
-            {% for network in networks %}
+            {% for network in single_networks %}
+                <option value="{{ network }}">{{ network }}</option>
+            {% endfor %}
+        </select>
+        <select id="secondary-network-filter">
+            <option value="">Any Secondary Network</option>
+            {% for network in single_networks %}
                 <option value="{{ network }}">{{ network }}</option>
             {% endfor %}
         </select>
@@ -136,7 +142,7 @@
             <div class="character-card" 
                  data-name="{{ character.name|lower }}" 
                  data-show="{{ character.show|lower }}" 
-                 data-network="{{ character.network|lower }}" 
+                 data-networks="{{ character.network|lower }}" 
                  data-year="{{ character.release_year }}" 
                  data-main="{{ character.is_main|lower }}" 
                  data-airing="{{ character.still_airing|lower }}" 
@@ -159,6 +165,7 @@
         const searchInput = document.getElementById('search-input');
         const showFilter = document.getElementById('show-filter');
         const networkFilter = document.getElementById('network-filter');
+        const secondaryNetworkFilter = document.getElementById('secondary-network-filter');
         const yearFilter = document.getElementById('year-filter');
         const mainFilter = document.getElementById('main-filter');
         const airingFilter = document.getElementById('airing-filter');
@@ -173,6 +180,7 @@
             const search = searchInput.value.toLowerCase();
             const show = showFilter.value.toLowerCase();
             const network = networkFilter.value.toLowerCase();
+            const secondaryNetwork = secondaryNetworkFilter.value.toLowerCase();
             const year = yearFilter.value;
             const main = mainFilter.value.toLowerCase();
             const airing = airingFilter.value.toLowerCase();
@@ -181,10 +189,14 @@
 
             // Filter
             let filteredCards = cards.filter(card => {
+                const networks = card.dataset.networks.split(', ').map(n => n.trim());
+                const matchesPrimaryNetwork = !network || networks.includes(network);
+                const matchesSecondaryNetwork = !secondaryNetwork || networks.includes(secondaryNetwork);
                 return (
                     (!search || card.dataset.name.includes(search)) &&
                     (!show || card.dataset.show === show) &&
-                    (!network || card.dataset.network === network) &&
+                    matchesPrimaryNetwork &&
+                    matchesSecondaryNetwork &&
                     (!year || card.dataset.year === year) &&
                     (!main || card.dataset.main === main) &&
                     (!airing || card.dataset.airing === airing) &&
@@ -205,8 +217,8 @@
                         bValue = b.dataset.show;
                         break;
                     case 'network':
-                        aValue = a.dataset.network;
-                        bValue = b.dataset.network;
+                        aValue = a.dataset.networks;
+                        bValue = b.dataset.networks;
                         break;
                     case 'year':
                         aValue = parseInt(a.dataset.year);
@@ -244,6 +256,7 @@
         searchInput.addEventListener('input', filterAndSort);
         showFilter.addEventListener('change', filterAndSort);
         networkFilter.addEventListener('change', filterAndSort);
+        secondaryNetworkFilter.addEventListener('change', filterAndSort);
         yearFilter.addEventListener('change', filterAndSort);
         mainFilter.addEventListener('change', filterAndSort);
         airingFilter.addEventListener('change', filterAndSort);

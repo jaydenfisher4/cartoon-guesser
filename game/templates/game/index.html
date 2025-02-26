@@ -50,6 +50,7 @@
             display: grid;
             grid-template-columns: 100px repeat(7, 1fr);
             gap: 8px;
+            margin-bottom: 8px;
         }
         .cell {
             padding: 12px;
@@ -59,6 +60,10 @@
             background-color: #333333;
             transition: transform 0.2s ease;
             word-wrap: break-word;
+            opacity: 0;
+        }
+        .cell.reveal {
+            animation: revealCell 0.3s ease forwards;
         }
         .cell img {
             max-width: 80px;
@@ -72,6 +77,12 @@
             font-weight: bold;
             color: #00ccff;
             background-color: #252525;
+            opacity: 1;
+        }
+        .known-row .cell {
+            background-color: #1f2a44;
+            font-weight: bold;
+            opacity: 1;
         }
         .correct {
             background-color: #2e7d32;
@@ -141,7 +152,7 @@
             cursor: pointer;
             color: #e0e0e0;
         }
-        .autocomplete-item:hover {
+        .autocomplete-item:hover, .autocomplete-item.selected {
             background-color: #333333;
         }
         .controls {
@@ -156,14 +167,18 @@
             gap: 20px;
             justify-content: center;
         }
+        @keyframes revealCell {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
     <h1>Cartoon Guesser</h1>
     <div class="mode-select">
-        <button onclick="window.location.href='/'">Daily Mode</button>
-        <button onclick="window.location.href='/unlimited/'">Unlimited Mode</button>
-        <button onclick="window.location.href='/characters/'">All Characters</button>
+        <button onmousedown="handleModeClick(event, '/')">Daily Mode</button>
+        <button onmousedown="handleModeClick(event, '/unlimited/')">Unlimited Mode</button>
+        <button onmousedown="handleModeClick(event, '/characters/')">All Characters</button>
     </div>
     <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
     <div class="timer-container">
@@ -181,6 +196,16 @@
             <div class="cell header"><span class="icon">📅</span>Release Year</div>
             <div class="cell header"><span class="icon">⏳</span>Still Airing</div>
             <div class="cell header"><span class="icon">🚻</span>Gender</div>
+        </div>
+        <div class="grid known-row" id="known-results">
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
+            <div class="cell">?</div>
         </div>
         <div id="guesses-container"></div>
     </div>
@@ -222,10 +247,13 @@
         const guessCounter = document.getElementById('guess-counter');
         const guessButton = document.getElementById('guess-button');
         const guessesContainer = document.getElementById('guesses-container');
+        const knownResults = document.getElementById('known-results');
         const winSound = document.getElementById('win-sound');
         const loseSound = document.getElementById('lose-sound');
         const timerDisplay = document.getElementById('timer');
         let guessCount = guesses.length;
+        let knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?' };
+        let selectedIndex = -1;
 
         guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
 
@@ -246,19 +274,29 @@
         if (mode === 'daily') setInterval(updateTimer, 1000);
         updateTimer();
 
+        function handleModeClick(event, url) {
+            if (event.button === 1) { // Middle mouse button
+                window.open(url, '_blank');
+            } else if (event.button === 0) { // Left click
+                window.location.href = url;
+            }
+        }
+
         input.addEventListener('input', function() {
             const value = this.value.toLowerCase();
             autocompleteList.innerHTML = '';
+            selectedIndex = -1;
             if (!value) {
                 autocompleteList.style.display = 'none';
                 return;
             }
             const matches = allCharacters.filter(name => name.toLowerCase().includes(value));
             if (matches.length > 0) {
-                matches.forEach(match => {
+                matches.forEach((match, index) => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
                     item.textContent = match;
+                    item.dataset.index = index;
                     item.addEventListener('click', () => {
                         input.value = match;
                         autocompleteList.style.display = 'none';
@@ -272,11 +310,87 @@
             }
         });
 
+        input.addEventListener('keydown', function(e) {
+            const items = autocompleteList.querySelectorAll('.autocomplete-item');
+            if (items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection();
+            } else if (e.key === 'Tab' && !e.shiftKey) {
+                e.preventDefault();
+                if (selectedIndex === -1) selectedIndex = 0;
+                else selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection();
+            } else if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection();
+            } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                e.preventDefault();
+                input.value = items[selectedIndex].textContent;
+                autocompleteList.style.display = 'none';
+                submitGuess();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                submitGuess();
+            }
+        });
+
+        function updateSelection() {
+            const items = autocompleteList.querySelectorAll('.autocomplete-item');
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+            if (selectedIndex >= 0) {
+                input.value = items[selectedIndex].textContent;
+                items[selectedIndex].scrollIntoView({ block: 'nearest' });
+            } else {
+                input.value = input.value; // Keep current input if no selection
+            }
+        }
+
         document.addEventListener('click', (e) => {
             if (!input.contains(e.target) && !autocompleteList.contains(e.target)) {
                 autocompleteList.style.display = 'none';
             }
         });
+
+        function updateKnownResults(data) {
+            if (data.correct) {
+                knownValues = {
+                    name: data.name,
+                    network: data.network_value,
+                    show: data.show_value,
+                    is_main: data.is_main ? 'Main' : 'Side',
+                    release_year: data.year_value,
+                    still_airing: data.still_airing ? 'Yes' : 'No',
+                    gender: data.gender_value
+                };
+            } else {
+                if (data.network) knownValues.network = data.network_value;
+                if (data.show) knownValues.show = data.show_value;
+                if (data.main_correct) knownValues.is_main = data.is_main ? 'Main' : 'Side';
+                if (data.release_year) knownValues.release_year = data.year_value;
+                if (data.airing_correct) knownValues.still_airing = data.still_airing ? 'Yes' : 'No';
+                if (data.gender) knownValues.gender = data.gender_value;
+            }
+            knownResults.innerHTML = `
+                <div class="cell">?</div>
+                <div class="cell ${knownValues.name !== '?' ? 'correct' : ''}"><span class="icon">👤</span>${knownValues.name}</div>
+                <div class="cell ${knownValues.network !== '?' ? 'correct' : ''}"><span class="icon">📺</span>${knownValues.network}</div>
+                <div class="cell ${knownValues.show !== '?' ? 'correct' : ''}"><span class="icon">🎬</span>${knownValues.show}</div>
+                <div class="cell ${knownValues.is_main !== '?' ? 'correct' : ''}"><span class="icon">⭐</span>${knownValues.is_main}</div>
+                <div class="cell ${knownValues.release_year !== '?' ? 'correct' : ''}"><span class="icon">📅</span>${knownValues.release_year}</div>
+                <div class="cell ${knownValues.still_airing !== '?' ? 'correct' : ''}"><span class="icon">⏳</span>${knownValues.still_airing}</div>
+                <div class="cell ${knownValues.gender !== '?' ? 'correct' : ''}"><span class="icon">🚻</span>${knownValues.gender}</div>
+            `;
+        }
 
         function submitGuess() {
             const guess = input.value.trim();
@@ -302,7 +416,7 @@
                 const row = document.createElement('div');
                 row.className = 'grid';
                 let yearIndicator = '';
-                if (!data.release_year) {
+                if (!data.release_year && data.year_within_3) {
                     yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
                 }
                 console.log(`Guess: ${data.name} (${data.year_value}), Target Year: ${data.daily_year}, Indicator: ${yearIndicator}`);
@@ -312,19 +426,30 @@
                     <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network_value}</div>
                     <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show_value}</div>
                     <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
-                    <div class="cell ${data.release_year ? 'correct' : 'partial'}"><span class="icon">📅</span>${data.year_value}${yearIndicator}</div>
+                    <div class="cell ${data.release_year ? 'correct' : (data.year_within_3 ? 'partial' : 'wrong')}"><span class="icon">📅</span>${data.year_value}${yearIndicator}</div>
                     <div class="cell ${data.airing_correct ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
                     <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender_value}</div>
                 `;
-                guessesContainer.appendChild(row);
+                guessesContainer.insertBefore(row, guessesContainer.firstChild);
                 guessCount = data.guess_count;
                 guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
+                updateKnownResults(data);
+
+                const cells = row.querySelectorAll('.cell');
+                cells.forEach((cell, index) => {
+                    setTimeout(() => {
+                        cell.classList.add('reveal');
+                    }, index * 100);
+                });
+
                 if (data.correct) {
                     winSound.play().catch(error => console.log("Win sound error:", error));
                     if (mode === 'unlimited') {
                         guessesContainer.innerHTML = '';
                         guessCount = 0;
                         guessCounter.textContent = 'Guesses: 0';
+                        knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?' };
+                        updateKnownResults({});
                     }
                 } else if (guessCount >= 15) {
                     loseSound.play().catch(error => console.log("Lose sound error:", error));
@@ -354,12 +479,6 @@
             })
             .catch(error => console.error('Reset error:', error));
         }
-
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                submitGuess();
-            }
-        });
     </script>
 </body>
 </html>

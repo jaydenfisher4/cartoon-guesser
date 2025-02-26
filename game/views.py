@@ -68,14 +68,19 @@ def unlimited(request):
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
     shows = sorted(set(char.show for char in all_characters))
-    networks = sorted(set(char.network for char in all_characters))
+    # Extract single networks from comma-separated network strings
+    all_networks = set()
+    for char in all_characters:
+        networks = char.network.split(', ')
+        all_networks.update(networks)
+    single_networks = sorted(all_networks)
     years = sorted(set(char.release_year for char in all_characters))
     last_mode = request.session.get('last_mode', 'daily')
     
     context = {
         'characters': all_characters,
         'shows': shows,
-        'networks': networks,
+        'single_networks': single_networks,  # Changed from 'networks'
         'years': years,
         'last_mode': last_mode
     }
@@ -104,9 +109,11 @@ def guess(request):
             guess_networks = set(guessed_char.network.split(', '))
             target_networks = set(current_character.network.split(', '))
             network_correct = guess_networks == target_networks
-            network_partial = not network_correct and bool(guess_networks & target_networks)  # Check for any overlap
+            network_partial = not network_correct and bool(guess_networks & target_networks)
             main_correct = guessed_char.is_main == current_character.is_main
             airing_correct = guessed_char.still_airing == current_character.still_airing
+            year_correct = guessed_char.release_year == current_character.release_year
+            year_within_3 = not year_correct and abs(guessed_char.release_year - current_character.release_year) <= 3
             logger.debug(f"Guess: {guessed_char.name} ({guessed_char.release_year}), Target: {current_character.name} ({current_character.release_year})")
             result = {
                 'name': guessed_char.name,
@@ -117,8 +124,9 @@ def guess(request):
                 'show_value': guessed_char.show,
                 'is_main': guessed_char.is_main,
                 'main_correct': main_correct,
-                'release_year': guessed_char.release_year == current_character.release_year,
+                'release_year': year_correct,
                 'year_value': guessed_char.release_year,
+                'year_within_3': year_within_3,
                 'daily_year': current_character.release_year,
                 'still_airing': guessed_char.still_airing,
                 'airing_correct': airing_correct,

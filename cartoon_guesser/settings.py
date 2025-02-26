@@ -11,7 +11,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # Allows overriding via env 
 
 # Allowed hosts: Specify your Render domain and localhost for testing
 ALLOWED_HOSTS = [
-    'cartoon-guesser.onrender.com',  # Replace with your actual Render URL after deployment
+    'cartoon-guesser.onrender.com',  # Your Render URL
     'localhost',
     '127.0.0.1',
 ]
@@ -28,13 +28,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Added for static file serving on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Optional: Add whitenoise for static file serving (if not using Render's static handling)
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'cartoon_guesser.urls'
@@ -74,8 +73,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Where your audio files live
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    # Where collectstatic outputs
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # Added for Whitenoise
 
-# Optional: Security enhancements for production
+# Security enhancements for production
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True') == 'True'  # Enforce HTTPS
-CSRF_COOKIE_SECURE = True  # Secure CSRF cookie over HTTPS
-SESSION_COOKIE_SECURE = True  # Secure session cookie over HTTPS
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'True') == 'True'  # Secure CSRF cookie over HTTPS
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'True') == 'True'  # Secure session cookie over HTTPS
