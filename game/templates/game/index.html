@@ -63,7 +63,7 @@
             opacity: 0;
         }
         .cell.reveal {
-            animation: revealCell 0.3s ease forwards;
+            animation: revealCell 0.8s ease forwards;
         }
         .cell img {
             max-width: 80px;
@@ -439,7 +439,7 @@
                 cells.forEach((cell, index) => {
                     setTimeout(() => {
                         cell.classList.add('reveal');
-                    }, index * 100);
+                    }, index * 200);
                 });
 
                 if (data.correct) {
