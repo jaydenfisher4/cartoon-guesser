@@ -4,36 +4,61 @@
     <title>All Characters - Cartoon Guesser</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        html {
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient on html */
-            min-height: 100vh; /* Ensure full viewport coverage */
-        }
-        body {
+        html, body {
             font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
             margin: 0;
-            min-height: 100vh;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-            position: relative;
+            height: 100vh;
+            overflow: hidden; /* No full-page scrolling */
         }
         .raindrop {
             position: absolute;
             width: 2px;
-            height: 10px; /* Elongated like a raindrop */
+            height: 10px;
             background: rgba(0, 204, 255, 0.6);
-            border-radius: 50% 50% 10% 10%; /* Rounded top, pointed bottom */
+            border-radius: 50% 50% 10% 10%;
             box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
             animation: fallRaindrop 3s linear infinite;
             pointer-events: none;
-            z-index: -1; /* Ensure behind content */
+            z-index: -1;
         }
         @keyframes fallRaindrop {
             0% { opacity: 0; transform: translateY(-100vh); }
             10% { opacity: 1; }
             90% { opacity: 1; }
             100% { opacity: 0; transform: translateY(100vh); }
+        }
+        /* Other styles unchanged until character-list */
+        .character-list {
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow-y: auto; /* Scroll only character list */
+            max-height: calc(100vh - 250px); /* Adjusted for controls */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        /* Custom Scrollbar */
+        .character-list::-webkit-scrollbar {
+            width: 12px;
+        }
+        .character-list::-webkit-scrollbar-track {
+            background: #252525;
+            border-radius: 10px;
+        }
+        .character-list::-webkit-scrollbar-thumb {
+            background: #00ccff;
+            border-radius: 10px;
+        }
+        .character-list::-webkit-scrollbar-thumb:hover {
+            background: #00b3e6;
         }
         h1 {
             color: #00ccff;
@@ -213,18 +238,15 @@
         const cards = Array.from(characterList.getElementsByClassName('character-card'));
         const lastMode = "{{ last_mode }}";
 
-        // Falling raindrop animation setup
         function createRaindrop() {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
-            const side = Math.random();
-            const offset = Math.random() * 15; // Wider random offset (0-15% from edge)
-            raindrop.style.left = side < 0.5 ? `${offset}%` : `${85 + offset}%`; // 0-15% or 85-100%
-            raindrop.style.animationDelay = Math.random() * 2 + 's';
+            raindrop.style.left = `${Math.random() * 100}%`; // Full width distribution
+            raindrop.style.animationDelay = `${Math.random() * 2}s`;
             document.body.appendChild(raindrop);
             setTimeout(() => raindrop.remove(), 3000);
         }
-        setInterval(createRaindrop, 200); // Increased frequency from 400ms to 200ms
+        setInterval(createRaindrop, 200);
 
         // Ensure animations and gradient are always visible
         window.addEventListener('load', () => {
