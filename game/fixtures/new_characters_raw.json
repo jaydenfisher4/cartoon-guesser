@@ -1,0 +1,542 @@
+[
+    {
+        "name": "Samurai Jack",
+        "show": "Samurai Jack",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://images1.wikia.nocookie.net/__cb20130213201806/samuraijack/images/5/5c/Samurai_Jack.png"
+    },
+    {
+        "name": "The Scotsman",
+        "show": "Samurai Jack",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://vignette4.wikia.nocookie.net/samuraijack/images/c/cc/Scotsman.gif/revision/latest?cb=20161225101654"
+    },
+    {
+        "name": "Ashi",
+        "show": "Samurai Jack",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://i.pinimg.com/originals/07/33/b1/0733b104ae41c1d4b413948659a9d059.jpg"
+    },
+    {
+        "name": "Courage",
+        "show": "Courage the Cowardly Dog",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://www.wallpaperflare.com/static/304/407/731/courage-the-cowardly-dog-cartoon-network-cartoon-dog-wallpaper.jpg"
+    },
+    {
+        "name": "Muriel Bagge",
+        "show": "Courage the Cowardly Dog",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "http://vignette2.wikia.nocookie.net/courage/images/a/ad/Muriel_Bagge.jpg/revision/latest?cb=20110610081643"
+    },
+    {
+        "name": "Eustace Bagge",
+        "show": "Courage the Cowardly Dog",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://static1.cbrimages.com/wordpress/wp-content/uploads/2021/08/R-3.jpg"
+    },
+    {
+        "name": "Kick Buttowski",
+        "show": "Kick Buttowski: Suburban Daredevil",
+        "network": "Disney XD",
+        "is_main": true,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://cdni.fancaps.net/file/fancaps-tvimages/12908951.jpg"
+    },
+    {
+        "name": "Gunther",
+        "show": "Kick Buttowski: Suburban Daredevil",
+        "network": "Disney XD",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://vignette.wikia.nocookie.net/kickbuttowskisurbubandaredevil/images/6/6b/Gunther.JPG/revision/latest?cb=20101224174413"
+    },
+    {
+        "name": "Milo",
+        "show": "Fish Hooks",
+        "network": "Disney Channel",
+        "is_main": true,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://lumiere-a.akamaihd.net/v1/images/open-uri20150422-20810-bl0r1m_0896de19.jpeg?region=0,0,600,600"
+    },
+    {
+        "name": "Oscar",
+        "show": "Fish Hooks",
+        "network": "Disney Channel",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://images1.wikia.nocookie.net/__cb20100906155710/fishhooks/images/7/77/Oscar.jpg"
+    },
+    {
+        "name": "Becky",
+        "show": "Fish Hooks",
+        "network": "Disney Channel",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "http://images4.fanpop.com/image/photos/22600000/bea-fish-hooks-22624165-540-720.jpg"
+    },
+    {
+        "name": "Chowder",
+        "show": "Chowder",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://cartoonvibe.com/wp-content/uploads/2023/01/Chowder.jpg"
+    },
+    {
+        "name": "Mung Daal",
+        "show": "Chowder",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Shnitzel",
+        "show": "Chowder",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Huey Freeman",
+        "show": "The Boondocks",
+        "network": "Cartoon Network, Adult Swim",
+        "is_main": true,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Riley Freeman",
+        "show": "The Boondocks",
+        "network": "Cartoon Network, Adult Swim",
+        "is_main": false,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Robert 'Granddad' Freeman",
+        "show": "The Boondocks",
+        "network": "Cartoon Network, Adult Swim",
+        "is_main": false,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Hank Hill",
+        "show": "King of the Hill",
+        "network": "Fox",
+        "is_main": true,
+        "release_year": 1997,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Peggy Hill",
+        "show": "King of the Hill",
+        "network": "Fox",
+        "is_main": false,
+        "release_year": 1997,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Bobby Hill",
+        "show": "King of the Hill",
+        "network": "Fox",
+        "is_main": false,
+        "release_year": 1997,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "Arthur Read",
+        "show": "Arthur",
+        "network": "PBS, PBS Kids",
+        "is_main": true,
+        "release_year": 1996,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://via.placeholder.com/150?text=No+Image"
+    },
+    {
+        "name": "D.W. Read",
+        "show": "Arthur",
+        "network": "PBS, PBS Kids",
+        "is_main": false,
+        "release_year": 1996,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://vignette3.wikia.nocookie.net/arthur/images/3/3e/DW_HQ_pic.png/revision/latest?cb=20160125204321"
+    },
+    {
+        "name": "Buster Baxter",
+        "show": "Arthur",
+        "network": "PBS, PBS Kids",
+        "is_main": false,
+        "release_year": 1996,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://img1.wikia.nocookie.net/__cb20120114192138/arthur/images/2/28/Prunella_Sees_the_Light_119.jpg"
+    },
+    {
+        "name": "Lazlo",
+        "show": "Camp Lazlo",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://i.pinimg.com/originals/fe/21/8c/fe218c22d03b6794a3ed7c4ce36a3578.jpg"
+    },
+    {
+        "name": "Raj",
+        "show": "Camp Lazlo",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://img1.wikia.nocookie.net/__cb20130622091059/camplazlowiki/images/thumb/0/00/Raj.png/500px-Raj.png"
+    },
+    {
+        "name": "Adam Lyon",
+        "show": "My Gym Partner's a Monkey",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://static.wikia.nocookie.net/mygympartneramonkey/images/a/ad/Transparent_Adam_Lyon.png/revision/latest/scale-to-width-down/250?cb=20190608140003"
+    },
+    {
+        "name": "Jake",
+        "show": "My Gym Partner's a Monkey",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2005,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://static.wikia.nocookie.net/mygympartneramonkey/images/8/88/Jake_Spidermonkey.png/revision/latest?cb=20170701060459"
+    },
+    {
+        "name": "Rex",
+        "show": "Generator Rex",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://vignette.wikia.nocookie.net/cartoonnetwork/images/f/f5/Dise\u00f1o_Oficial_Generador_Rex_-_Rex_Salazar_-_imagen_22.png/revision/latest?cb=20140818191428&path-prefix=es"
+    },
+    {
+        "name": "Vanessa",
+        "show": "Generator Rex",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://i.pinimg.com/originals/70/f3/18/70f318cf308471d8569df2706977db1b.jpg"
+    },
+    {
+        "name": "Bobo Haha",
+        "show": "Generator Rex",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://vignette3.wikia.nocookie.net/generadorrexcn/images/f/f4/Bobo_Haha_unfond.png/revision/latest?cb=20111026002318&path-prefix=es"
+    },
+    {
+        "name": "Ilana",
+        "show": "Sym-Bionic Titan",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://i.pinimg.com/originals/41/fd/e9/41fde96f5bff6d3b6e0d8b48f5e50fb0.png"
+    },
+    {
+        "name": "Lance",
+        "show": "Sym-Bionic Titan",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://vignette.wikia.nocookie.net/p__/images/2/21/Lance_(Sym-Bionic_Titan).png/revision/latest?cb=20150525002325&path-prefix=protagonist"
+    },
+    {
+        "name": "Octus",
+        "show": "Sym-Bionic Titan",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2010,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://i.pinimg.com/originals/54/e1/f6/54e1f64f79a19b5515c95705fc2b67be.jpg"
+    },
+    {
+        "name": "Steven Universe",
+        "show": "Steven Universe",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2013,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://vignette.wikia.nocookie.net/steven-universe/images/b/b0/CrystalGemsbyStereo.png/revision/latest/scale-to-width-down/2000?cb=20191006040635"
+    },
+    {
+        "name": "Garnet",
+        "show": "Steven Universe",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2013,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://vignette.wikia.nocookie.net/steven-universe/images/1/16/GarnetByKmes.png/revision/latest?cb=20160617171556&path-prefix=fr"
+    },
+    {
+        "name": "Amethyst",
+        "show": "Steven Universe",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2013,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "http://img4.wikia.nocookie.net/__cb20141216201440/steven-universe/images/a/a6/AmethystCute.png"
+    },
+    {
+        "name": "Johnny Bravo",
+        "show": "Johnny Bravo",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 1997,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://sethkoko-blog.com/wp-content/uploads/2021/01/592825.jpg"
+    },
+    {
+        "name": "Little Suzy",
+        "show": "Johnny Bravo",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 1997,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://static.wikia.nocookie.net/johnnybravo/images/d/d8/Suzy_Pointing.png/revision/latest?cb=20220301063447"
+    },
+    {
+        "name": "Eliza Thornberry",
+        "show": "The Wild Thornberrys",
+        "network": "Nickelodeon",
+        "is_main": true,
+        "release_year": 1998,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://static.wikia.nocookie.net/wildthornberrys/images/9/97/Eliza_Thornberry.png/revision/latest/scale-to-width-down/1200?cb=20220424052936"
+    },
+    {
+        "name": "Nigel Thornberry",
+        "show": "The Wild Thornberrys",
+        "network": "Nickelodeon",
+        "is_main": false,
+        "release_year": 1998,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://www.vhv.rs/dpng/d/485-4851105_the-wild-thornberrys-wiki-nigel-thornberry-hd-png.png"
+    },
+    {
+        "name": "Chris McLean",
+        "show": "Total Drama Island",
+        "network": "Teletoon, Cartoon Network",
+        "is_main": true,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://vignette1.wikia.nocookie.net/totaldramaisland/images/4/44/EliottAChris.png/revision/latest?cb=20150721230458"
+    },
+    {
+        "name": "Gwen",
+        "show": "Total Drama Island",
+        "network": "Teletoon, Cartoon Network",
+        "is_main": false,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://i.pinimg.com/originals/53/d4/fa/53d4fa310b72159e3621ce9eae6b2542.png"
+    },
+    {
+        "name": "Duncan",
+        "show": "Total Drama Island",
+        "network": "Teletoon, Cartoon Network",
+        "is_main": false,
+        "release_year": 2007,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://i.pinimg.com/originals/00/73/92/0073924ebc4ee0c11d5259844d87706e.png"
+    },
+    {
+        "name": "Master Shake",
+        "show": "Aqua Teen Hunger Force",
+        "network": "Adult Swim",
+        "is_main": true,
+        "release_year": 2000,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://img1.wikia.nocookie.net/__cb20110426230523/athfwiki/images/0/01/Master-Shake.jpg"
+    },
+    {
+        "name": "Frylock",
+        "show": "Aqua Teen Hunger Force",
+        "network": "Adult Swim",
+        "is_main": false,
+        "release_year": 2000,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://static2.wikia.nocookie.net/__cb20101230022230/athfwiki/images/c/cd/AthfFrylock2.png"
+    },
+    {
+        "name": "Meatwad",
+        "show": "Aqua Teen Hunger Force",
+        "network": "Adult Swim",
+        "is_main": false,
+        "release_year": 2000,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://static.wikia.nocookie.net/supercomputer/images/a/a8/Meatwad.jpg/revision/latest?cb=20100610020833"
+    },
+    {
+        "name": "Uncle Grandpa",
+        "show": "Uncle Grandpa",
+        "network": "Cartoon Network",
+        "is_main": true,
+        "release_year": 2013,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://i.pinimg.com/originals/e0/48/d6/e048d64fa59d9107d1049d2150800b89.jpg"
+    },
+    {
+        "name": "Pizza Steve",
+        "show": "Uncle Grandpa",
+        "network": "Cartoon Network",
+        "is_main": false,
+        "release_year": 2013,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://vignette3.wikia.nocookie.net/cartoon-networks-uncle-grandpa/images/f/fe/-unc-_wallpaper_-pizzasteve-_03_1024x768.jpg/revision/latest?cb=20130908155409"
+    },
+    {
+        "name": "Penny Proud",
+        "show": "The Proud Family",
+        "network": "Disney Channel",
+        "is_main": true,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "http://static3.wikia.nocookie.net/__cb20111215221941/theproudfamily/images/thumb/b/b7/Vlcsnap-2011-10-14-12h39m50s115.png/500px-Vlcsnap-2011-10-14-12h39m50s115.png"
+    },
+    {
+        "name": "Oscar Proud",
+        "show": "The Proud Family",
+        "network": "Disney Channel",
+        "is_main": false,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "https://i.pinimg.com/736x/e9/26/d2/e926d22e6ff827f911d3d4f1de298361.jpg"
+    },
+    {
+        "name": "Trudy Proud",
+        "show": "The Proud Family",
+        "network": "Disney Channel",
+        "is_main": false,
+        "release_year": 2001,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "https://disneynews.us/wp-content/uploads/2023/04/Dr-Trudy-Proud-The-Proud-Family.png"
+    },
+    {
+        "name": "Otto Rocket",
+        "show": "Rocket Power",
+        "network": "Nickelodeon",
+        "is_main": true,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://vignette1.wikia.nocookie.net/rocketpower/images/0/00/Otto_Rocket.png/revision/latest?cb=20160417053941"
+    },
+    {
+        "name": "Reggie Rocket",
+        "show": "Rocket Power",
+        "network": "Nickelodeon",
+        "is_main": false,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Female",
+        "image_url": "http://img3.wikia.nocookie.net/__cb20140809063832/nickelodeon/images/6/68/Reggie_Rocket.png"
+    },
+    {
+        "name": "Twister",
+        "show": "Rocket Power",
+        "network": "Nickelodeon",
+        "is_main": false,
+        "release_year": 1999,
+        "still_airing": false,
+        "gender": "Male",
+        "image_url": "http://vignette1.wikia.nocookie.net/rocketpower/images/1/10/Twister_with_his_arms_crossed.png/revision/latest?cb=20160417053939"
+    }
+]
