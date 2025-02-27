@@ -8,4 +8,5 @@ urlpatterns = [
     path('win/', views.win, name='win'),
     path('lose/', views.lose, name='lose'),
     path('characters/', views.characters_list, name='characters_list'),
+    path('suggest/', views.submit_suggestion, name='suggest'),
 ]

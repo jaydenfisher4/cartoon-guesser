@@ -244,6 +244,21 @@
             justify-content: center;
             margin-bottom: 20px;
         }
+        .suggest-button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            background-color: #00ccff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        .suggest-button:hover {
+            background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
+        }
         @keyframes revealCell {
             0% { opacity: 0; transform: scale(0.8); }
             100% { opacity: 1; transform: scale(1); }
@@ -258,6 +273,13 @@
             <button onmousedown="handleModeClick(event, '/')">Daily Mode</button>
             <button onmousedown="handleModeClick(event, '/unlimited/')">Unlimited Mode</button>
             <button onmousedown="handleModeClick(event, '/characters/')">All Characters</button>
+        </div>
+        <div class="controls" style="margin: 15px 0;">
+            <a href="{% url 'suggest' %}">
+                <button class="suggest-button">
+                    <span class="icon">✨</span>Suggest a Cartoon
+                </button>
+            </a>
         </div>
         <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
         <div class="timer-container">

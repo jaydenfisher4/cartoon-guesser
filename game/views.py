@@ -5,6 +5,7 @@ from datetime import date
 import hashlib
 import random
 import logging
+from .forms import CartoonSuggestionForm
 
 # Setup logging
 logging.basicConfig(level=logging.DEBUG)
@@ -199,3 +200,15 @@ def lose(request):
         'mode': mode
     }
     return render(request, 'game/lose.html', context)
+
+def submit_suggestion(request):
+    if request.method == 'POST':
+        form = CartoonSuggestionForm(request.POST)
+        if form.is_valid():
+            suggestion = form.save(commit=False)
+            suggestion.submitter_ip = request.META.get('REMOTE_ADDR')  # Optional IP capture
+            suggestion.save()
+            return redirect('index')  # Back to the game
+    else:
+        form = CartoonSuggestionForm()
+    return render(request, 'suggestion.html', {'form': form})

@@ -10,5 +10,11 @@ class CartoonCharacter(models.Model):
     gender = models.CharField(max_length=20)
     image_url = models.URLField(max_length=200, blank=True, null=True)  # Ensure this is added
 
+class CartoonSuggestion(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)  
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    submitter_ip = models.GenericIPAddressField(null=True, blank=True)  
+
     def __str__(self):
         return self.name
