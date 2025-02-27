@@ -9,4 +9,6 @@ urlpatterns = [
     path('lose/', views.lose, name='lose'),
     path('characters/', views.characters_list, name='characters_list'),
     path('suggest/', views.submit_suggestion, name='suggest'),
+    path('register/', views.register, name='register'),
+    path('preferences/', views.preferences, name='preferences'),
 ]

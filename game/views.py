@@ -1,40 +1,58 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import CartoonCharacter
+from .models import CartoonCharacter, UserPreference
 from datetime import date
 import hashlib
 import random
 import logging
 from .forms import CartoonSuggestionForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 # Setup logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_daily_character():
+def get_user_exclusions(request):
+    """Helper to get user's excluded shows and characters."""
+    if request.user.is_authenticated:
+        try:
+            prefs = UserPreference.objects.get(user=request.user)
+            return prefs.get_excluded_shows_list(), prefs.get_excluded_characters_list()
+        except UserPreference.DoesNotExist:
+            return [], []
+    return [], []
+
+def get_daily_character(request):
     characters = CartoonCharacter.objects.all()
     if not characters:
         return None
-    today = date.today().isoformat()
-    index = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(characters)
-    logger.debug(f"Daily character selected: {characters[index].name} ({characters[index].release_year})")
-    return characters[index]
-
-def get_random_character(exclude_ids=None):
-    characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
-    if not characters:
+    excluded_shows, excluded_chars = get_user_exclusions(request)
+    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
+    if not available:
         return None
-    chosen = random.choice(characters)
-    logger.debug(f"Random character selected: {chosen.name} ({chosen.release_year})")
+    today = date.today().isoformat()
+    index = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(available)
+    logger.debug(f"Daily character selected: {available[index].name}")
+    return available[index]
+
+def get_random_character(request, exclude_ids=None):
+    characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
+    excluded_shows, excluded_chars = get_user_exclusions(request)
+    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
+    if not available:
+        return None
+    chosen = random.choice(available)
+    logger.debug(f"Random character selected: {chosen.name}")
     return chosen
 
 def index(request):
-    daily_character = get_daily_character()
+    daily_character = get_daily_character(request)
     all_characters = CartoonCharacter.objects.all()
     guesses = request.session.get('guesses-daily', [])
     all_characters_data = [char.name for char in all_characters]
     request.session['last_mode'] = 'daily'
-    
     context = {
         'character': daily_character,
         'guesses': guesses,
@@ -49,7 +67,7 @@ def unlimited(request):
     current_character_id = request.session.get('current_character_id-unlimited')
     
     if not current_character_id or current_character_id not in guessed_ids:
-        current_character = get_random_character(guessed_ids)
+        current_character = get_random_character(request, guessed_ids)
         if current_character:
             request.session['current_character_id-unlimited'] = current_character.id
     
@@ -69,7 +87,6 @@ def unlimited(request):
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
     shows = sorted(set(char.show for char in all_characters))
-    # Extract single networks from comma-separated network strings
     all_networks = set()
     for char in all_characters:
         networks = char.network.split(', ')
@@ -81,7 +98,7 @@ def characters_list(request):
     context = {
         'characters': all_characters,
         'shows': shows,
-        'single_networks': single_networks,  # Changed from 'networks'
+        'single_networks': single_networks,
         'years': years,
         'last_mode': last_mode
     }
@@ -93,10 +110,10 @@ def guess(request):
         guess_name = request.POST.get('guess', '').strip()
         
         if mode == 'daily':
-            current_character = get_daily_character()
+            current_character = get_daily_character(request)
             guesses_key = 'guesses-daily'
             guessed_ids_key = None
-        else:  # unlimited
+        else:
             current_character_id = request.session.get('current_character_id-unlimited')
             current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
             guesses_key = 'guesses-unlimited'
@@ -115,7 +132,6 @@ def guess(request):
             airing_correct = guessed_char.still_airing == current_character.still_airing
             year_correct = guessed_char.release_year == current_character.release_year
             year_within_3 = not year_correct and abs(guessed_char.release_year - current_character.release_year) <= 3
-            logger.debug(f"Guess: {guessed_char.name} ({guessed_char.release_year}), Target: {current_character.name} ({current_character.release_year})")
             result = {
                 'name': guessed_char.name,
                 'network': network_correct,
@@ -145,7 +161,7 @@ def guess(request):
                 if mode == 'unlimited' and result['correct']:
                     guessed_ids.append(current_character.id)
                     request.session[guessed_ids_key] = guessed_ids
-            
+        
             if result['correct']:
                 return JsonResponse({'redirect': '/win/?mode=' + mode})
             elif len(guesses) >= 15:
@@ -158,18 +174,16 @@ def guess(request):
 def win(request):
     mode = request.GET.get('mode', 'daily')
     if mode == 'daily':
-        daily_character = get_daily_character()
-    else:  # unlimited
+        daily_character = get_daily_character(request)
+    else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        new_character = get_random_character(guessed_ids)
+        new_character = get_random_character(request, guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
-            logger.debug(f"New unlimited character after win: {new_character.name} ({new_character.release_year})")
         else:
-            logger.warning("No new character available for unlimited mode")
             del request.session['current_character_id-unlimited']
     
     context = {
@@ -181,18 +195,16 @@ def win(request):
 def lose(request):
     mode = request.GET.get('mode', 'daily')
     if mode == 'daily':
-        daily_character = get_daily_character()
-    else:  # unlimited
+        daily_character = get_daily_character(request)
+    else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        new_character = get_random_character(guessed_ids)
+        new_character = get_random_character(request, guessed_ids)
         if new_character:
             request.session['current_character_id-unlimited'] = new_character.id
-            logger.debug(f"New unlimited character after loss: {new_character.name} ({new_character.release_year})")
         else:
-            logger.warning("No new character available for unlimited mode")
             del request.session['current_character_id-unlimited']
     
     context = {
@@ -206,9 +218,46 @@ def submit_suggestion(request):
         form = CartoonSuggestionForm(request.POST)
         if form.is_valid():
             suggestion = form.save(commit=False)
-            suggestion.submitter_ip = request.META.get('REMOTE_ADDR')  # Optional IP capture
+            suggestion.submitter_ip = request.META.get('REMOTE_ADDR')
             suggestion.save()
-            return redirect('index')  # Back to the game
+            return redirect('index')
     else:
         form = CartoonSuggestionForm()
-    return render(request, 'game/suggestion.html', {'form': form})  # Changed to 'game/suggestion.html'
+    return render(request, 'game/suggestion.html', {'form': form})
+
+@login_required
+def preferences(request):
+    try:
+        prefs = UserPreference.objects.get(user=request.user)
+    except UserPreference.DoesNotExist:
+        prefs = UserPreference(user=request.user)
+        prefs.save()
+
+    if request.method == 'POST':
+        excluded_shows = ','.join(request.POST.getlist('excluded_shows'))
+        excluded_characters = ','.join(request.POST.getlist('excluded_characters'))
+        prefs.excluded_shows = excluded_shows
+        prefs.excluded_characters = excluded_characters
+        prefs.save()
+        return redirect('index')
+
+    all_shows = sorted(set(CartoonCharacter.objects.values_list('show', flat=True)))
+    all_characters = CartoonCharacter.objects.all().order_by('name')
+    context = {
+        'preferences': prefs,
+        'all_shows': all_shows,
+        'all_characters': all_characters,
+    }
+    return render(request, 'game/preferences.html', context)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            UserPreference.objects.create(user=user)  # Create empty preferences
+            return redirect('index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
