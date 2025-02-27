@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import CartoonCharacter, UserPreference, Show
+from .models import CartoonCharacter
 from datetime import date
 import hashlib
 import random
@@ -15,14 +15,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_user_exclusions(request):
-    if request.user.is_authenticated:
-        try:
-            prefs = UserPreference.objects.get(user=request.user)
-            excluded_shows = [s.strip() for s in (prefs.excluded_shows or '').split(',') if s.strip()]
-            excluded_chars = [c.strip() for c in (prefs.excluded_characters or '').split(',') if c.strip()]
-            return excluded_shows, excluded_chars
-        except UserPreference.DoesNotExist:
-            return [], []
+    # Temporarily return empty lists since UserPreference isn’t available
     return [], []
 
 def get_daily_character(request):
@@ -50,11 +43,9 @@ def index(request):
 
 def get_random_character(request, exclude_ids=None):
     characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
-    excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
-    if not available:
+    if not characters:
         return None
-    chosen = random.choice(available)
+    chosen = random.choice(characters)
     logger.debug(f"Random character selected: {chosen.name}")
     return chosen
 
@@ -83,7 +74,7 @@ def unlimited(request):
 
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
-    shows = sorted(set(char.show for char in all_characters))
+    shows = sorted(set(char.show for char in all_characters))  # Using CharField
     all_networks = set()
     for char in all_characters:
         networks = char.network.split(', ')
@@ -134,7 +125,7 @@ def guess(request):
                 'network': network_correct,
                 'network_value': guessed_char.network,
                 'network_partial': network_partial,
-                'show': guessed_char.show == current_character.show,
+                'show': guessed_char.show == current_character.show,  # Using CharField
                 'show_value': guessed_char.show,
                 'is_main': guessed_char.is_main,
                 'main_correct': main_correct,
@@ -224,23 +215,8 @@ def submit_suggestion(request):
 
 @login_required
 def preferences(request):
-    preferences, created = UserPreference.objects.get_or_create(user=request.user)
-    all_shows = Show.objects.all()
-    
-    if request.method == 'POST':
-        # Get selected shows and characters as lists
-        excluded_shows = request.POST.getlist('excluded_shows')
-        excluded_characters = request.POST.getlist('excluded_characters')
-        preferences.excluded_shows = excluded_shows
-        preferences.excluded_characters = excluded_characters
-        preferences.save()
-        return redirect('index')
-
-    context = {
-        'preferences': preferences,
-        'all_shows': all_shows,
-    }
-    return render(request, 'game/preferences.html', context)
+    # Placeholder: Redirect to index since UserPreference isn’t available
+    return redirect('index')
 
 def register(request):
     if request.method == 'POST':
@@ -248,7 +224,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            UserPreference.objects.create(user=user)  # Create empty preferences
+            # Skip UserPreference creation for now
             return redirect('index')
     else:
         form = UserCreationForm()
