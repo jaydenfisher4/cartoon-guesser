@@ -19,7 +19,10 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            return prefs.get_excluded_shows_list(), prefs.get_excluded_characters_list()
+            # Fetch names of excluded shows and characters directly
+            excluded_shows = list(prefs.excluded_shows.values_list('name', flat=True))
+            excluded_chars = list(prefs.excluded_characters.values_list('name', flat=True))
+            return excluded_shows, excluded_chars
         except UserPreference.DoesNotExist:
             return [], []
     return [], []
@@ -29,7 +32,7 @@ def get_daily_character(request):
     if not characters:
         return None
     excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
+    available = [c for c in characters if c.show.name not in excluded_shows and c.name not in excluded_chars]
     if not available:
         return None
     today = date.today().isoformat()
