@@ -6,11 +6,31 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden; /* Contain sparkles */
+        }
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 204, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+            animation: sparkle 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
         }
         h1 {
             color: #00ccff;
@@ -21,29 +41,41 @@
             margin: 20px 0;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
+            background: rgba(37, 37, 37, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         input, select {
-            padding: 8px;
-            font-size: 1em;
+            padding: 10px;
+            font-size: 1.1em;
             border: 2px solid #404040;
             border-radius: 5px;
-            background-color: #252525;
+            background-color: #333333;
             color: #e0e0e0;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00ccff;
+            box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
         }
         button {
-            padding: 10px 20px;
-            font-size: 1em;
+            padding: 12px 24px;
+            font-size: 1.1em;
             background-color: #00ccff;
             color: #1a1a1a;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
         button:hover {
             background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
         }
         .character-list {
             max-width: 1200px;
@@ -51,6 +83,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            flex-grow: 1;
         }
         .character-card {
             background-color: #2a2a2a;
@@ -76,8 +109,8 @@
     </style>
 </head>
 <body>
-    <h1>All Characters</h1>
     <div class="controls">
+        <h1>All Characters</h1>
         <input type="text" id="search-input" placeholder="Search by name...">
         <select id="show-filter">
             <option value="">All Shows</option>
@@ -176,6 +209,18 @@
         const cards = Array.from(characterList.getElementsByClassName('character-card'));
         const lastMode = "{{ last_mode }}";
 
+        // Sparkle animation setup
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 3000);
+        }
+        setInterval(createSparkle, 500);
+
         function filterAndSort() {
             const search = searchInput.value.toLowerCase();
             const show = showFilter.value.toLowerCase();
@@ -187,7 +232,6 @@
             const gender = genderFilter.value.toLowerCase();
             const [sortField, sortDir] = sortBy.value.split('-');
 
-            // Filter
             let filteredCards = cards.filter(card => {
                 const networks = card.dataset.networks.split(', ').map(n => n.trim());
                 const matchesPrimaryNetwork = !network || networks.includes(network);
@@ -204,7 +248,6 @@
                 );
             });
 
-            // Sort
             filteredCards.sort((a, b) => {
                 let aValue, bValue;
                 switch (sortField) {
@@ -244,7 +287,6 @@
                 }
             });
 
-            // Update display
             cards.forEach(card => card.classList.add('hidden'));
             filteredCards.forEach(card => {
                 card.classList.remove('hidden');
@@ -252,7 +294,6 @@
             });
         }
 
-        // Event listeners for filtering and sorting
         searchInput.addEventListener('input', filterAndSort);
         showFilter.addEventListener('change', filterAndSort);
         networkFilter.addEventListener('change', filterAndSort);
@@ -263,12 +304,10 @@
         genderFilter.addEventListener('change', filterAndSort);
         sortBy.addEventListener('change', filterAndSort);
 
-        // Event listener for back button
         backButton.addEventListener('click', function() {
             window.location.href = lastMode === 'daily' ? '/' : '/unlimited/';
         });
 
-        // Initial sort
         filterAndSort();
     </script>
 </body>

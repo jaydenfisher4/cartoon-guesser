@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
@@ -14,6 +14,23 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden; /* Contain sparkles */
+        }
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 204, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+            animation: sparkle 3s infinite ease-in-out;
+            pointer-events: none; /* Prevents interaction */
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
         }
         h1 {
             color: #00ccff;
@@ -27,11 +44,11 @@
             margin: 5px 0;
         }
         .header-container {
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             margin-bottom: 30px;
+            background: rgba(37, 37, 37, 0.8); /* Slight overlay for contrast */
         }
         .timer-container {
             margin: 20px auto;
@@ -109,7 +126,7 @@
         }
         .input-container {
             margin: 20px auto;
-            max-width: 600px; /* Wider for better usability */
+            max-width: 600px;
             position: relative;
             display: flex;
             gap: 15px;
@@ -156,7 +173,7 @@
             position: absolute;
             top: 100%;
             left: 0;
-            width: calc(100% - 150px); /* Adjusted for wider buttons */
+            width: calc(100% - 150px);
             background-color: #252525;
             border: 1px solid #404040;
             border-radius: 5px;
@@ -277,6 +294,18 @@
 
         guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
 
+        // Sparkle animation setup
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 3000); // Remove after animation
+        }
+        setInterval(createSparkle, 500); // Add a sparkle every 500ms
+
         function updateTimer() {
             const now = new Date();
             const tomorrow = new Date(now);
@@ -288,10 +317,10 @@
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            timerDisplay.textContent = `Next Daily Character: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            if (mode !== 'daily') timerDisplay.style.display = 'none';
+            timerDisplay.textContent = `${mode === 'daily' ? 'Next Daily Character' : 'Time Remaining'}: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            // Removed condition to hide in unlimited mode
         }
-        if (mode === 'daily') setInterval(updateTimer, 1000);
+        setInterval(updateTimer, 1000); // Always update timer
         updateTimer();
 
         function handleModeClick(event, url) {

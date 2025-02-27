@@ -6,41 +6,68 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden; /* Contain sparkles */
+        }
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 204, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+            animation: sparkle 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
         }
         h1 {
             color: #2e7d32;
             font-size: 3em;
             text-shadow: 0 0 10px rgba(46, 125, 50, 0.8);
             animation: bounce 1s infinite;
+            margin-bottom: 20px;
         }
         p {
             font-size: 1.5em;
             color: #b0b0b0;
+            margin: 10px 0;
         }
         img {
             max-width: 200px;
             height: auto;
             border-radius: 10px;
             margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         button {
-            padding: 10px 20px;
-            font-size: 1em;
+            padding: 12px 24px;
+            font-size: 1.1em;
             background-color: #00ccff;
             color: #1a1a1a;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             margin-top: 20px;
         }
         button:hover {
             background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
         }
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -64,10 +91,24 @@
         const mode = "{{ mode }}";
         document.getElementById('mode-text').textContent = mode === 'daily' ? "today's" : "the";
         const winSound = document.getElementById('win-sound');
-        winSound.play().catch(error => console.log("Win sound error:", error));
+        setTimeout(() => {
+            winSound.play().catch(error => console.log("Win sound error:", error));
+        }, 100);
         document.getElementById('play-again').addEventListener('click', function() {
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });
+
+        // Sparkle animation setup
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 3000);
+        }
+        setInterval(createSparkle, 500);
     </script>
 </body>
 </html>
