@@ -7,7 +7,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fake-key-for-demo')  # Fallback for local dev
 
 # Debug mode: False in production for security
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # Allows overriding via env variable
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # Allows overriding via env variable
+DEBUG = True  # Override env var for now
 
 # Allowed hosts: Specify your Render domain and localhost for testing
 ALLOWED_HOSTS = [
@@ -24,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'game',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

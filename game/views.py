@@ -211,4 +211,4 @@ def submit_suggestion(request):
             return redirect('index')  # Back to the game
     else:
         form = CartoonSuggestionForm()
-    return render(request, 'suggestion.html', {'form': form})
+    return render(request, 'game/suggestion.html', {'form': form})  # Changed to 'game/suggestion.html'
