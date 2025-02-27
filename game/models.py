@@ -9,7 +9,7 @@ class Show(models.Model):
 
 class CartoonCharacter(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    show = models.ForeignKey(Show, on_delete=models.CASCADE)
+    show = models.CharField(max_length=100)  # Temporary
     network = models.CharField(max_length=50)
     is_main = models.BooleanField(default=True)
     release_year = models.IntegerField()

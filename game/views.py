@@ -32,7 +32,7 @@ def get_daily_character(request):
     if not characters:
         return None
     excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show.name not in excluded_shows and c.name not in excluded_chars]
+    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
     if not available:
         return None
     today = date.today().isoformat()
