@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .game.models import CartoonSuggestion
+from .models import CartoonSuggestion
+from .models import CartoonCharacter
+
+admin.site.register(CartoonCharacter)
 
 @admin.register(CartoonSuggestion)
 class CartoonSuggestionAdmin(admin.ModelAdmin):
