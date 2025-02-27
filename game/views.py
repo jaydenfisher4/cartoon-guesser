@@ -15,7 +15,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_user_exclusions(request):
-    # Temporarily return empty lists since UserPreference isn’t available
+    if request.user.is_authenticated:
+        try:
+            prefs = UserPreference.objects.get(user=request.user)
+            return prefs.excluded_shows, prefs.excluded_characters
+        except UserPreference.DoesNotExist:
+            return [], []
     return [], []
 
 def get_daily_character(request):
