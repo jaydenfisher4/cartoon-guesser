@@ -4,15 +4,19 @@
     <title>All Characters - Cartoon Guesser</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        html, body {
+        html {
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient on html */
+            min-height: 100vh; /* Ensure full viewport coverage */
+        }
+        body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
             text-align: center;
             padding: 20px;
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative;
         }
         .raindrop {
             position: absolute;
@@ -23,6 +27,7 @@
             box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
             animation: fallRaindrop 3s linear infinite;
             pointer-events: none;
+            z-index: -1; /* Ensure behind content */
         }
         @keyframes fallRaindrop {
             0% { opacity: 0; transform: translateY(-100vh); }
@@ -81,6 +86,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            overflow-y: auto; /* Enable vertical scrolling within list */
+            max-height: calc(100vh - 300px); /* Limit height to viewport minus controls */
         }
         .character-card {
             background-color: #2a2a2a;
@@ -211,13 +218,19 @@
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
             const side = Math.random();
-            const offset = Math.random() * 10; // Random offset within 10% of edge
-            raindrop.style.left = side < 0.5 ? `${offset}%` : `${90 + offset}%`;
+            const offset = Math.random() * 15; // Wider random offset (0-15% from edge)
+            raindrop.style.left = side < 0.5 ? `${offset}%` : `${85 + offset}%`; // 0-15% or 85-100%
             raindrop.style.animationDelay = Math.random() * 2 + 's';
             document.body.appendChild(raindrop);
             setTimeout(() => raindrop.remove(), 3000);
         }
-        setInterval(createRaindrop, 400);
+        setInterval(createRaindrop, 200); // Increased frequency from 400ms to 200ms
+
+        // Ensure animations and gradient are always visible
+        window.addEventListener('load', () => {
+            filterAndSort(); // Force initial render
+            createRaindrop(); // Start animations immediately
+        });
 
         function filterAndSort() {
             const search = searchInput.value.toLowerCase();
@@ -306,7 +319,7 @@
             window.location.href = lastMode === 'daily' ? '/' : '/unlimited/';
         });
 
-        filterAndSort();
+        filterAndSort(); // Ensure initial render
     </script>
 </body>
 </html>

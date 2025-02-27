@@ -27,6 +27,7 @@
             box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
             animation: fallRaindrop 3s linear infinite;
             pointer-events: none;
+            z-index: -1; /* Ensure behind content */
         }
         @keyframes fallRaindrop {
             0% { opacity: 0; transform: translateY(-100vh); }
@@ -103,13 +104,13 @@
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
             const side = Math.random();
-            const offset = Math.random() * 10; // Random offset within 10% of edge
-            raindrop.style.left = side < 0.5 ? `${offset}%` : `${90 + offset}%`;
+            const offset = Math.random() * 15; // Wider random offset (0-15% from edge)
+            raindrop.style.left = side < 0.5 ? `${offset}%` : `${85 + offset}%`; // 0-15% or 85-100%
             raindrop.style.animationDelay = Math.random() * 2 + 's';
             document.body.appendChild(raindrop);
             setTimeout(() => raindrop.remove(), 3000);
         }
-        setInterval(createRaindrop, 400);
+        setInterval(createRaindrop, 200); // Increased frequency from 400ms to 200ms
     </script>
 </body>
 </html>
