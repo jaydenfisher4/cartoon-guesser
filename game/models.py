@@ -27,5 +27,5 @@ class CartoonSuggestion(models.Model):
 
 class UserPreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    excluded_shows = JSONField(default=list, blank=True)
-    excluded_characters = JSONField(default=list, blank=True)
+    excluded_shows = models.TextField(blank=True, null=True)  # Revert to old state
+    excluded_characters = models.TextField(blank=True, null=True)

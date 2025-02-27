@@ -15,13 +15,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_user_exclusions(request):
-    """Helper to get user's excluded shows and characters."""
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            # JSONFields are already lists
-            excluded_shows = prefs.excluded_shows
-            excluded_chars = prefs.excluded_characters
+            excluded_shows = [s.strip() for s in (prefs.excluded_shows or '').split(',') if s.strip()]
+            excluded_chars = [c.strip() for c in (prefs.excluded_characters or '').split(',') if c.strip()]
             return excluded_shows, excluded_chars
         except UserPreference.DoesNotExist:
             return [], []
