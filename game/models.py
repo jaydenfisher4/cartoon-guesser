@@ -26,5 +26,9 @@ class CartoonSuggestion(models.Model):
 
 class UserPreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    excluded_shows = models.ManyToManyField(Show, blank=True)
-    excluded_characters = models.ManyToManyField(CartoonCharacter, blank=True)
+    # Old fields (keep temporarily)
+    excluded_shows = models.TextField(blank=True, null=True)
+    excluded_characters = models.TextField(blank=True, null=True)
+    # New ManyToManyFields
+    excluded_shows_m2m = models.ManyToManyField(Show, blank=True, related_name='excluded_by')
+    excluded_characters_m2m = models.ManyToManyField(CartoonCharacter, blank=True, related_name='excluded_by')

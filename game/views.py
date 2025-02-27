@@ -19,7 +19,6 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            # Fetch names of excluded shows and characters directly
             excluded_shows = list(prefs.excluded_shows.values_list('name', flat=True))
             excluded_chars = list(prefs.excluded_characters.values_list('name', flat=True))
             return excluded_shows, excluded_chars
