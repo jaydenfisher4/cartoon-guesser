@@ -1,36 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>You Lose - Cartoon Guesser</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        html, body {
+        html {
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
+            height: 100%;
+            overflow-y: scroll; /* Enable overscroll */
+        }
+        body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
             text-align: center;
-            padding: 20px;
             margin: 0;
+            padding: 20px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative;
+            z-index: 1;
+        }
+        .raindrop-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+            pointer-events: none;
+            z-index: 0; /* Behind content */
         }
         .raindrop {
             position: absolute;
             width: 2px;
-            height: 10px; /* Elongated like a raindrop */
+            height: 10px;
             background: rgba(0, 204, 255, 0.6);
-            border-radius: 50% 50% 10% 10%; /* Rounded top, pointed bottom */
+            border-radius: 50% 50% 10% 10%;
             box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
             animation: fallRaindrop 3s linear infinite;
-            pointer-events: none;
-            z-index: -1; /* Ensure behind content */
         }
         @keyframes fallRaindrop {
-            0% { opacity: 0; transform: translateY(-100vh); }
+            0% { opacity: 0; transform: translateY(-10vh); }
             10% { opacity: 1; }
             90% { opacity: 1; }
             100% { opacity: 0; transform: translateY(100vh); }
@@ -80,6 +90,7 @@
     </style>
 </head>
 <body>
+    <div class="raindrop-wrapper"></div>
     <h1>Game Over!</h1>
     <p>You ran out of guesses. <span id="mode-text"></span> character was:</p>
     <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
@@ -101,18 +112,16 @@
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });
 
-        // Falling raindrop animation setup
+        // Raindrop animation setup
         function createRaindrop() {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
-            const side = Math.random();
-            const offset = Math.random() * 15; // Wider random offset (0-15% from edge)
-            raindrop.style.left = side < 0.5 ? `${offset}%` : `${85 + offset}%`; // 0-15% or 85-100%
-            raindrop.style.animationDelay = Math.random() * 2 + 's';
-            document.body.appendChild(raindrop);
+            raindrop.style.left = `${Math.random() * 100}%`;
+            raindrop.style.animationDelay = `${Math.random() * 2}s`;
+            document.querySelector('.raindrop-wrapper').appendChild(raindrop);
             setTimeout(() => raindrop.remove(), 3000);
         }
-        setInterval(createRaindrop, 200); // Increased frequency from 400ms to 200ms
+        setInterval(createRaindrop, 200);
     </script>
 </body>
 </html>
