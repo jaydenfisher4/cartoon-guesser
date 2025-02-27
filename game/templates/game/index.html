@@ -507,7 +507,7 @@
                 const row = document.createElement('div');
                 row.className = 'grid';
                 let yearIndicator = '';
-                if (!data.release_year && data.year_within_3) {
+                if (!data.release_year) {
                     yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
                 }
                 row.innerHTML = `
