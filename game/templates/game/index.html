@@ -46,7 +46,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: -2; /* Further behind all content */
+            z-index: -2;
         }
         .raindrop {
             position: absolute;
@@ -55,7 +55,7 @@
             background: rgba(0, 204, 255, 0.5);
             border-radius: 50% 50% 10% 10%;
             box-shadow: 0 0 4px rgba(0, 204, 255, 0.2);
-            animation: fallRaindrop 3s linear forwards; /* Removed infinite to ensure removal */
+            animation: fallRaindrop 3s linear forwards;
             pointer-events: none;
         }
         @keyframes fallRaindrop {
@@ -345,11 +345,11 @@
             } else {
                 raindrop.style.left = `${80 + Math.random() * 20}%`; // Right margin
             }
-            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`; // Vary fall speed
+            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
             document.querySelector('.raindrop-wrapper').appendChild(raindrop);
-            setTimeout(() => raindrop.remove(), 4000); // Ensure removal after animation
+            setTimeout(() => raindrop.remove(), 4000);
         }
-        setInterval(createRaindrop, 150); // Increased frequency slightly
+        setInterval(createRaindrop, 150);
 
         function updateTimer() {
             const now = new Date();
@@ -510,7 +510,6 @@
                 if (!data.release_year && data.year_within_3) {
                     yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
                 }
-                console.log(`Guess: ${data.name} (${data.year_value}), Target Year: ${data.daily_year}, Indicator: ${yearIndicator}`);
                 row.innerHTML = `
                     <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
                     <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
