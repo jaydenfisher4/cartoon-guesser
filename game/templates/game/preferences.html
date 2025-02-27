@@ -75,16 +75,16 @@
                 {% for show in all_shows %}
                     <div class="show-item">
                         <label>
-                            <input type="checkbox" name="excluded_shows" value="{{ show.id }}"
-                                   {% if show in preferences.excluded_shows.all %}checked{% endif %}>
+                            <input type="checkbox" name="excluded_shows" value="{{ show.name }}"
+                                   {% if show.name in preferences.excluded_shows %}checked{% endif %}>
                             {{ show.name }}
                         </label>
                         <button type="button" class="toggle-characters" onclick="toggleCharacters('chars-{{ show.id }}')">Toggle Characters</button>
                         <div id="chars-{{ show.id }}" class="character-list">
                             {% for character in show.cartooncharacter_set.all %}
                                 <label>
-                                    <input type="checkbox" name="excluded_characters" value="{{ character.id }}"
-                                           {% if character in preferences.excluded_characters.all %}checked{% endif %}>
+                                    <input type="checkbox" name="excluded_characters" value="{{ character.name }}"
+                                           {% if character.name in preferences.excluded_characters %}checked{% endif %}>
                                     {{ character.name }}
                                 </label>
                             {% endfor %}

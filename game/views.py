@@ -19,8 +19,9 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            excluded_shows = list(prefs.excluded_shows.values_list('name', flat=True))
-            excluded_chars = list(prefs.excluded_characters.values_list('name', flat=True))
+            # JSONFields are already lists
+            excluded_shows = prefs.excluded_shows
+            excluded_chars = prefs.excluded_characters
             return excluded_shows, excluded_chars
         except UserPreference.DoesNotExist:
             return [], []
@@ -233,10 +234,11 @@ def preferences(request):
     all_shows = Show.objects.all()
     
     if request.method == 'POST':
-        excluded_shows_ids = request.POST.getlist('excluded_shows')
-        excluded_characters_ids = request.POST.getlist('excluded_characters')
-        preferences.excluded_shows.set(excluded_shows_ids)
-        preferences.excluded_characters.set(excluded_characters_ids)
+        # Get selected shows and characters as lists
+        excluded_shows = request.POST.getlist('excluded_shows')
+        excluded_characters = request.POST.getlist('excluded_characters')
+        preferences.excluded_shows = excluded_shows
+        preferences.excluded_characters = excluded_characters
         preferences.save()
         return redirect('index')
 

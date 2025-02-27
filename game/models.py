@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import JSONField
 
 class Show(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -29,6 +30,6 @@ class UserPreference(models.Model):
     # Old fields (keep temporarily)
     excluded_shows = models.TextField(blank=True, null=True)
     excluded_characters = models.TextField(blank=True, null=True)
-    # New ManyToManyFields
-    excluded_shows_m2m = models.ManyToManyField(Show, blank=True, related_name='excluded_by')
-    excluded_characters_m2m = models.ManyToManyField(CartoonCharacter, blank=True, related_name='excluded_by')
+    # New JSONFields
+    excluded_shows_json = JSONField(default=list, blank=True)
+    excluded_characters_json = JSONField(default=list, blank=True)
