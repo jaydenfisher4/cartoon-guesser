@@ -11,6 +11,9 @@
             text-align: center;
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         h1 {
             color: #00ccff;
@@ -22,6 +25,13 @@
             color: #b0b0b0;
             font-size: 1.2em;
             margin: 5px 0;
+        }
+        .header-container {
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
         }
         .timer-container {
             margin: 20px auto;
@@ -40,11 +50,12 @@
         }
         .grid-container {
             max-width: 1000px;
-            margin: 30px auto;
+            margin: 0 auto 30px auto;
             background-color: #2a2a2a;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            flex-grow: 1;
         }
         .grid {
             display: grid;
@@ -63,7 +74,7 @@
             opacity: 0;
         }
         .cell.reveal {
-            animation: revealCell 0.8s ease forwards;
+            animation: revealCell 0.6s ease forwards;
         }
         .cell img {
             max-width: 80px;
@@ -98,37 +109,44 @@
         }
         .input-container {
             margin: 20px auto;
-            max-width: 400px;
+            max-width: 600px; /* Wider for better usability */
             position: relative;
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         #guess-input {
             flex-grow: 1;
-            padding: 10px;
-            font-size: 1em;
+            padding: 12px;
+            font-size: 1.1em;
             border: 2px solid #404040;
             border-radius: 5px;
-            background-color: #252525;
+            background-color: #333333;
             color: #e0e0e0;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         #guess-input:focus {
             outline: none;
             border-color: #00ccff;
-            box-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
+            box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
         }
         button {
-            padding: 10px 20px;
-            font-size: 1em;
+            padding: 12px 24px;
+            font-size: 1.1em;
             background-color: #00ccff;
             color: #1a1a1a;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
         button:hover {
             background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
         }
         .icon {
             margin-right: 5px;
@@ -138,7 +156,7 @@
             position: absolute;
             top: 100%;
             left: 0;
-            width: calc(100% - 90px);
+            width: calc(100% - 150px); /* Adjusted for wider buttons */
             background-color: #252525;
             border: 1px solid #404040;
             border-radius: 5px;
@@ -146,26 +164,28 @@
             overflow-y: auto;
             z-index: 1000;
             display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         .autocomplete-item {
-            padding: 10px;
+            padding: 12px;
             cursor: pointer;
             color: #e0e0e0;
+            transition: background-color 0.2s ease;
         }
         .autocomplete-item:hover, .autocomplete-item.selected {
             background-color: #333333;
         }
         .controls {
-            margin: 20px auto;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
+            margin-top: 15px;
         }
         .mode-select {
-            margin: 20px auto;
             display: flex;
             gap: 20px;
             justify-content: center;
+            margin-bottom: 20px;
         }
         @keyframes revealCell {
             0% { opacity: 0; transform: scale(0.8); }
@@ -174,17 +194,28 @@
     </style>
 </head>
 <body>
-    <h1>Cartoon Guesser</h1>
-    <div class="mode-select">
-        <button onmousedown="handleModeClick(event, '/')">Daily Mode</button>
-        <button onmousedown="handleModeClick(event, '/unlimited/')">Unlimited Mode</button>
-        <button onmousedown="handleModeClick(event, '/characters/')">All Characters</button>
+    <div class="header-container">
+        <h1>Cartoon Guesser</h1>
+        <div class="mode-select">
+            <button onmousedown="handleModeClick(event, '/')">Daily Mode</button>
+            <button onmousedown="handleModeClick(event, '/unlimited/')">Unlimited Mode</button>
+            <button onmousedown="handleModeClick(event, '/characters/')">All Characters</button>
+        </div>
+        <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
+        <div class="timer-container">
+            <span id="timer">Next Daily Character: --:--:--</span>
+        </div>
+        <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
+        <div class="input-container">
+            <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
+            <div id="autocomplete-list"></div>
+            <div class="controls">
+                <button id="guess-button" onclick="submitGuess()">Guess</button>
+                <button onclick="giveUp()">Give Up</button>
+                <button onclick="resetGame()">Reset</button>
+            </div>
+        </div>
     </div>
-    <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
-    <div class="timer-container">
-        <span id="timer">Next Daily Character: --:--:--</span>
-    </div>
-    <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
     
     <div class="grid-container">
         <div class="grid" id="header-row">
@@ -208,17 +239,6 @@
             <div class="cell">?</div>
         </div>
         <div id="guesses-container"></div>
-    </div>
-
-    <div class="input-container">
-        <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
-        <div id="autocomplete-list"></div>
-        <button id="guess-button" onclick="submitGuess()">Guess</button>
-    </div>
-
-    <div class="controls">
-        <button onclick="giveUp()">Give Up</button>
-        <button onclick="resetGame()">Reset</button>
     </div>
 
     {{ guesses|json_script:"guesses-data"|safe }}
@@ -350,8 +370,6 @@
             if (selectedIndex >= 0) {
                 input.value = items[selectedIndex].textContent;
                 items[selectedIndex].scrollIntoView({ block: 'nearest' });
-            } else {
-                input.value = input.value; // Keep current input if no selection
             }
         }
 
@@ -443,7 +461,9 @@
                 });
 
                 if (data.correct) {
-                    winSound.play().catch(error => console.log("Win sound error:", error));
+                    setTimeout(() => {
+                        winSound.play().catch(error => console.log("Win sound error:", error));
+                    }, 100);
                     if (mode === 'unlimited') {
                         guessesContainer.innerHTML = '';
                         guessCount = 0;
@@ -452,7 +472,9 @@
                         updateKnownResults({});
                     }
                 } else if (guessCount >= 15) {
-                    loseSound.play().catch(error => console.log("Lose sound error:", error));
+                    setTimeout(() => {
+                        loseSound.play().catch(error => console.log("Lose sound error:", error));
+                    }, 100);
                 }
                 input.value = '';
                 autocompleteList.style.display = 'none';
@@ -464,7 +486,9 @@
         }
 
         function giveUp() {
-            loseSound.play().catch(error => console.log("Lose sound error:", error));
+            setTimeout(() => {
+                loseSound.play().catch(error => console.log("Lose sound error:", error));
+            }, 100);
             window.location.href = `/lose/?mode=${mode}`;
         }
 
