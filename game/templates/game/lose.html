@@ -16,25 +16,22 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
-            overflow-x: hidden; /* Prevent horizontal scroll from sparkles */
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
-        .sparkle {
+        .raindrop {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(0, 204, 255, 0.7);
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.3);
-            animation: fallSparkle 4s linear infinite;
+            width: 2px;
+            height: 10px; /* Elongated like a raindrop */
+            background: rgba(0, 204, 255, 0.6);
+            border-radius: 50% 50% 10% 10%; /* Rounded top, pointed bottom */
+            box-shadow: 0 0 5px rgba(0, 204, 255, 0.3);
+            animation: fallRaindrop 3s linear infinite;
             pointer-events: none;
         }
-        .left-sparkle { left: 5%; }
-        .right-sparkle { right: 5%; }
-        @keyframes fallSparkle {
+        @keyframes fallRaindrop {
             0% { opacity: 0; transform: translateY(-100vh); }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
             100% { opacity: 0; transform: translateY(100vh); }
         }
         h1 {
@@ -103,17 +100,18 @@
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });
 
-        // Falling sparkle animation setup
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            const isLeft = Math.random() < 0.5;
-            sparkle.classList.add(isLeft ? 'left-sparkle' : 'right-sparkle');
-            sparkle.style.animationDelay = Math.random() * 3 + 's';
-            document.body.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 4000);
+        // Falling raindrop animation setup
+        function createRaindrop() {
+            const raindrop = document.createElement('div');
+            raindrop.className = 'raindrop';
+            const side = Math.random();
+            const offset = Math.random() * 10; // Random offset within 10% of edge
+            raindrop.style.left = side < 0.5 ? `${offset}%` : `${90 + offset}%`;
+            raindrop.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(raindrop);
+            setTimeout(() => raindrop.remove(), 3000);
         }
-        setInterval(createSparkle, 600);
+        setInterval(createRaindrop, 400);
     </script>
 </body>
 </html>
