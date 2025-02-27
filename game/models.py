@@ -8,7 +8,7 @@ class CartoonCharacter(models.Model):
     release_year = models.IntegerField()
     still_airing = models.BooleanField(default=False)
     gender = models.CharField(max_length=20)
-    image_url = models.URLField(max_length=200, blank=True, null=True)
+    image_url = models.URLField(max_length=999, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.show})"  # Display the character's name in the admin
