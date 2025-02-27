@@ -29,24 +29,10 @@ def get_daily_character(request):
     characters = CartoonCharacter.objects.all()
     if not characters:
         return None
-    excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
-    if not available:
-        return None
     today = date.today().isoformat()
-    index = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(available)
-    logger.debug(f"Daily character selected: {available[index].name}")
-    return available[index]
-
-def get_random_character(request, exclude_ids=None):
-    characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
-    excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
-    if not available:
-        return None
-    chosen = random.choice(available)
-    logger.debug(f"Random character selected: {chosen.name}")
-    return chosen
+    index = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(characters)
+    logger.debug(f"Daily character selected: {characters[index].name}")
+    return characters[index]
 
 def index(request):
     daily_character = get_daily_character(request)
@@ -61,6 +47,16 @@ def index(request):
         'mode': 'daily'
     }
     return render(request, 'game/index.html', context)
+
+def get_random_character(request, exclude_ids=None):
+    characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
+    excluded_shows, excluded_chars = get_user_exclusions(request)
+    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
+    if not available:
+        return None
+    chosen = random.choice(available)
+    logger.debug(f"Random character selected: {chosen.name}")
+    return chosen
 
 def unlimited(request):
     guesses = request.session.get('guesses-unlimited', [])
