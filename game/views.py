@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import CartoonCharacter, UserPreference
+from .models import CartoonCharacter, UserPreference, CartoonSuggestion, Show
 from datetime import date
 import hashlib
 import random
