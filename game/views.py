@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import CartoonCharacter, UserPreference
+from .models import CartoonCharacter, UserPreference, Show
 from datetime import date
 import hashlib
 import random
@@ -227,26 +227,20 @@ def submit_suggestion(request):
 
 @login_required
 def preferences(request):
-    try:
-        prefs = UserPreference.objects.get(user=request.user)
-    except UserPreference.DoesNotExist:
-        prefs = UserPreference(user=request.user)
-        prefs.save()
-
+    preferences, created = UserPreference.objects.get_or_create(user=request.user)
+    all_shows = Show.objects.all()
+    
     if request.method == 'POST':
-        excluded_shows = ','.join(request.POST.getlist('excluded_shows'))
-        excluded_characters = ','.join(request.POST.getlist('excluded_characters'))
-        prefs.excluded_shows = excluded_shows
-        prefs.excluded_characters = excluded_characters
-        prefs.save()
+        excluded_shows_ids = request.POST.getlist('excluded_shows')
+        excluded_characters_ids = request.POST.getlist('excluded_characters')
+        preferences.excluded_shows.set(excluded_shows_ids)
+        preferences.excluded_characters.set(excluded_characters_ids)
+        preferences.save()
         return redirect('index')
 
-    all_shows = sorted(set(CartoonCharacter.objects.values_list('show', flat=True)))
-    all_characters = CartoonCharacter.objects.all().order_by('name')
     context = {
-        'preferences': prefs,
+        'preferences': preferences,
         'all_shows': all_shows,
-        'all_characters': all_characters,
     }
     return render(request, 'game/preferences.html', context)
 
