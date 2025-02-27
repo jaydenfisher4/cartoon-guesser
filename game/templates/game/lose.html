@@ -4,7 +4,7 @@
     <title>You Lose - Cartoon Guesser</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        html, body {
             font-family: 'Roboto', sans-serif;
             background: linear-gradient(135deg, #2a2a2a, #1f2a44); /* Full-screen gradient */
             color: #e0e0e0;
@@ -17,22 +17,25 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow: hidden; /* Contain sparkles */
+            overflow-x: hidden; /* Prevent horizontal scroll from sparkles */
         }
         .sparkle {
             position: absolute;
-            width: 6px;
-            height: 6px;
-            background: rgba(0, 204, 255, 0.8);
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 204, 255, 0.7);
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
-            animation: sparkle 3s infinite ease-in-out;
+            box-shadow: 0 0 8px rgba(0, 204, 255, 0.3);
+            animation: fallSparkle 4s linear infinite;
             pointer-events: none;
         }
-        @keyframes sparkle {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0); }
+        .left-sparkle { left: 5%; }
+        .right-sparkle { right: 5%; }
+        @keyframes fallSparkle {
+            0% { opacity: 0; transform: translateY(-100vh); }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(100vh); }
         }
         h1 {
             color: #d32f2f;
@@ -100,17 +103,17 @@
             window.location.href = mode === 'daily' ? '/' : '/unlimited/';
         });
 
-        // Sparkle animation setup
+        // Falling sparkle animation setup
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
-            sparkle.style.left = Math.random() * 100 + 'vw';
-            sparkle.style.top = Math.random() * 100 + 'vh';
-            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            const isLeft = Math.random() < 0.5;
+            sparkle.classList.add(isLeft ? 'left-sparkle' : 'right-sparkle');
+            sparkle.style.animationDelay = Math.random() * 3 + 's';
             document.body.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 3000);
+            setTimeout(() => sparkle.remove(), 4000);
         }
-        setInterval(createSparkle, 500);
+        setInterval(createSparkle, 600);
     </script>
 </body>
 </html>

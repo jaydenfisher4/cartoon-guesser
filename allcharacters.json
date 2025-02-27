@@ -2372,7 +2372,7 @@
   {
     "name": "Bugs Bunny",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": true,
     "release_year": 1930,
     "still_airing": false,
@@ -2382,7 +2382,7 @@
   {
     "name": "Daffy Duck",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": true,
     "release_year": 1930,
     "still_airing": false,
@@ -2392,7 +2392,7 @@
   {
     "name": "Tweety",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": false,
     "release_year": 1930,
     "still_airing": false,
@@ -2402,7 +2402,7 @@
   {
     "name": "Sylvester",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": false,
     "release_year": 1930,
     "still_airing": false,
@@ -2412,7 +2412,7 @@
   {
     "name": "Porky Pig",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": false,
     "release_year": 1930,
     "still_airing": false,
@@ -2422,7 +2422,7 @@
   {
     "name": "Yosemite Sam",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": false,
     "release_year": 1930,
     "still_airing": false,
@@ -2432,7 +2432,7 @@
   {
     "name": "Lola Bunny",
     "show": "Looney Tunes",
-    "network": "Cartoon Network",
+    "network": "Cartoon Network, Nickelodeon, ABC, CBS",
     "is_main": false,
     "release_year": 1930,
     "still_airing": false,
