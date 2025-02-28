@@ -142,7 +142,7 @@ def guess(request):
                 'network_value': guessed_char.network,
                 'network_partial': network_partial,
                 'show': guessed_char.show == current_character.show,
-                'show_value': guessed_char.show,
+                'show_value': guessed_char.show.name if guessed_char.show else None,
                 'is_main': guessed_char.is_main,
                 'main_correct': main_correct,
                 'release_year': year_correct,
@@ -237,9 +237,8 @@ def preferences(request):
     if request.method == 'POST':
         excluded_shows_ids = request.POST.getlist('excluded_shows')
         excluded_characters_ids = request.POST.getlist('excluded_characters')
-        # Directly assign lists to JSONFields
-        preferences.excluded_shows = excluded_shows_ids
-        preferences.excluded_characters = excluded_characters_ids
+        preferences.excluded_shows.set(excluded_shows_ids)
+        preferences.excluded_characters.set(excluded_characters_ids)
         preferences.save()
         return redirect('index')
 
