@@ -89,8 +89,8 @@ def unlimited(request):
     return render(request, 'game/index.html', context)
 
 def characters_list(request):
-    all_characters = CartoonCharacter.objects.all().order_by('name')
-    shows = sorted(set(char.show for char in all_characters))
+    all_characters = CartoonCharacter.objects.select_related('show').all().order_by('name')
+    shows = sorted(set(char.show.name for char in all_characters))
     all_networks = set()
     for char in all_characters:
         networks = char.network.split(', ')
@@ -233,6 +233,7 @@ def submit_suggestion(request):
 def preferences(request):
     preferences, created = UserPreference.objects.get_or_create(user=request.user)
     all_shows = Show.objects.all()
+    all_characters = CartoonCharacter.objects.select_related('show').all()
 
     if request.method == 'POST':
         excluded_shows_ids = request.POST.getlist('excluded_shows')
@@ -245,6 +246,7 @@ def preferences(request):
     context = {
         'preferences': preferences,
         'all_shows': all_shows,
+        'all_characters': all_characters,
     }
     return render(request, 'game/preferences.html', context)
 
