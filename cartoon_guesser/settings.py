@@ -59,11 +59,11 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cartoon_guesser_db_new',
-        'USER': 'cartoon_guesser_db_new_user',
-        'PASSWORD': 'bRIOXXJcVQg5CqveznOVHECvOW1iRLlU',  
-        'HOST': 'dpg-cv0ftibtq21c73emc57g-a.ohio-postgres.render.com',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
