@@ -19,13 +19,14 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            # Directly use the JSONField lists without values_list or set
-            excluded_shows = prefs.excluded_shows
-            excluded_chars = prefs.excluded_characters
+            # Call .all() to retrieve the related objects as querysets and then use .values_list() to extract names
+            excluded_shows = list(prefs.excluded_shows.all().values_list('name', flat=True))
+            excluded_chars = list(prefs.excluded_characters.all().values_list('name', flat=True))
             return excluded_shows, excluded_chars
         except UserPreference.DoesNotExist:
             return [], []
     return [], []
+
 
 def get_daily_character(request):
     characters = CartoonCharacter.objects.all()
