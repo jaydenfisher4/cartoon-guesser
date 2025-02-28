@@ -19,9 +19,7 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            excluded_shows = list(prefs.excluded_shows.values_list('name', flat=True))
-            excluded_chars = list(prefs.excluded_characters.values_list('name', flat=True))
-            # JSONFields are already lists
+            # Directly use the JSONField lists without values_list or set
             excluded_shows = prefs.excluded_shows
             excluded_chars = prefs.excluded_characters
             return excluded_shows, excluded_chars
@@ -45,7 +43,7 @@ def get_daily_character(request):
 def get_random_character(request, exclude_ids=None):
     characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
     excluded_shows, excluded_chars = get_user_exclusions(request)
-    available = [c for c in characters if c.show not in excluded_shows and c.name not in excluded_chars]
+    available = [c for c in characters if c.show.name not in excluded_shows and c.name not in excluded_chars]
     if not available:
         return None
     chosen = random.choice(available)
@@ -238,13 +236,9 @@ def preferences(request):
     if request.method == 'POST':
         excluded_shows_ids = request.POST.getlist('excluded_shows')
         excluded_characters_ids = request.POST.getlist('excluded_characters')
-        preferences.excluded_shows.set(excluded_shows_ids)
-        preferences.excluded_characters.set(excluded_characters_ids)
-        # Get selected shows and characters as lists
-        excluded_shows = request.POST.getlist('excluded_shows')
-        excluded_characters = request.POST.getlist('excluded_characters')
-        preferences.excluded_shows = excluded_shows
-        preferences.excluded_characters = excluded_characters
+        # Directly assign lists to JSONFields
+        preferences.excluded_shows = excluded_shows_ids
+        preferences.excluded_characters = excluded_characters_ids
         preferences.save()
         return redirect('index')
 
