@@ -48,9 +48,20 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, default='postgres://localhost')
-}
+# Database configuration
+if 'DATABASE_URL' in os.environ:
+    # Use Postgres on Render (via DATABASE_URL)
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+else:
+    # Use SQLite locally
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
