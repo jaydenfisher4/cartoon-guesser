@@ -140,9 +140,6 @@
             transform: translateY(-5px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
-        .character-card.excluded {
-            background-color: #d32f2f; /* Red background for excluded characters */
-        }
         .character-card img {
             max-width: 100px;
             height: auto;
@@ -224,7 +221,7 @@
     </div>
     <div class="character-list" id="character-list">
         {% for character in characters %}
-            <div class="character-card {% if character.is_excluded %}excluded{% endif %}" 
+            <div class="character-card" 
                  data-name="{{ character.name|lower }}" 
                  data-show="{{ character.show|lower }}" 
                  data-networks="{{ character.network|lower }}" 
@@ -293,7 +290,9 @@
                 const networks = card.dataset.networks.split(', ').map(n => n.trim());
                 const matchesPrimaryNetwork = !network || networks.includes(network);
                 const matchesSecondaryNetwork = !secondaryNetwork || networks.includes(secondaryNetwork);
+                // Exclude characters where data-excluded is "true"
                 return (
+                    card.dataset.excluded !== "true" &&
                     (!search || card.dataset.name.includes(search)) &&
                     (!show || card.dataset.show === show) &&
                     matchesPrimaryNetwork &&
@@ -348,6 +347,9 @@
             filteredCards.forEach(card => {
                 characterList.appendChild(card);
             });
+            if (filteredCards.length === 0) {
+                characterList.innerHTML = '<p>No characters found.</p>';
+            }
         }
 
         searchInput.addEventListener('input', filterAndSort);
