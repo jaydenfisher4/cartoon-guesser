@@ -19,17 +19,15 @@ def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
-            # Call .all() to retrieve the related objects as querysets and then use .values_list() to extract names
-            excluded_shows = list(prefs.excluded_shows.all().values_list('name', flat=True))
-            excluded_chars = list(prefs.excluded_characters.all().values_list('name', flat=True))
+            excluded_shows = list(prefs.excluded_shows.values_list('name', flat=True))
+            excluded_chars = list(prefs.excluded_characters.values_list('name', flat=True))
             return excluded_shows, excluded_chars
         except UserPreference.DoesNotExist:
             return [], []
     return [], []
 
-
 def get_daily_character(request):
-    characters = CartoonCharacter.objects.all()
+    characters = CartoonCharacter.objects.select_related('show').all()
     if not characters:
         return None
     excluded_shows, excluded_chars = get_user_exclusions(request)
@@ -42,7 +40,7 @@ def get_daily_character(request):
     return available[index]
 
 def get_random_character(request, exclude_ids=None):
-    characters = CartoonCharacter.objects.exclude(id__in=exclude_ids or [])
+    characters = CartoonCharacter.objects.select_related('show').exclude(id__in=exclude_ids or [])
     excluded_shows, excluded_chars = get_user_exclusions(request)
     available = [c for c in characters if c.show.name not in excluded_shows and c.name not in excluded_chars]
     if not available:
@@ -53,9 +51,9 @@ def get_random_character(request, exclude_ids=None):
 
 def index(request):
     daily_character = get_daily_character(request)
-    all_characters = CartoonCharacter.objects.all()
+    all_characters = CartoonCharacter.objects.select_related('show').all()
     guesses = request.session.get('guesses-daily', [])
-    all_characters_data = [char.name for char in all_characters]
+    all_characters_data = [char.name for char in all_characters]  # Full list, no limit
     request.session['last_mode'] = 'daily'
     context = {
         'character': daily_character,
@@ -76,8 +74,8 @@ def unlimited(request):
             request.session['current_character_id-unlimited'] = current_character.id
 
     current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-    all_characters = CartoonCharacter.objects.all()
-    all_characters_data = [char.name for char in all_characters]
+    all_characters = CartoonCharacter.objects.select_related('show').all()
+    all_characters_data = [char.name for char in all_characters]  # Full list, no limit
     request.session['last_mode'] = 'unlimited'
 
     context = {
@@ -89,7 +87,7 @@ def unlimited(request):
     return render(request, 'game/index.html', context)
 
 def characters_list(request):
-    all_characters = CartoonCharacter.objects.select_related('show').all().order_by('name')
+    all_characters = CartoonCharacter.objects.select_related('show').order_by('name')
     shows = sorted(set(char.show.name for char in all_characters))
     all_networks = set()
     for char in all_characters:
@@ -256,7 +254,8 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            UserPreference.objects.create(user=user)  # Create empty preferences
+            UserPreference.objects.create(user=user)
             return redirect('index')
     else:
         form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
