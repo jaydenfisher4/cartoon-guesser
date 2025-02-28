@@ -59,10 +59,10 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cartoon_restore',
-        'USER': 'postgres',
-        'PASSWORD': 'Catfish1.',  
-        'HOST': 'localhost',
+        'NAME': 'cartoon_guesser_db_new',
+        'USER': 'cartoon_guesser_db_new_user',
+        'PASSWORD': 'bRIOXXJcVQg5CqveznOVHECvOW1iRLlU',  
+        'HOST': 'dpg-cv0ftibtq21c73emc57g-a.ohio-postgres.render.com',
         'PORT': '5432',
     }
 }
