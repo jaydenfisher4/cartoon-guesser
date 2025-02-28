@@ -85,7 +85,7 @@ def index(request):
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
     
-    # Filter autocomplete list
+    # Filter autocomplete list to exclude user-checked exclusions
     excluded_shows, excluded_chars = get_user_exclusions(request)
     all_characters = CartoonCharacter.objects.select_related('show').exclude(
         show__in=excluded_shows

@@ -66,7 +66,10 @@
             margin-right: 10px;
         }
         .button-group {
-            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
         }
     </style>
 </head>
@@ -75,6 +78,10 @@
         <h2>Exclusions</h2>
         <form method="post" action="{% url 'exclusions' %}">
             {% csrf_token %}
+            <div class="button-group">
+                <button type="button" class="btn" onclick="selectAll()">Select All</button>
+                <button type="button" class="btn" onclick="deselectAll()">Deselect All</button>
+            </div>
             <div class="exclusions-list">
                 {% for show in all_shows %}
                     <div class="show-item">
@@ -88,13 +95,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="button-group">
-                <button type="button" class="btn" onclick="selectAll('excluded_shows')">Select All Shows</button>
-                <button type="button" class="btn" onclick="deselectAll('excluded_shows')">Deselect All Shows</button>
-                <button type="button" class="btn" onclick="selectAll('excluded_characters')">Select All Characters</button>
-                <button type="button" class="btn" onclick="deselectAll('excluded_characters')">Deselect All Characters</button>
-                <button type="submit" class="btn">Save Exclusions</button>
-            </div>
+            <button type="submit" class="btn">Save Exclusions</button>
         </form>
     </div>
 
@@ -132,14 +133,14 @@
             });
         });
 
-        function selectAll(name) {
-            document.querySelectorAll(`input[name="${name}"]`).forEach(checkbox => {
+        function selectAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = true;
             });
         }
 
-        function deselectAll(name) {
-            document.querySelectorAll(`input[name="${name}"]`).forEach(checkbox => {
+        function deselectAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
         }

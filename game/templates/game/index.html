@@ -93,53 +93,30 @@
         .navbar {
             display: flex;
             justify-content: center;
-            gap: 20px; /* Increased from 15px for more breathing room */
+            gap: 20px;
             flex-wrap: wrap;
-            margin-bottom: 30px; /* Increased from 20px */
+            margin-bottom: 30px;
             padding: 10px;
         }
         .btn {
-            padding: 12px 24px; /* Slightly larger for better touch targets */
+            padding: 12px 24px;
             font-size: 1.1em;
             background-color: #00ccff;
             color: #1a1a1a;
             border: none;
-            border-radius: 8px; /* Softer corners */
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 120px; /* Consistent width */
+            min-width: 120px;
         }
         .btn:hover {
             background-color: #00b3e6;
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 204, 255, 0.3);
-        }
-        .input-container {
-            margin: 30px auto; /* Increased from 20px */
-            max-width: 700px; /* Slightly wider */
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px; /* Increased from 10px */
-            justify-content: center;
-            background: #252525;
-            padding: 20px; /* Increased from 15px */
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        #guess-input {
-            flex-grow: 1;
-            max-width: 350px; /* Slightly wider */
-            padding: 12px;
-            font-size: 1.1em;
-            border: 2px solid #404040;
-            border-radius: 5px;
-            background-color: #333333;
-            color: #e0e0e0;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .timer-container {
             margin: 20px auto;
@@ -215,6 +192,29 @@
             background-color: #f9a825;
             color: white;
         }
+        .input-container {
+            margin: 30px auto;
+            max-width: 700px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            background: #252525;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        #guess-input {
+            flex-grow: 1;
+            max-width: 350px;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #404040;
+            border-radius: 5px;
+            background-color: #333333;
+            color: #e0e0e0;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
         #guess-input:focus {
             outline: none;
             border-color: #00ccff;
@@ -223,9 +223,9 @@
         #autocomplete-list {
             position: absolute;
             top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
+            left: 0;
+            right: 0;
+            width: 350px;
             background-color: #252525;
             border: 1px solid #404040;
             border-radius: 5px;
@@ -280,8 +280,10 @@
         </div>
         <p id="guess-counter">Guesses: 0{% if mode == 'daily' %}/15{% endif %}</p>
         <div class="input-container">
-            <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
-            <div id="autocomplete-list"></div>
+            <div style="position: relative;">
+                <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
+                <div id="autocomplete-list"></div>
+            </div>
             <button class="btn" id="guess-button" onclick="submitGuess()">Guess</button>
             <button class="btn" onclick="giveUp()">Give Up</button>
             <button class="btn" onclick="resetGame()">Reset</button>
@@ -389,13 +391,14 @@
         }
 
         input.addEventListener('input', function() {
-            const value = this.value.toLowerCase();
+            const value = this.value.toLowerCase().trim();
             autocompleteList.innerHTML = '';
             selectedIndex = -1;
-            if (!value) {
+            if (!value || value.length < 1) {
                 autocompleteList.style.display = 'none';
                 return;
             }
+
             const matches = allCharacters.filter(name => name.toLowerCase().includes(value));
             if (matches.length > 0) {
                 matches.forEach((match, index) => {
@@ -423,20 +426,20 @@
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-                updateSelection();
+                updateSelection(items);
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 selectedIndex = Math.max(selectedIndex - 1, -1);
-                updateSelection();
+                updateSelection(items);
             } else if (e.key === 'Tab' && !e.shiftKey) {
                 e.preventDefault();
                 if (selectedIndex === -1) selectedIndex = 0;
                 else selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-                updateSelection();
+                updateSelection(items);
             } else if (e.key === 'Tab' && e.shiftKey) {
                 e.preventDefault();
                 selectedIndex = Math.max(selectedIndex - 1, -1);
-                updateSelection();
+                updateSelection(items);
             } else if (e.key === 'Enter' && selectedIndex >= 0) {
                 e.preventDefault();
                 input.value = items[selectedIndex].textContent;
@@ -448,15 +451,14 @@
             }
         });
 
-        function updateSelection() {
-            const items = autocompleteList.querySelectorAll('.autocomplete-item');
+        function updateSelection(items) {
             items.forEach((item, index) => {
                 item.classList.toggle('selected', index === selectedIndex);
+                if (index === selectedIndex) {
+                    item.scrollIntoView({ block: 'nearest' });
+                    input.value = item.textContent;
+                }
             });
-            if (selectedIndex >= 0) {
-                input.value = items[selectedIndex].textContent;
-                items[selectedIndex].scrollIntoView({ block: 'nearest' });
-            }
         }
 
         document.addEventListener('click', (e) => {
