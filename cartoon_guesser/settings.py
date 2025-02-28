@@ -4,16 +4,8 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fake-key-for-demo')
-
-# Set DEBUG to True for local dev, False for production
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Changed default to True for local testing
-
-ALLOWED_HOSTS = [
-    'cartoon-guesser.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
-
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['cartoon-guesser.onrender.com', 'localhost', '127.0.0.1']
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -25,7 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "cartoon_guesser",
-    "game",  
+    "game",
 ]
 
 MIDDLEWARE = [
@@ -57,21 +49,13 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(conn_max_age=600, default='postgres://localhost')
 }
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
@@ -79,7 +63,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Security settings: Disable HTTPS enforcement when DEBUG is True
-SECURE_SSL_REDIRECT = not DEBUG  # False when DEBUG=True (local), True when DEBUG=False (production)
-CSRF_COOKIE_SECURE = not DEBUG   # False when DEBUG=True, True when DEBUG=False
-SESSION_COOKIE_SECURE = not DEBUG  # False when DEBUG=True, True when DEBUG=False
+SECURE_SSL_REDIRECT = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG

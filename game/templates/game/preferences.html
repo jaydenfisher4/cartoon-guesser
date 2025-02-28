@@ -79,16 +79,8 @@
                                    {% if show in preferences.excluded_shows.all %}checked{% endif %}>
                             {{ show.name }}
                         </label>
-                        <button type="button" class="toggle-characters" onclick="toggleCharacters('chars-{{ show.id }}')">Toggle Characters</button>
-                        <div id="chars-{{ show.id }}" class="character-list">
-                            {% for character in show.cartooncharacter_set.all %}
-                                <label>
-                                    <input type="checkbox" name="excluded_characters" value="{{ character.id }}"
-                                           {% if character in preferences.excluded_characters.all %}checked{% endif %}>
-                                    {{ character.name }}
-                                </label>
-                            {% endfor %}
-                        </div>
+                        <button type="button" class="toggle-characters" data-show-id="{{ show.id }}">Toggle Characters</button>
+                        <div id="chars-{{ show.id }}" class="character-list"></div>
                     </div>
                 {% endfor %}
             </div>
@@ -97,14 +89,39 @@
     </div>
 
     <script>
-        function toggleCharacters(divId) {
-            var element = document.getElementById(divId);
-            if (element.style.display === "none") {
-                element.style.display = "block";
+        function toggleCharacters(divId, showId) {
+            const element = document.getElementById(divId);
+            if (element.style.display === "none" || element.innerHTML === "") {
+                fetch(`/get_characters/${showId}/`, {
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    element.innerHTML = '';
+                    data.characters.forEach(char => {
+                        const label = document.createElement('label');
+                        label.innerHTML = `
+                            <input type="checkbox" name="excluded_characters" value="${char.id}"
+                                   ${char.excluded ? 'checked' : ''}> ${char.name}
+                        `;
+                        element.appendChild(label);
+                    });
+                    element.style.display = "block";
+                })
+                .catch(error => console.error('Error loading characters:', error));
             } else {
                 element.style.display = "none";
             }
         }
+
+        // Add event listeners to all toggle buttons
+        document.querySelectorAll('.toggle-characters').forEach(button => {
+            button.addEventListener('click', function() {
+                const showId = this.getAttribute('data-show-id');
+                const divId = `chars-${showId}`;
+                toggleCharacters(divId, showId);
+            });
+        });
     </script>
 </body>
 </html>
