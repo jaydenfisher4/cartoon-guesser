@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preferences - Cartoon Guesser</title>
+    <title>Exclusions - Cartoon Guesser</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -13,7 +13,7 @@
             margin: 0;
             padding: 20px;
         }
-        .preferences-container {
+        .exclusions-container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
@@ -52,6 +52,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
+            margin: 5px;
         }
         .btn:hover {
             background-color: #00b3e6;
@@ -64,14 +65,17 @@
         input[type="checkbox"] {
             margin-right: 10px;
         }
+        .button-group {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="preferences-container">
-        <h2>Preferences</h2>
-        <form method="post" action="{% url 'preferences' %}">
+    <div class="exclusions-container">
+        <h2>Exclusions</h2>
+        <form method="post" action="{% url 'exclusions' %}">
             {% csrf_token %}
-            <div class="preferences-list">
+            <div class="exclusions-list">
                 {% for show in all_shows %}
                     <div class="show-item">
                         <label>
@@ -84,7 +88,13 @@
                     </div>
                 {% endfor %}
             </div>
-            <button type="submit" class="btn">Save Preferences</button>
+            <div class="button-group">
+                <button type="button" class="btn" onclick="selectAll('excluded_shows')">Select All Shows</button>
+                <button type="button" class="btn" onclick="deselectAll('excluded_shows')">Deselect All Shows</button>
+                <button type="button" class="btn" onclick="selectAll('excluded_characters')">Select All Characters</button>
+                <button type="button" class="btn" onclick="deselectAll('excluded_characters')">Deselect All Characters</button>
+                <button type="submit" class="btn">Save Exclusions</button>
+            </div>
         </form>
     </div>
 
@@ -114,7 +124,6 @@
             }
         }
 
-        // Add event listeners to all toggle buttons
         document.querySelectorAll('.toggle-characters').forEach(button => {
             button.addEventListener('click', function() {
                 const showId = this.getAttribute('data-show-id');
@@ -122,6 +131,18 @@
                 toggleCharacters(divId, showId);
             });
         });
+
+        function selectAll(name) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deselectAll(name) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
     </script>
 </body>
 </html>

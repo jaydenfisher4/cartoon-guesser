@@ -140,6 +140,9 @@
             transform: translateY(-5px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
+        .character-card.excluded {
+            background-color: #d32f2f; /* Red background for excluded characters */
+        }
         .character-card img {
             max-width: 100px;
             height: auto;
@@ -221,14 +224,15 @@
     </div>
     <div class="character-list" id="character-list">
         {% for character in characters %}
-            <div class="character-card" 
+            <div class="character-card {% if character.is_excluded %}excluded{% endif %}" 
                  data-name="{{ character.name|lower }}" 
                  data-show="{{ character.show|lower }}" 
                  data-networks="{{ character.network|lower }}" 
                  data-year="{{ character.release_year }}" 
                  data-main="{{ character.is_main|lower }}" 
                  data-airing="{{ character.still_airing|lower }}" 
-                 data-gender="{{ character.gender|lower }}">
+                 data-gender="{{ character.gender|lower }}"
+                 data-excluded="{{ character.is_excluded|lower }}">
                 <img src="{{ character.image_url|default:'https://via.placeholder.com/100' }}" alt="{{ character.name }}">
                 <p><strong>Name:</strong> {{ character.name }}</p>
                 <p><strong>Show:</strong> {{ character.show }}</p>

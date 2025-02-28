@@ -9,7 +9,7 @@ urlpatterns = [
     path('win/', views.win, name='win'),
     path('lose/', views.lose, name='lose'),
     path('suggest/', views.submit_suggestion, name='suggest'),
-    path('preferences/', views.preferences, name='preferences'),
+    path('exclusions/', views.exclusions, name='exclusions'),
     path('get_characters/<int:show_id>/', views.get_characters, name='get_characters'),
     path('register/', views.register, name='register'),
     # Add login/logout URLs as needed

@@ -85,9 +85,15 @@ def index(request):
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
     
-    all_characters = CartoonCharacter.objects.select_related('show').all()
-    guesses = request.session.get('guesses-daily', [])
+    # Filter autocomplete list
+    excluded_shows, excluded_chars = get_user_exclusions(request)
+    all_characters = CartoonCharacter.objects.select_related('show').exclude(
+        show__in=excluded_shows
+    ).exclude(
+        id__in=excluded_chars
+    )
     all_characters_data = [char.name for char in all_characters]
+    guesses = request.session.get('guesses-daily', [])
     request.session['last_mode'] = 'daily'
     context = {
         'character': daily_character,
@@ -102,8 +108,8 @@ def unlimited(request):
     guessed_ids = request.session.get('guessed_ids-unlimited', [])
     current_character_id = request.session.get('current_character_id-unlimited')
 
+    excluded_shows, excluded_chars = get_user_exclusions(request)
     if not current_character_id or current_character_id not in guessed_ids:
-        excluded_shows, excluded_chars = get_user_exclusions(request)
         current_character = get_random_character(request, guessed_ids, excluded_shows, excluded_chars)
         if current_character:
             request.session['current_character_id-unlimited'] = current_character.id
@@ -112,7 +118,11 @@ def unlimited(request):
     else:
         current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
 
-    all_characters = CartoonCharacter.objects.select_related('show').all()
+    all_characters = CartoonCharacter.objects.select_related('show').exclude(
+        show__in=excluded_shows
+    ).exclude(
+        id__in=excluded_chars
+    )
     all_characters_data = [char.name for char in all_characters]
     request.session['last_mode'] = 'unlimited'
 
@@ -135,8 +145,24 @@ def characters_list(request):
     years = sorted(set(char.release_year for char in all_characters))
     last_mode = request.session.get('last_mode', 'daily')
 
+    excluded_shows, excluded_chars = get_user_exclusions(request)
+    excluded_show_ids = set(excluded_shows.values_list('id', flat=True))
+    excluded_char_ids = set(excluded_chars.values_list('id', flat=True))
+
     context = {
-        'characters': all_characters,
+        'characters': [
+            {
+                'name': char.name,
+                'show': char.show.name,
+                'network': char.network,
+                'release_year': char.release_year,
+                'still_airing': char.still_airing,
+                'is_main': char.is_main,
+                'gender': char.gender,
+                'image_url': char.image_url,
+                'is_excluded': char.id in excluded_char_ids or char.show.id in excluded_show_ids
+            } for char in all_characters
+        ],
         'shows': shows,
         'single_networks': single_networks,
         'years': years,
@@ -266,7 +292,7 @@ def submit_suggestion(request):
     return render(request, 'game/suggestion.html', {'form': form})
 
 @login_required
-def preferences(request):
+def exclusions(request):
     preferences, created = UserPreference.objects.get_or_create(user=request.user)
     all_shows = Show.objects.all()
 
@@ -282,7 +308,7 @@ def preferences(request):
         'preferences': preferences,
         'all_shows': all_shows,
     }
-    return render(request, 'game/preferences.html', context)
+    return render(request, 'game/exclusions.html', context)
 
 @login_required
 def get_characters(request, show_id):
