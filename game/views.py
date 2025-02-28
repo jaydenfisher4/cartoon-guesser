@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import CartoonCharacter, UserPreference, CartoonSuggestion, Show
+from .models import CartoonCharacter
 from datetime import date
 import hashlib
 import random
@@ -10,18 +10,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-def get_user_exclusions(request):
-    if request.user.is_authenticated:
-        try:
-            prefs = UserPreference.objects.get(user=request.user)
-            return prefs.excluded_shows, prefs.excluded_characters
-        except UserPreference.DoesNotExist:
-            return [], []
-    return [], []
 
 def get_daily_character(request):
     characters = CartoonCharacter.objects.all()
@@ -79,7 +69,7 @@ def unlimited(request):
 
 def characters_list(request):
     all_characters = CartoonCharacter.objects.all().order_by('name')
-    shows = sorted(set(char.show for char in all_characters))  # Using CharField
+    shows = sorted(set(char.show for char in all_characters))  # CharField
     all_networks = set()
     for char in all_characters:
         networks = char.network.split(', ')
@@ -130,7 +120,7 @@ def guess(request):
                 'network': network_correct,
                 'network_value': guessed_char.network,
                 'network_partial': network_partial,
-                'show': guessed_char.show == current_character.show,  # Using CharField
+                'show': guessed_char.show == current_character.show,
                 'show_value': guessed_char.show,
                 'is_main': guessed_char.is_main,
                 'main_correct': main_correct,
@@ -220,7 +210,6 @@ def submit_suggestion(request):
 
 @login_required
 def preferences(request):
-    # Placeholder: Redirect to index since UserPreference isn’t available
     return redirect('index')
 
 def register(request):
@@ -229,7 +218,6 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            # Skip UserPreference creation for now
             return redirect('index')
     else:
         form = UserCreationForm()

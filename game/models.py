@@ -1,15 +1,9 @@
+# game/models.py
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models import JSONField
-
-class Show(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    def __str__(self):
-        return self.name
 
 class CartoonCharacter(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    show = models.ForeignKey(Show, on_delete=models.CASCADE)
+    show = models.CharField(max_length=100)
     network = models.CharField(max_length=50)
     is_main = models.BooleanField(default=True)
     release_year = models.IntegerField()
@@ -24,8 +18,3 @@ class CartoonSuggestion(models.Model):
     submitter_ip = models.GenericIPAddressField(null=True, blank=True)
     def __str__(self):
         return self.name
-
-class UserPreference(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    excluded_shows = JSONField(default=list, blank=True)
-    excluded_characters = JSONField(default=list, blank=True)

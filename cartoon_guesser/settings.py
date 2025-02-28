@@ -57,10 +57,14 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///db.sqlite3",
-        conn_max_age=600,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'cartoon_restore',
+        'USER': 'postgres',
+        'PASSWORD': 'Catfish1.',  
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 LANGUAGE_CODE = 'en-us'
