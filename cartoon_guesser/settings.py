@@ -4,10 +4,10 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fake-key-for-demo')
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['cartoon-guesser.onrender.com', 'localhost', '127.0.0.1']
+DEBUG = False
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+ALLOWED_HOSTS = ['cartoonguesser.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -49,19 +49,24 @@ TEMPLATES = [
 ]
 
 # Database configuration
-if 'DATABASE_URL' in os.environ:
-    # Use Postgres on Render (via DATABASE_URL)
-    DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cartoon_guesser_local',
+        'USER': 'root',
+        'PASSWORD': 'Catfish1.',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    } if not os.environ.get('DB_HOST') else {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'cartoonguesser$cartoonguesserdb'),
+        'USER': os.environ.get('DB_USER', 'cartoonguesser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST', 'cartoonguesser.mysql.pythonanywhere-services.com'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
-else:
-    # Use SQLite locally
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+}
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

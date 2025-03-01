@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520"
+     crossorigin="anonymous"></script>
+     
+     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cartoon Guesser</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Existing styles unchanged until relevant sections */
         html {
             background: linear-gradient(135deg, #2a2a2a, #1f2a44);
             background-attachment: fixed;
@@ -118,6 +124,11 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 204, 255, 0.3);
         }
+        .btn.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
         .timer-container {
             margin: 20px auto;
             padding: 15px;
@@ -175,6 +186,10 @@
             background-color: #252525;
             opacity: 1;
         }
+        .known-row .cell.correct {
+        background-color: #2e7d32 !important;
+        color: white !important;
+    }
         .known-row .cell {
             background-color: #1f2a44;
             font-weight: bold;
@@ -236,13 +251,23 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         .autocomplete-item {
-            padding: 12px;
+            padding: 8px;
             cursor: pointer;
             color: #e0e0e0;
+            display: flex;
+            align-items: center;
             transition: background-color 0.2s ease;
         }
         .autocomplete-item:hover, .autocomplete-item.selected {
             background-color: #333333;
+        }
+        .autocomplete-item img {
+            width: 20px;
+            height: auto; 
+            margin-right: 10px;
+            border-radius: 3px;
+            object-fit: contain;
+            image-rendering: -webkit-optimize-contrast; 
         }
         .icon {
             margin-right: 5px;
@@ -285,6 +310,7 @@
                 <div id="autocomplete-list"></div>
             </div>
             <button class="btn" id="guess-button" onclick="submitGuess()">Guess</button>
+            <button class="btn" id="hint-button" onclick="requestHint()" disabled>Hint</button>
             <button class="btn" onclick="giveUp()">Give Up</button>
             <button class="btn" onclick="resetGame()">Reset</button>
         </div>
@@ -303,13 +329,13 @@
         </div>
         <div class="grid known-row" id="known-results">
             <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
-            <div class="cell">?</div>
+            <div class="cell"><span class="icon">👤</span>?</div>
+            <div class="cell"><span class="icon">📺</span>?</div>
+            <div class="cell"><span class="icon">🎬</span>?</div>
+            <div class="cell"><span class="icon">⭐</span>?</div>
+            <div class="cell"><span class="icon">📅</span>?</div>
+            <div class="cell"><span class="icon">⏳</span>?</div>
+            <div class="cell"><span class="icon">🚻</span>?</div>
         </div>
         <div id="guesses-container"></div>
     </div>
@@ -339,16 +365,19 @@
         const autocompleteList = document.getElementById('autocomplete-list');
         const guessCounter = document.getElementById('guess-counter');
         const guessButton = document.getElementById('guess-button');
+        const hintButton = document.getElementById('hint-button');
         const guessesContainer = document.getElementById('guesses-container');
         const knownResults = document.getElementById('known-results');
         const winSound = document.getElementById('win-sound');
         const loseSound = document.getElementById('lose-sound');
         const timerDisplay = document.getElementById('timer');
         let guessCount = guesses.length;
-        let knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?' };
+        let knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
         let selectedIndex = -1;
+        let hintUsed = false;
 
         guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
+        updateHintButton();
 
         // Raindrop animation setup
         function createRaindrop() {
@@ -399,15 +428,15 @@
                 return;
             }
 
-            const matches = allCharacters.filter(name => name.toLowerCase().includes(value));
+            const matches = allCharacters.filter(item => item.name.toLowerCase().includes(value));
             if (matches.length > 0) {
                 matches.forEach((match, index) => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    item.textContent = match;
+                    item.innerHTML = `<img src="${match.image_url || 'https://via.placeholder.com/20'}" alt="${match.name}"> ${match.name}`;
                     item.dataset.index = index;
                     item.addEventListener('click', () => {
-                        input.value = match;
+                        input.value = match.name;
                         autocompleteList.style.display = 'none';
                         submitGuess();
                     });
@@ -442,7 +471,7 @@
                 updateSelection(items);
             } else if (e.key === 'Enter' && selectedIndex >= 0) {
                 e.preventDefault();
-                input.value = items[selectedIndex].textContent;
+                input.value = items[selectedIndex].textContent.trim();
                 autocompleteList.style.display = 'none';
                 submitGuess();
             } else if (e.key === 'Enter') {
@@ -456,7 +485,7 @@
                 item.classList.toggle('selected', index === selectedIndex);
                 if (index === selectedIndex) {
                     item.scrollIntoView({ block: 'nearest' });
-                    input.value = item.textContent;
+                    input.value = item.textContent.trim();
                 }
             });
         }
@@ -468,6 +497,7 @@
         });
 
         function updateKnownResults(data) {
+            console.log("Received data:", data);
             if (data.correct) {
                 knownValues = {
                     name: data.name,
@@ -476,18 +506,25 @@
                     is_main: data.is_main ? 'Main' : 'Side',
                     release_year: data.year_value,
                     still_airing: data.still_airing ? 'Yes' : 'No',
-                    gender: data.gender_value
+                    gender: data.gender_value,
+                    image: data.image_url || '?'
                 };
+            } else if (data.hint) {
+                console.log("Applying hint:", data.hint.field, data.hint.value);
+                knownValues[data.hint.field] = data.hint.value;
             } else {
-                if (data.network) knownValues.network = data.network_value;
+                // Update knownValues based on exact matches from the guess
+                if (data.network) knownValues.network = data.network_value;  // Any network match
                 if (data.show) knownValues.show = data.show_value;
                 if (data.main_correct) knownValues.is_main = data.is_main ? 'Main' : 'Side';
                 if (data.release_year) knownValues.release_year = data.year_value;
                 if (data.airing_correct) knownValues.still_airing = data.still_airing ? 'Yes' : 'No';
                 if (data.gender) knownValues.gender = data.gender_value;
             }
+            console.log("Updated knownValues:", knownValues);
+            knownResults.innerHTML = '';
             knownResults.innerHTML = `
-                <div class="cell">?</div>
+                <div class="cell">${knownValues.image !== '?' ? `<img src="${knownValues.image}" alt="Character" style="max-width: 80px;">` : '?'}</div>
                 <div class="cell ${knownValues.name !== '?' ? 'correct' : ''}"><span class="icon">👤</span>${knownValues.name}</div>
                 <div class="cell ${knownValues.network !== '?' ? 'correct' : ''}"><span class="icon">📺</span>${knownValues.network}</div>
                 <div class="cell ${knownValues.show !== '?' ? 'correct' : ''}"><span class="icon">🎬</span>${knownValues.show}</div>
@@ -496,11 +533,29 @@
                 <div class="cell ${knownValues.still_airing !== '?' ? 'correct' : ''}"><span class="icon">⏳</span>${knownValues.still_airing}</div>
                 <div class="cell ${knownValues.gender !== '?' ? 'correct' : ''}"><span class="icon">🚻</span>${knownValues.gender}</div>
             `;
+            console.log("Applied classes:", {
+                name: knownValues.name !== '?' ? 'correct' : '',
+                network: knownValues.network !== '?' ? 'correct' : '',
+                show: knownValues.show !== '?' ? 'correct' : '',
+                is_main: knownValues.is_main !== '?' ? 'correct' : '',
+                release_year: knownValues.release_year !== '?' ? 'correct' : '',
+                still_airing: knownValues.still_airing !== '?' ? 'correct' : '',
+                gender: knownValues.gender !== '?' ? 'correct' : ''
+            });
+        }
+
+        function updateHintButton() {
+            hintButton.disabled = guessCount < 5 || hintUsed || (mode === 'daily' && guessCount >= 15);
+            if (hintButton.disabled) {
+                hintButton.classList.add('disabled');
+            } else {
+                hintButton.classList.remove('disabled');
+            }
         }
 
         function submitGuess() {
             const guess = input.value.trim();
-            if (!guess || guessCount >= 15) return;
+            if (!guess || (mode === 'daily' && guessCount >= 15)) return;
             fetch('/guess/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
@@ -539,6 +594,7 @@
                 guessCount = data.guess_count;
                 guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
                 updateKnownResults(data);
+                updateHintButton();
 
                 const cells = row.querySelectorAll('.cell');
                 cells.forEach((cell, index) => {
@@ -554,11 +610,13 @@
                     if (mode === 'unlimited') {
                         guessesContainer.innerHTML = '';
                         guessCount = 0;
+                        hintUsed = false;
                         guessCounter.textContent = 'Guesses: 0';
-                        knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?' };
+                        let knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
                         updateKnownResults({});
+                        updateHintButton();
                     }
-                } else if (guessCount >= 15) {
+                } else if (mode === 'daily' && guessCount >= 15) {
                     setTimeout(() => {
                         loseSound.play().catch(error => console.log("Lose sound error:", error));
                     }, 100);
@@ -569,6 +627,32 @@
             .catch(error => {
                 console.error('Fetch error:', error);
                 alert('Error submitting guess. Check console for details.');
+            });
+        }
+
+        function requestHint() {
+            if (guessCount < 3 || hintUsed || (mode === 'daily' && guessCount >= 15)) return;
+            fetch('/hint/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: 'mode=' + mode
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                hintUsed = true;
+                updateKnownResults(data);
+                updateHintButton();
+            })
+            .catch(error => {
+                console.error('Hint fetch error:', error);
+                alert('Error requesting hint. Check console for details.');
             });
         }
 

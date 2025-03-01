@@ -9,6 +9,7 @@ from .forms import CartoonSuggestionForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+import json
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +43,6 @@ def get_daily_character(request, excluded_shows=None, excluded_chars=None):
     today = date.today().isoformat()
     index = int(hashlib.md5(today.encode()).hexdigest(), 16) % count
     try:
-        # Order consistently and use slicing (note: this may still hit performance with large offsets)
         daily_character = characters.order_by('id')[index]
         logger.debug(f"Daily character selected: {daily_character.name}")
         return daily_character
@@ -62,7 +62,6 @@ def get_random_character(request, exclude_ids=None, excluded_shows=None, exclude
         id__in=exclude_ids or []
     )
     
-    # Use database random selection (Postgres ORDER BY RANDOM())
     character = characters.order_by('?').first()
     if character:
         logger.debug(f"Random character selected: {character.name}")
@@ -85,16 +84,16 @@ def index(request):
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
     
-    # Filter autocomplete list to exclude user-checked exclusions
     excluded_shows, excluded_chars = get_user_exclusions(request)
     all_characters = CartoonCharacter.objects.select_related('show').exclude(
         show__in=excluded_shows
     ).exclude(
         id__in=excluded_chars
     )
-    all_characters_data = [char.name for char in all_characters]
+    all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     guesses = request.session.get('guesses-daily', [])
     request.session['last_mode'] = 'daily'
+    request.session.setdefault('hint_used-daily', False)
     context = {
         'character': daily_character,
         'guesses': guesses,
@@ -123,8 +122,9 @@ def unlimited(request):
     ).exclude(
         id__in=excluded_chars
     )
-    all_characters_data = [char.name for char in all_characters]
+    all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     request.session['last_mode'] = 'unlimited'
+    request.session.setdefault('hint_used-unlimited', False)
 
     context = {
         'character': current_character,
@@ -171,71 +171,165 @@ def characters_list(request):
     return render(request, 'game/characters.html', context)
 
 def guess(request):
-    if request.method == 'POST':
-        mode = request.POST.get('mode', 'daily')
-        guess_name = request.POST.get('guess', '').strip()
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+    
+    mode = request.POST.get('mode', 'daily')
+    guess_name = request.POST.get('guess', '').strip()
+    reset = request.POST.get('reset', 'false') == 'true'
 
+    if reset:
         if mode == 'daily':
-            current_character = get_daily_character(request)
-            guesses_key = 'guesses-daily'
-            guessed_ids_key = None
+            request.session['guesses-daily'] = []
+            request.session['hint_used-daily'] = False
         else:
-            current_character_id = request.session.get('current_character_id-unlimited')
-            current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-            guesses_key = 'guesses-unlimited'
-            guessed_ids_key = 'guessed_ids-unlimited'
-            guessed_ids = request.session.get(guessed_ids_key, [])
+            request.session['guesses-unlimited'] = []
+            request.session['guessed_ids-unlimited'] = []
+            request.session.pop('current_character_id-unlimited', None)
+            request.session['hint_used-unlimited'] = False
+        return JsonResponse({'status': 'reset'})
 
-        guesses = request.session.get(guesses_key, [])
+    if mode == 'daily':
+        current_character = get_daily_character(request)
+        guesses_key = 'guesses-daily'
+        hint_key = 'hint_used-daily'
+        guessed_ids_key = None
+    else:
+        current_character_id = request.session.get('current_character_id-unlimited')
+        current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
+        guesses_key = 'guesses-unlimited'
+        hint_key = 'hint_used-unlimited'
+        guessed_ids_key = 'guessed_ids-unlimited'
+        guessed_ids = request.session.get(guessed_ids_key, [])
 
+    guesses = request.session.get(guesses_key, [])
+
+    try:
+        guessed_char = CartoonCharacter.objects.get(name__iexact=guess_name)
+        guess_networks = set(guessed_char.network.split(', '))
+        target_networks = set(current_character.network.split(', '))
+        # Check if any network matches (partial match)
+        network_match = bool(guess_networks & target_networks)
+        main_match = guessed_char.is_main == current_character.is_main
+        airing_match = guessed_char.still_airing == current_character.still_airing
+        year_match = guessed_char.release_year == current_character.release_year
+        year_within_3 = not year_match and abs(guessed_char.release_year - current_character.release_year) <= 3
+        gender_match = guessed_char.gender == current_character.gender
+        show_match = guessed_char.show == current_character.show
+
+        result = {
+            'name': guessed_char.name,
+            'network': network_match,  # True if any network matches
+            'network_value': guessed_char.network,
+            'network_partial': network_match and not (guess_networks == target_networks),
+            'show': show_match,
+            'show_value': guessed_char.show.name if guessed_char.show else None,
+            'is_main': guessed_char.is_main,
+            'main_correct': main_match,
+            'release_year': year_match,
+            'year_value': guessed_char.release_year,
+            'year_within_3': year_within_3,
+            'daily_year': current_character.release_year,
+            'still_airing': guessed_char.still_airing,
+            'airing_correct': airing_match,
+            'gender': gender_match,
+            'gender_value': guessed_char.gender,
+            'image_url': guessed_char.image_url,
+            'correct': guessed_char.id == current_character.id,
+            'guess_count': len(guesses) + 1,
+            'mode': mode,
+            'current_character_id': current_character.id if mode == 'unlimited' else None
+        }
+        if guess_name not in guesses:
+            guesses.append(guess_name)
+            request.session[guesses_key] = guesses[:15]
+            if mode == 'unlimited' and result['correct']:
+                guessed_ids.append(current_character.id)
+                request.session[guessed_ids_key] = guessed_ids
+
+        logger.info(f"Guess response: {json.dumps(result)}")
+        if result['correct']:
+            return JsonResponse({'redirect': '/win/?mode=' + mode})
+        elif mode == 'daily' and len(guesses) >= 15:
+            return JsonResponse({'redirect': '/lose/?mode=' + mode})
+        return JsonResponse(result)
+    except CartoonCharacter.DoesNotExist:
+        return JsonResponse({'error': 'Character not found'}, status=404)
+
+def hint(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+    mode = request.POST.get('mode', 'daily')
+    hint_key = 'hint_used-' + mode
+    guesses_key = 'guesses-' + mode
+
+    if request.session.get(hint_key, False):
+        return JsonResponse({'error': 'Hint already used'}, status=400)
+
+    guesses = request.session.get(guesses_key, [])
+    if len(guesses) < 3:
+        return JsonResponse({'error': 'Not enough guesses for a hint'}, status=400)
+
+    if mode == 'daily':
+        current_character = get_daily_character(request)
+    else:
+        current_character_id = request.session.get('current_character_id-unlimited')
+        current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
+
+    if not current_character:
+        return JsonResponse({'error': 'No character available'}, status=500)
+
+    known = set()
+    for guess_name in guesses:
         try:
             guessed_char = CartoonCharacter.objects.get(name__iexact=guess_name)
-            guess_networks = set(guessed_char.network.split(', '))
-            target_networks = set(current_character.network.split(', '))
-            network_correct = guess_networks == target_networks
-            network_partial = not network_correct and bool(guess_networks & target_networks)
-            main_correct = guessed_char.is_main == current_character.is_main
-            airing_correct = guessed_char.still_airing == current_character.still_airing
-            year_correct = guessed_char.release_year == current_character.release_year
-            year_within_3 = not year_correct and abs(guessed_char.release_year - current_character.release_year) <= 3
-            result = {
-                'name': guessed_char.name,
-                'network': network_correct,
-                'network_value': guessed_char.network,
-                'network_partial': network_partial,
-                'show': guessed_char.show == current_character.show,
-                'show_value': guessed_char.show.name if guessed_char.show else None,
-                'is_main': guessed_char.is_main,
-                'main_correct': main_correct,
-                'release_year': year_correct,
-                'year_value': guessed_char.release_year,
-                'year_within_3': year_within_3,
-                'daily_year': current_character.release_year,
-                'still_airing': guessed_char.still_airing,
-                'airing_correct': airing_correct,
-                'gender': guessed_char.gender == current_character.gender,
-                'gender_value': guessed_char.gender,
-                'image_url': guessed_char.image_url,
-                'correct': guessed_char.id == current_character.id,
-                'guess_count': len(guesses) + 1,
-                'mode': mode,
-                'current_character_id': current_character.id if mode == 'unlimited' else None
-            }
-            if guess_name not in guesses:
-                guesses.append(guess_name)
-                request.session[guesses_key] = guesses[:15]
-                if mode == 'unlimited' and result['correct']:
-                    guessed_ids.append(current_character.id)
-                    request.session[guessed_ids_key] = guessed_ids
-
-            if result['correct']:
-                return JsonResponse({'redirect': '/win/?mode=' + mode})
-            elif len(guesses) >= 15:
-                return JsonResponse({'redirect': '/lose/?mode=' + mode})
-            return JsonResponse(result)
+            if guessed_char.network == current_character.network:
+                known.add('network')
+            if guessed_char.show == current_character.show:
+                known.add('show')
+            if guessed_char.is_main == current_character.is_main:
+                known.add('is_main')
+            if guessed_char.release_year == current_character.release_year:
+                known.add('release_year')
+            if guessed_char.still_airing == current_character.still_airing:
+                known.add('still_airing')
+            if guessed_char.gender == current_character.gender:
+                known.add('gender')
         except CartoonCharacter.DoesNotExist:
-            return JsonResponse({'error': 'Character not found'}, status=404)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+            continue
+
+    hint_options = ['network', 'is_main', 'release_year', 'still_airing', 'gender']
+    unknown_options = [field for field in hint_options if field not in known]
+
+    if unknown_options:
+        hint_field = random.choice(unknown_options)
+    elif 'show' not in known:
+        hint_field = 'show'
+    elif 'image' not in known:
+        hint_field = 'image'
+    else:
+        return JsonResponse({'error': 'No new hints available'}, status=400)
+
+    request.session[hint_key] = True
+
+    if hint_field == 'image':
+        value = current_character.image_url
+    elif hint_field == 'show':
+        value = current_character.show.name
+    elif hint_field == 'is_main':
+        value = 'Main' if current_character.is_main else 'Side'
+    elif hint_field == 'release_year':
+        value = str(current_character.release_year)
+    elif hint_field == 'network':
+        value = current_character.network
+    elif hint_field == 'gender':
+        value = current_character.gender
+    elif hint_field == 'still_airing':
+        value = 'Yes' if current_character.still_airing else 'No'
+
+    logger.info(f"Hint response: {json.dumps({'hint': {'field': hint_field, 'value': value}})}")
+    return JsonResponse({'hint': {'field': hint_field, 'value': value}})
 
 def win(request):
     mode = request.GET.get('mode', 'daily')
@@ -245,6 +339,7 @@ def win(request):
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
+        request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
         if new_character:
@@ -266,6 +361,7 @@ def lose(request):
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         request.session['guesses-unlimited'] = []
+        request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
         if new_character:
