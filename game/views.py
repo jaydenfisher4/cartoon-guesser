@@ -10,6 +10,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 import json
+from django.core.files.base import ContentFile
+import base64
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -418,6 +420,18 @@ def get_characters(request, show_id):
     ]
     return JsonResponse({'characters': characters_data})
 
+@login_required
+def set_profile_picture(request):
+    if request.method == 'POST':
+        image_url = request.POST.get('image_url')  # Base64 data from frontend
+        if image_url:
+            preference, created = UserPreference.objects.get_or_create(user=request.user)
+            preference.profile_picture = image_url  # Save base64 string directly
+            preference.save()
+            return JsonResponse({'success': True, 'url': image_url})  # Return base64 for frontend
+        return JsonResponse({'success': False, 'error': 'No image data'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -432,3 +446,6 @@ def register(request):
 
 def about(request):
     return render(request, 'game/about.html')
+
+def recent_changes(request):
+    return render(request, 'game/recent_changes.html')

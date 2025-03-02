@@ -14,4 +14,6 @@ urlpatterns = [
     path('get_characters/<int:show_id>/', views.get_characters, name='get_characters'),
     path('register/', views.register, name='register'),
     path('about/', views.about, name='about'),
+    path('recent-changes/', views.recent_changes, name='recent_changes'),
+     path('set-profile-picture/', views.set_profile_picture, name='set_profile_picture'),
 ]

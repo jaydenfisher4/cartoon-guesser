@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- SEO Metadata -->
+    <meta name="google-site-verification" content="sdv-XVynGmX-gziYGl0dJg3AkBuvm-lqokpzM10T_bU" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C909CPRTVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-C909CPRTVP');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Changes - Cartoon Guessing Game</title>
+    <meta name="description" content="See the latest updates to the Cartoon Guessing Game from March 2025! New features and characters added.">
+    <meta name="keywords" content="cartoon guessing game updates, recent changes, cartoon trivia news">
+    <meta property="og:title" content="Recent Changes - Cartoon Guessing Game">
+    <meta property="og:description" content="Check out the latest updates to the Cartoon Guessing Game from March 2025!">
+    <meta property="og:url" content="http://cartoonguesser.pythonanywhere.com/recent-changes/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/static/favicon.ico">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            height: 100%;
+            overflow-y: scroll;
+            scrollbar-width: thin;
+            scrollbar-color: #00ccff #252525;
+        }
+        html::-webkit-scrollbar { width: 12px; }
+        html::-webkit-scrollbar-track { background: #252525; border-radius: 6px; }
+        html::-webkit-scrollbar-thumb { background: #00ccff; border-radius: 6px; }
+        html::-webkit-scrollbar-thumb:hover { background: #00b3e6; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #e0e0e0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        .raindrop-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+        }
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: rgba(0, 204, 255, 0.5);
+            border-radius: 50% 50% 10% 10%;
+            box-shadow: 0 0 4px rgba(0, 204, 255, 0.2);
+            animation: fallRaindrop 3s linear forwards;
+            pointer-events: none;
+        }
+        @keyframes fallRaindrop {
+            0% { opacity: 0; transform: translateY(-10vh); }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(110vh); }
+        }
+        h1 {
+            color: #00ccff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
+        }
+        p {
+            color: #b0b0b0;
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+        .header-container {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            background: rgba(37, 37, 37, 0.85);
+            transition: box-shadow 0.3s ease;
+        }
+        .header-container:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 10px;
+            position: relative;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #00ccff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            position: relative;
+        }
+        .btn:hover {
+            background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 204, 255, 0.3);
+        }
+        .btn.active {
+            background-color: #00b3e6;
+            cursor: default;
+        }
+        .btn[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .account-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .account-btn {
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: 2px solid #00ccff;
+            border-radius: 50%;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+            position: relative;
+            display: inline-block;
+        }
+        .account-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .account-btn.no-image::before {
+            content: '👤';
+            font-size: 1.5em;
+            color: #00ccff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .account-btn:hover {
+            border-color: #00b3e6;
+            transform: scale(1.1);
+        }
+        .account-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: #2a2a2a;
+            min-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            z-index: 20;
+            overflow: hidden;
+        }
+        .account-dropdown.active {
+            display: block;
+        }
+        .account-dropdown a, .account-dropdown form button {
+            display: block;
+            padding: 12px 20px;
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1em;
+            border-bottom: 1px solid #404040;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .account-dropdown a:hover, .account-dropdown form button:hover {
+            background-color: #333333;
+        }
+        .account-dropdown a:last-child, .account-dropdown form button:last-child {
+            border-bottom: none;
+        }
+        .hamburger {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #00ccff;
+        }
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+        .content-container h2 {
+            color: #00ccff;
+            font-size: 1.8em;
+            margin-top: 20px;
+        }
+        .content-container ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .content-container li {
+            line-height: 1.6;
+            color: #e0e0e0;
+            font-size: 1.1em;
+        }
+        footer {
+            margin-top: 20px;
+            color: #b0b0b0;
+        }
+        footer a {
+            color: #00ccff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #00b3e6;
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: rgba(37, 37, 37, 0.9);
+                padding: 10px 0;
+                border-radius: 0 0 10px 10px;
+            }
+            .navbar.active {
+                display: flex;
+            }
+            .hamburger {
+                display: block;
+                position: absolute;
+                top: 20px;
+                right: 60px;
+            }
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9em;
+                min-width: unset;
+                width: 80%;
+                margin: 5px auto;
+            }
+            .account-btn {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+            }
+            .account-dropdown {
+                top: 50px;
+                right: 15px;
+                min-width: 180px;
+            }
+            .content-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="raindrop-wrapper"></div>
+    <div class="header-container">
+        <h1>Recent Changes</h1>
+        <button class="hamburger" onclick="toggleNav()">☰</button>
+        <div class="navbar">
+            <button class="btn" onmousedown="handleModeClick(event, '/')" title="Guess one new character daily">Daily Mode</button>
+            <button class="btn" onmousedown="handleModeClick(event, '/unlimited/')" title="Guess unlimited characters">Unlimited Mode</button>
+            <button class="btn" onmousedown="handleModeClick(event, '/characters/')" title="View all characters">All Characters</button>
+            <a href="/suggest/"><button class="btn" title="Suggest a new character or show"><span class="icon">✨</span>Suggest</button></a>
+            <div class="account-container">
+                <div class="account-btn {% if not user.is_authenticated or not user.userpreference.profile_picture %}no-image{% endif %}" onclick="toggleAccountDropdown()">
+                    {% if user.is_authenticated and user.userpreference.profile_picture %}
+                        <img src="{{ user.userpreference.profile_picture }}" alt="Profile">
+                    {% endif %}
+                </div>
+                <div class="account-dropdown" id="account-dropdown">
+                    {% if user.is_authenticated %}
+                        <a href="#" onclick="openProfileModal(); toggleAccountDropdown()">Change Profile Picture</a>
+                        <a href="{% url 'exclusions' %}" onclick="toggleAccountDropdown()">Exclusions</a>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" onclick="toggleAccountDropdown()">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" onclick="toggleAccountDropdown()">Login</a>
+                        <a href="{% url 'register' %}" onclick="toggleAccountDropdown()">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+            <button class="btn active" title="You are here">Recent Changes</button>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <h2>Latest Updates</h2>
+        <ul>
+            <li><strong>March 2, 2025:</strong> Added "Recent Changes" page to keep you updated on new features and improvements.</li>
+            <li><strong>March 2, 2025:</strong> Added profile pictures feature allowing users to set custom avatars.</li>
+            <li><strong>March 2, 2025:</strong> Updated suggest page to include feedback option alongside new shows and characters.</li>
+            <li><strong>March 2, 2025:</strong> Improved mobile experience with a hamburger menu and responsive design.</li>
+            <li><strong>March 2, 2025:</strong> Added the following shows: Olivia, Miss Spider's Sunny Patch Friends, Charlie & Lola, Winx Club, The Jetsons, The New Adventures of Winnie the Pooh, Betty Boop, Popeye the Sailor, The Yogi Bear Show, Oswald, Little Bear, Franklin.</li>
+            <li><strong>March 1, 2025:</strong> Swapped site to its current domain: <a href="https://cartoonguesser.pythonanywhere.com/">https://cartoonguesser.pythonanywhere.com/</a>.</li>
+            <li><strong>March 1, 2025:</strong> Added hints feature.</li>
+            <li><strong>March 1, 2025:</strong> Added the following shows: Hey Arnold!, BoJack Horseman, The Ren & Stimpy Show.</li>
+        </ul>
+        <p>Check back here for the latest news on the <strong>Cartoon Guessing Game</strong>!</p>
+    </div>
+
+    <footer>
+        <p>Play the <strong>Cartoon Guessing Game</strong> - Your daily <strong>cartoon trivia</strong> fix! <a href="/">Home</a></p>
+    </footer>
+
+    <script>
+        function createRaindrop() {
+            const raindrop = document.createElement('div');
+            raindrop.className = 'raindrop';
+            const position = Math.random();
+            if (position < 0.5) {
+                raindrop.style.left = `${Math.random() * 20}%`;
+            } else {
+                raindrop.style.left = `${80 + Math.random() * 20}%`;
+            }
+            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
+            document.querySelector('.raindrop-wrapper').appendChild(raindrop);
+            setTimeout(() => raindrop.remove(), 4000);
+        }
+        setInterval(createRaindrop, 150);
+
+        function handleModeClick(event, url) {
+            if (event.button === 1) { window.open(url, '_blank'); }
+            else if (event.button === 0) { window.location.href = url; }
+        }
+
+        function toggleNav() {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('active');
+        }
+
+        function toggleAccountDropdown() {
+            const dropdown = document.getElementById('account-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const accountContainer = document.querySelector('.account-container');
+            const dropdown = document.getElementById('account-dropdown');
+            if (!accountContainer.contains(event.target) && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        function openProfileModal() {
+            // Placeholder function; implement if needed
+            console.log("Profile modal would open here");
+        }
+    </script>
+</body>
+</html>

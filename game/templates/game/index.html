@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <!-- SEO Metadata -->
     <meta name="google-site-verification" content="sdv-XVynGmX-gziYGl0dJg3AkBuvm-lqokpzM10T_bU" />
-
-    <!-- SEO: Google Analytics for tracking -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-C909CPRTVP"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -12,22 +10,13 @@
         gtag('js', new Date());
         gtag('config', 'G-C909CPRTVP');
     </script>
-
-    <!-- Adsense (unchanged) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
-
-    <!-- SEO: Favicon for branding -->
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-
     <meta charset="UTF-8">
-    <!-- SEO: Mobile responsiveness -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO: Optimized title and description -->
     <title>Cartoon Guessing Game - Guess Animated Characters Daily</title>
     <meta name="description" content="Play the Cartoon Guessing Game! Guess cartoon characters from SpongeBob to Adventure Time in daily and unlimited modes. Free, fun, and challenging! Cartoondle">
-    <!-- SEO: Keywords -->
     <meta name="keywords" content="cartoon guessing game, guess cartoon characters, animation quiz, cartoon trivia online, daily cartoon game, cartoondle, cartoon guesser">
-    <!-- SEO: Open Graph for social sharing -->
     <meta property="og:title" content="Cartoon Guessing Game - Guess Animated Characters">
     <meta property="og:description" content="Test your cartoon knowledge daily with this fun guessing game! From classic to modern characters, play now!">
     <meta property="og:url" content="http://cartoonguesser.pythonanywhere.com">
@@ -89,9 +78,7 @@
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-            transition: transform 0.3s ease;
         }
-        h1:hover { transform: scale(1.05); }
         p {
             color: #b0b0b0;
             font-size: 1.2em;
@@ -104,19 +91,20 @@
             margin-bottom: 30px;
             background: rgba(37, 37, 37, 0.85);
             transition: box-shadow 0.3s ease;
+            position: relative;
         }
         .header-container:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); }
         .navbar {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding: 10px;
         }
         .btn {
-            padding: 12px 24px;
-            font-size: 1.1em;
+            padding: 10px 20px;
+            font-size: 1em;
             background-color: #00ccff;
             color: #1a1a1a;
             border: none;
@@ -127,8 +115,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 120px;
-            position: relative; /* For tooltips */
+            min-width: 100px;
+            position: relative;
         }
         .btn:hover {
             background-color: #00b3e6;
@@ -140,11 +128,10 @@
             cursor: not-allowed;
             transform: none;
         }
-        /* Tooltip Styling */
         .btn[title]:hover::after {
             content: attr(title);
             position: absolute;
-            top: -40px;
+            top: -35px;
             left: 50%;
             transform: translateX(-50%);
             background-color: #333;
@@ -155,9 +142,114 @@
             white-space: nowrap;
             z-index: 10;
         }
+        .suggest-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 8px 16px;
+            font-size: 1em;
+            background-color: #00ccff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        .suggest-btn:hover {
+            background-color: #00b3e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 204, 255, 0.3);
+        }
+        .account-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .account-btn {
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: 2px solid #00ccff;
+            border-radius: 50%;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+            position: relative;
+            display: inline-block;
+        }
+        .account-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .account-btn.no-image::before {
+            content: '👤';
+            font-size: 1.5em;
+            color: #00ccff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .account-btn.no-image img {
+            display: none;
+        }
+        .account-btn:hover {
+            border-color: #00b3e6;
+            transform: scale(1.1);
+        }
+        .account-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: #2a2a2a;
+            min-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            z-index: 20;
+            overflow: hidden;
+        }
+        .account-dropdown.active {
+            display: block;
+        }
+        .account-dropdown a, .account-dropdown form button {
+            display: block;
+            padding: 12px 20px;
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1em;
+            border-bottom: 1px solid #404040;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .account-dropdown a:hover, .account-dropdown form button:hover {
+            background-color: #333333;
+        }
+        .account-dropdown a:last-child, .account-dropdown form button:last-child {
+            border-bottom: none;
+        }
+        .hamburger {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #00ccff;
+        }
         .timer-container {
-            margin: 20px auto;
-            padding: 15px;
+            margin: 15px auto;
+            padding: 10px;
             background-color: #2a2a2a;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
@@ -177,12 +269,14 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
         }
         .grid {
             display: grid;
             grid-template-columns: 100px repeat(7, 1fr);
             gap: 8px;
             margin-bottom: 8px;
+            min-width: 800px;
         }
         .cell {
             padding: 12px;
@@ -223,22 +317,22 @@
         .wrong { background-color: #d32f2f; color: white; }
         .partial { background-color: #f9a825; color: white; }
         .input-container {
-            margin: 30px auto;
+            margin: 20px auto;
             max-width: 700px;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             justify-content: center;
             background: #252525;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         #guess-input {
             flex-grow: 1;
             max-width: 350px;
-            padding: 12px;
-            font-size: 1.1em;
+            padding: 10px;
+            font-size: 1em;
             border: 2px solid #404040;
             border-radius: 5px;
             background-color: #333333;
@@ -282,40 +376,205 @@
             margin-right: 10px;
             border-radius: 3px;
             object-fit: contain;
-            image-rendering: -webkit-optimize-contrast;
         }
         .icon { margin-right: 5px; vertical-align: middle; }
         @keyframes revealCell {
             0% { opacity: 0; transform: scale(0.8); }
             100% { opacity: 1; transform: scale(1); }
         }
+        #profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        #character-select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333333;
+            border: 2px solid #404040;
+            color: #e0e0e0;
+            border-radius: 5px;
+        }
+        #character-search {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333333;
+            border: 2px solid #404040;
+            color: #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        #character-search:focus {
+            outline: none;
+            border-color: #00ccff;
+            box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
+        }
+        #crop-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        #character-image {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        #crop-circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #00ccff;
+            border-radius: 50%;
+            cursor: move;
+            background: rgba(0, 204, 255, 0.2);
+        }
+        #profile-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 10px auto;
+            display: block;
+        }
+        .zoom-controls {
+            margin: 10px 0;
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: rgba(37, 37, 37, 0.9);
+                padding: 10px 0;
+                border-radius: 0 0 10px 10px;
+            }
+            .navbar.active {
+                display: flex;
+            }
+            .hamburger {
+                display: block;
+                position: absolute;
+                top: 20px;
+                right: 60px;
+            }
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9em;
+                min-width: unset;
+                width: 80%;
+                margin: 5px auto;
+            }
+            .suggest-btn {
+                top: 15px;
+                left: 15px;
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+            .account-btn {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+            }
+            .account-dropdown {
+                top: 50px;
+                right: 15px;
+                min-width: 180px;
+            }
+            .input-container {
+                padding: 10px;
+                gap: 8px;
+            }
+            #guess-input {
+                max-width: 100%;
+                width: 100%;
+            }
+            .cell {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+            .cell img {
+                max-width: 50px;
+            }
+            .grid-container::-webkit-scrollbar {
+                height: 8px;
+            }
+            .grid-container::-webkit-scrollbar-thumb {
+                background: #00ccff;
+                border-radius: 4px;
+            }
+            .grid-container::-webkit-scrollbar-track {
+                background: #252525;
+            }
+            #crop-container {
+                width: 200px;
+                height: 200px;
+            }
+            #crop-circle {
+                width: 80px;
+                height: 80px;
+            }
+            #profile-preview {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="raindrop-wrapper"></div>
     <div class="header-container">
-        <!-- SEO: H1 with primary keyword -->
         <h1>Cartoon Guessing Game</h1>
+        <a href="{% url 'suggest' %}" class="suggest-btn"><span class="icon">✨</span>Suggest</a>
+        <button class="hamburger" onclick="toggleNav()">☰</button>
         <div class="navbar">
-            <!-- Tooltips added with title attribute -->
             <button class="btn" onmousedown="handleModeClick(event, '/')" title="Guess one new character daily">Daily Mode</button>
             <button class="btn" onmousedown="handleModeClick(event, '/unlimited/')" title="Guess unlimited characters">Unlimited Mode</button>
-            <button class="btn" onmousedown="handleModeClick(event, '/characters/')" title="View all characters in the game">All Characters</button>
-            <a href="{% url 'suggest' %}"><button class="btn" title="Suggest a new character or show"><span class="icon">✨</span>Suggest</button></a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'exclusions' %}"><button class="btn" title="Manage excluded shows/characters">Exclusions</button></a>
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn" title="Log out of your account">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}"><button class="btn" title="Log in to your account">Login</button></a>
-                <a href="{% url 'register' %}"><button class="btn" title="Create a new account">Register</button></a>
-            {% endif %}
-            <!-- SEO: Internal link to About page -->
-            <a href="/about/"><button class="btn" title="Learn more about the game">About</button></a>
+            <button class="btn" onmousedown="handleModeClick(event, '/characters/')" title="View all characters">All Characters</button>
+            <a href="/recent-changes/"><button class="btn" title="See recent updates to the game">Recent Changes</button></a>
         </div>
-        <!-- SEO: Keyword-rich description -->
+        <div class="account-container">
+            <div class="account-btn {% if not user.is_authenticated or not user.userpreference.profile_picture %}no-image{% endif %}" onclick="toggleAccountDropdown()">
+                {% if user.is_authenticated and user.userpreference.profile_picture %}
+                    <img src="{{ user.userpreference.profile_picture }}" alt="Profile">
+                {% endif %}
+            </div>
+            <div class="account-dropdown" id="account-dropdown">
+                {% if user.is_authenticated %}
+                    <a href="#" onclick="openProfileModal(); toggleAccountDropdown()">Change Profile Picture</a>
+                    <a href="{% url 'exclusions' %}" onclick="toggleAccountDropdown()">Exclusions</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" onclick="toggleAccountDropdown()">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" onclick="toggleAccountDropdown()">Login</a>
+                    <a href="{% url 'register' %}" onclick="toggleAccountDropdown()">Register</a>
+                {% endif %}
+            </div>
+        </div>
         <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s in this fun <strong>cartoon guessing game</strong>?{% else %}Guess as many cartoon characters as you can in this exciting <strong>animation quiz</strong>!{% endif %}</p>
         <div class="timer-container">
             <span id="timer">Next Daily Character: --:--:--</span>
@@ -326,10 +585,9 @@
                 <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
                 <div id="autocomplete-list"></div>
             </div>
-            <!-- Tooltips for input buttons -->
-            <button class="btn" id="guess-button" onclick="submitGuess()" title="Submit your character guess">Guess</button>
-            <button class="btn" id="hint-button" onclick="requestHint()" disabled title="After 5 guesses display a category">Hint</button>
-            <button class="btn" onclick="giveUp()" title="End the game and see the answer">Give Up</button>
+            <button class="btn" id="guess-button" onclick="submitGuess()" title="Submit your guess">Guess</button>
+            <button class="btn" id="hint-button" onclick="requestHint()" disabled title="Get a hint after 5 guesses">Hint</button>
+            <button class="btn" onclick="giveUp()" title="See the answer">Give Up</button>
             <button class="btn" onclick="resetGame()" title="Reset guesses">Reset</button>
         </div>
     </div>
@@ -341,8 +599,8 @@
             <div class="cell header"><span class="icon">📺</span>Network</div>
             <div class="cell header"><span class="icon">🎬</span>Show</div>
             <div class="cell header"><span class="icon">⭐</span>Main/Side</div>
-            <div class="cell header"><span class="icon">📅</span>Release Year</div>
-            <div class="cell header"><span class="icon">⏳</span>Still Airing</div>
+            <div class="cell header"><span class="icon">📅</span>Year</div>
+            <div class="cell header"><span class="icon">⏳</span>Airing</div>
             <div class="cell header"><span class="icon">🚻</span>Gender</div>
         </div>
         <div class="grid known-row" id="known-results">
@@ -358,6 +616,30 @@
         <div id="guesses-container"></div>
     </div>
 
+    <div id="profile-modal">
+        <div class="modal-content">
+            <h2>Customize Profile Picture</h2>
+            <input type="text" id="character-search" placeholder="Search characters..." autocomplete="off">
+            <select id="character-select" onchange="loadCharacterImage()">
+                <option value="">Select a character</option>
+                {% for character in all_characters %}
+                    <option value="{{ character.image_url }}">{{ character.name }}</option>
+                {% endfor %}
+            </select>
+            <div id="crop-container">
+                <img id="character-image" src="" alt="Selected Character" crossOrigin="anonymous">
+                <div id="crop-circle"></div>
+            </div>
+            <div class="zoom-controls">
+                <button class="btn" onclick="zoomIn()">Zoom In</button>
+                <button class="btn" onclick="zoomOut()">Zoom Out</button>
+            </div>
+            <img id="profile-preview" src="" alt="Preview">
+            <button class="btn" onclick="saveProfilePicture()">Save</button>
+            <button class="btn" onclick="closeProfileModal()">Cancel</button>
+        </div>
+    </div>
+
     {{ guesses|json_script:"guesses-data"|safe }}
     {{ all_characters|json_script:"all-characters"|safe }}
 
@@ -365,7 +647,6 @@
     <audio id="win-sound" src="{% static 'success.mp3' %}" preload="auto"></audio>
     <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}" preload="auto"></audio>
 
-    <!-- SEO: Footer with keywords and links -->
     <footer style="margin-top: 20px; color: #b0b0b0;">
         <p>Play the <strong>Cartoon Guessing Game</strong> - Guess your favorite animated characters daily! <a href="/about/" style="color: #00ccff;">Learn more</a></p>
     </footer>
@@ -688,6 +969,200 @@
             })
             .catch(error => console.error('Reset error:', error));
         }
+
+        function toggleNav() {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('active');
+        }
+
+        // Account Dropdown Click Toggle
+        function toggleAccountDropdown() {
+            const dropdown = document.getElementById('account-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const accountContainer = document.querySelector('.account-container');
+            const dropdown = document.getElementById('account-dropdown');
+            if (!accountContainer.contains(event.target) && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Profile Picture Modal
+        let cropX = 0, cropY = 0, scale = 1;
+
+        // Dragging setup (run once on page load)
+        const cropper = document.getElementById('crop-circle');
+        let isDragging = false;
+        let startX, startY;
+
+        cropper.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - cropX;
+            startY = e.clientY - cropY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            cropX = Math.max(0, Math.min(200, e.clientX - startX));
+            cropY = Math.max(0, Math.min(200, e.clientY - startY));
+            updateCropper();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        function openProfileModal() {
+            document.getElementById('profile-modal').style.display = 'flex';
+            loadCharacterImage();
+            initCropper();
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function loadCharacterImage() {
+            const select = document.getElementById('character-select');
+            const image = document.getElementById('character-image');
+            const preview = document.getElementById('profile-preview');
+            const selectedUrl = select.value;
+            if (!selectedUrl) {
+                image.src = '';
+                preview.src = '';
+                return;
+            }
+            image.src = selectedUrl;
+            image.onload = () => {
+                cropX = 0;
+                cropY = 0;
+                scale = 1;
+                updateCropper();
+            };
+            image.onerror = () => {
+                alert('Failed to load the image. It may not support cropping due to server restrictions.');
+            };
+        }
+
+        function initCropper() {
+            cropX = 0;
+            cropY = 0;
+            scale = 1;
+            updateCropper();
+        }
+
+        function zoomIn() {
+            scale = Math.min(scale + 0.1, 2);
+            updateCropper();
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale - 0.1, 0.5);
+            updateCropper();
+        }
+
+        function updateCropper() {
+            const image = document.getElementById('character-image');
+            const cropper = document.getElementById('crop-circle');
+            const preview = document.getElementById('profile-preview');
+            cropper.style.left = `${cropX}px`;
+            cropper.style.top = `${cropY}px`;
+            image.style.transform = `scale(${scale})`;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(50, 50, 50, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.clearRect(0, 0, 100, 100);
+
+            const imgRect = image.getBoundingClientRect();
+            const cropRect = cropper.getBoundingClientRect();
+
+            const imgWidth = image.naturalWidth;
+            const imgHeight = image.naturalHeight;
+
+            const relativeX = cropRect.left - imgRect.left;
+            const relativeY = cropRect.top - imgRect.top;
+
+            const sx = (relativeX / imgRect.width) * imgWidth;
+            const sy = (relativeY / imgRect.height) * imgHeight;
+            const sWidth = (100 / imgRect.width) * imgWidth / scale;
+            const sHeight = (100 / imgRect.height) * imgHeight / scale;
+
+            try {
+                ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, 100, 100);
+                preview.src = canvas.toDataURL();
+            } catch (e) {
+                console.error('Canvas tainted error:', e);
+                alert('Cannot crop this image due to security restrictions. Saving the original URL instead.');
+                preview.src = image.src;
+            }
+        }
+
+        async function saveProfilePicture() {
+            const preview = document.getElementById('profile-preview');
+            const imageUrl = preview.src;
+            if (!imageUrl) {
+                alert('Please select and crop an image first.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/set-profile-picture/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: 'image_url=' + encodeURIComponent(imageUrl)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const btn = document.querySelector('.account-btn');
+                    let profileImg = btn.querySelector('img');
+                    if (profileImg) {
+                        profileImg.src = data.url;
+                    } else {
+                        profileImg = document.createElement('img');
+                        profileImg.src = data.url;
+                        profileImg.alt = 'Profile';
+                        btn.innerHTML = '';
+                        btn.appendChild(profileImg);
+                    }
+                    btn.classList.remove('no-image');
+                    closeProfileModal();
+                    toggleAccountDropdown();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to save profile picture.');
+            }
+        }
+
+        const characterSearch = document.getElementById('character-search');
+        const characterSelect = document.getElementById('character-select');
+
+        characterSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            characterSelect.innerHTML = '<option value="">Select a character</option>';
+            const filteredCharacters = allCharacters.filter(char => char.name.toLowerCase().includes(query));
+            filteredCharacters.forEach(char => {
+                const option = document.createElement('option');
+                option.value = char.image_url;
+                option.textContent = char.name;
+                characterSelect.appendChild(option);
+            });
+        });
     </script>
 </body>
 </html>

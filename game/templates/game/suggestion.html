@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520"
-     crossorigin="anonymous"></script>
-     
+    <!-- SEO Metadata -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suggest a Cartoon - Cartoon Guesser</title>
+    <title>Suggest a Character, Show, or Feedback - Cartoon Guessing Game</title>
+    <meta name="description" content="Suggest a new cartoon show, a missing character from an existing show, or share feedback for the Cartoon Guessing Game! Help us improve our animation quiz community.">
+    <meta name="keywords" content="cartoon guessing game suggestion, suggest cartoon character, animation quiz feedback">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         html {
@@ -72,10 +73,6 @@
             font-size: 2em;
             margin-bottom: 20px;
             text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-            transition: transform 0.3s ease;
-        }
-        h2:hover {
-            transform: scale(1.05);
         }
         .suggestion-container {
             max-width: 600px;
@@ -99,7 +96,7 @@
             font-size: 1.1em;
             text-align: left;
         }
-        input, textarea {
+        input, textarea, select {
             padding: 12px;
             font-size: 1.1em;
             border: 2px solid #404040;
@@ -108,7 +105,7 @@
             color: #e0e0e0;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #00ccff;
             box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
@@ -143,39 +140,77 @@
         a:hover {
             color: #00b3e6;
         }
+        .errorlist {
+            color: #d32f2f;
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
     <div class="raindrop-wrapper"></div>
     <div class="suggestion-container">
-        <h2>Suggest a Cartoon</h2>
-        <form method="post">
+        <h2>Suggest a Character, Show, or Feedback</h2>
+        <form method="post" id="suggestion-form">
             {% csrf_token %}
-            <label for="id_name">Cartoon Name:</label>
-            {{ form.name }}
-            <label for="id_description">Description (optional):</label>
+            <label for="id_suggestion_type">Suggestion Type:</label>
+            {{ form.suggestion_type }}
+            {{ form.suggestion_type.errors }}
+            <div id="show-fields">
+                <label for="id_show_name">Show Name:</label>
+                {{ form.show_name }}
+                {{ form.show_name.errors }}
+            </div>
+            <div id="character-fields" style="display: none;">
+                <label for="id_existing_show">Existing Show:</label>
+                {{ form.existing_show }}
+                {{ form.existing_show.errors }}
+                <label for="id_character_name">Character Name:</label>
+                {{ form.character_name }}
+                {{ form.character_name.errors }}
+            </div>
+            <div id="feedback-fields" style="display: none;">
+                <label for="id_feedback">Feedback:</label>
+                {{ form.feedback }}
+                {{ form.feedback.errors }}
+            </div>
+            <label for="id_description">Additional Details (optional):</label>
             {{ form.description }}
+            {{ form.description.errors }}
             <button type="submit"><span class="icon">✨</span>Submit Suggestion</button>
         </form>
         <a href="{% url 'index' %}">Back to Game</a>
     </div>
 
     <script>
-        // Raindrop animation setup
         function createRaindrop() {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
             const position = Math.random();
             if (position < 0.5) {
-                raindrop.style.left = `${Math.random() * 20}%`; // Left margin
+                raindrop.style.left = `${Math.random() * 20}%`;
             } else {
-                raindrop.style.left = `${80 + Math.random() * 20}%`; // Right margin
+                raindrop.style.left = `${80 + Math.random() * 20}%`;
             }
             raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
             document.querySelector('.raindrop-wrapper').appendChild(raindrop);
             setTimeout(() => raindrop.remove(), 4000);
         }
         setInterval(createRaindrop, 150);
+
+        function toggleFields() {
+            const type = document.getElementById('id_suggestion_type').value;
+            const showFields = document.getElementById('show-fields');
+            const characterFields = document.getElementById('character-fields');
+            const feedbackFields = document.getElementById('feedback-fields');
+            showFields.style.display = type === 'show' ? 'block' : 'none';
+            characterFields.style.display = type === 'character' ? 'block' : 'none';
+            feedbackFields.style.display = type === 'feedback' ? 'block' : 'none';
+        }
+
+        // Initialize field visibility on page load
+        toggleFields();
     </script>
 </body>
 </html>

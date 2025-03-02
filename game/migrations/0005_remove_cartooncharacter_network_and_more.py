@@ -16,7 +16,7 @@ def migrate_show_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0001_initial'),  # Adjust to your previous migration
+        ('game', '0004_alter_cartooncharacter_name_alter_show_name'), 
     ]
 
     operations = [
