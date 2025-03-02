@@ -513,8 +513,8 @@
                 console.log("Applying hint:", data.hint.field, data.hint.value);
                 knownValues[data.hint.field] = data.hint.value;
             } else {
-                // Update knownValues based on exact matches from the guess
-                if (data.network) knownValues.network = data.network_value;  // Any network match
+                // Update only for exact matches
+                if (data.network && !data.network_partial) knownValues.network = data.network_value;  // Exact match only
                 if (data.show) knownValues.show = data.show_value;
                 if (data.main_correct) knownValues.is_main = data.is_main ? 'Main' : 'Side';
                 if (data.release_year) knownValues.release_year = data.year_value;
@@ -541,6 +541,32 @@
                 release_year: knownValues.release_year !== '?' ? 'correct' : '',
                 still_airing: knownValues.still_airing !== '?' ? 'correct' : '',
                 gender: knownValues.gender !== '?' ? 'correct' : ''
+            });
+
+            // Insert new guess row
+            const row = document.createElement('div');
+            row.className = 'grid';
+            let yearIndicator = '';
+            if (!data.release_year) {
+                yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
+            }
+            row.innerHTML = `
+                <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
+                <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
+                <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network_value}</div>
+                <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show_value}</div>
+                <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
+                <div class="cell ${data.release_year ? 'correct' : (data.year_within_3 ? 'partial' : 'wrong')}"><span class="icon">📅</span>${data.year_value}${yearIndicator}</div>
+                <div class="cell ${data.airing_correct ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
+                <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender_value}</div>
+            `;
+            guessesContainer.insertBefore(row, guessesContainer.firstChild);
+
+            const cells = row.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.classList.add('reveal');
+                }, index * 200);
             });
         }
 

@@ -208,8 +208,8 @@ def guess(request):
         guessed_char = CartoonCharacter.objects.get(name__iexact=guess_name)
         guess_networks = set(guessed_char.network.split(', '))
         target_networks = set(current_character.network.split(', '))
-        # Check if any network matches (partial match)
-        network_match = bool(guess_networks & target_networks)
+        network_exact = (guess_networks == target_networks)  # True only for exact match
+        network_partial = bool(guess_networks & target_networks) and not network_exact  # True for partial match
         main_match = guessed_char.is_main == current_character.is_main
         airing_match = guessed_char.still_airing == current_character.still_airing
         year_match = guessed_char.release_year == current_character.release_year
@@ -219,9 +219,9 @@ def guess(request):
 
         result = {
             'name': guessed_char.name,
-            'network': network_match,  # True if any network matches
+            'network': network_exact,  
             'network_value': guessed_char.network,
-            'network_partial': network_match and not (guess_networks == target_networks),
+            'network_partial': network_partial, 
             'show': show_match,
             'show_value': guessed_char.show.name if guessed_char.show else None,
             'is_main': guessed_char.is_main,

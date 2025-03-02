@@ -4,7 +4,7 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fake-key-for-demo')
-DEBUG = False
+DEBUG = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 ALLOWED_HOSTS = ['cartoonguesser.pythonanywhere.com', 'localhost', '127.0.0.1']
