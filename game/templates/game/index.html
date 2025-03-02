@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520"
-     crossorigin="anonymous"></script>
-     
-     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+
+    <meta name="google-site-verification" content="sdv-XVynGmX-gziYGl0dJg3AkBuvm-lqokpzM10T_bU" />
+
+    <!-- SEO: Google Analytics for tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C909CPRTVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-C909CPRTVP');
+    </script>
+
+    <!-- Adsense (unchanged) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
+
+    <!-- SEO: Favicon for branding -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 
     <meta charset="UTF-8">
+    <!-- SEO: Mobile responsiveness -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartoon Guesser</title>
+    <!-- SEO: Optimized title and description -->
+    <title>Cartoon Guessing Game - Guess Animated Characters Daily</title>
+    <meta name="description" content="Play the Cartoon Guessing Game! Guess cartoon characters from SpongeBob to Adventure Time in daily and unlimited modes. Free, fun, and challenging! Cartoondle">
+    <!-- SEO: Keywords -->
+    <meta name="keywords" content="cartoon guessing game, guess cartoon characters, animation quiz, cartoon trivia online, daily cartoon game, cartoondle, cartoon guesser">
+    <!-- SEO: Open Graph for social sharing -->
+    <meta property="og:title" content="Cartoon Guessing Game - Guess Animated Characters">
+    <meta property="og:description" content="Test your cartoon knowledge daily with this fun guessing game! From classic to modern characters, play now!">
+    <meta property="og:url" content="http://cartoonguesser.pythonanywhere.com">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/static/favicon.ico">
+
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Existing styles unchanged until relevant sections */
         html {
             background: linear-gradient(135deg, #2a2a2a, #1f2a44);
             background-attachment: fixed;
@@ -21,20 +45,10 @@
             scrollbar-width: thin;
             scrollbar-color: #00ccff #252525;
         }
-        html::-webkit-scrollbar {
-            width: 12px;
-        }
-        html::-webkit-scrollbar-track {
-            background: #252525;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: #00ccff;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb:hover {
-            background: #00b3e6;
-        }
+        html::-webkit-scrollbar { width: 12px; }
+        html::-webkit-scrollbar-track { background: #252525; border-radius: 6px; }
+        html::-webkit-scrollbar-thumb { background: #00ccff; border-radius: 6px; }
+        html::-webkit-scrollbar-thumb:hover { background: #00b3e6; }
         body {
             font-family: 'Roboto', sans-serif;
             color: #e0e0e0;
@@ -77,9 +91,7 @@
             text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
             transition: transform 0.3s ease;
         }
-        h1:hover {
-            transform: scale(1.05);
-        }
+        h1:hover { transform: scale(1.05); }
         p {
             color: #b0b0b0;
             font-size: 1.2em;
@@ -93,9 +105,7 @@
             background: rgba(37, 37, 37, 0.85);
             transition: box-shadow 0.3s ease;
         }
-        .header-container:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-        }
+        .header-container:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); }
         .navbar {
             display: flex;
             justify-content: center;
@@ -118,6 +128,7 @@
             align-items: center;
             justify-content: center;
             min-width: 120px;
+            position: relative; /* For tooltips */
         }
         .btn:hover {
             background-color: #00b3e6;
@@ -128,6 +139,21 @@
             background-color: #666;
             cursor: not-allowed;
             transform: none;
+        }
+        /* Tooltip Styling */
+        .btn[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            z-index: 10;
         }
         .timer-container {
             margin: 20px auto;
@@ -168,9 +194,7 @@
             word-wrap: break-word;
             opacity: 0;
         }
-        .cell.reveal {
-            animation: revealCell 0.6s ease forwards;
-        }
+        .cell.reveal { animation: revealCell 0.6s ease forwards; }
         .cell img {
             max-width: 80px;
             height: auto;
@@ -187,26 +211,17 @@
             opacity: 1;
         }
         .known-row .cell.correct {
-        background-color: #2e7d32 !important;
-        color: white !important;
-    }
+            background-color: #2e7d32 !important;
+            color: white !important;
+        }
         .known-row .cell {
             background-color: #1f2a44;
             font-weight: bold;
             opacity: 1;
         }
-        .correct {
-            background-color: #2e7d32;
-            color: white;
-        }
-        .wrong {
-            background-color: #d32f2f;
-            color: white;
-        }
-        .partial {
-            background-color: #f9a825;
-            color: white;
-        }
+        .correct { background-color: #2e7d32; color: white; }
+        .wrong { background-color: #d32f2f; color: white; }
+        .partial { background-color: #f9a825; color: white; }
         .input-container {
             margin: 30px auto;
             max-width: 700px;
@@ -263,16 +278,13 @@
         }
         .autocomplete-item img {
             width: 20px;
-            height: auto; 
+            height: auto;
             margin-right: 10px;
             border-radius: 3px;
             object-fit: contain;
-            image-rendering: -webkit-optimize-contrast; 
+            image-rendering: -webkit-optimize-contrast;
         }
-        .icon {
-            margin-right: 5px;
-            vertical-align: middle;
-        }
+        .icon { margin-right: 5px; vertical-align: middle; }
         @keyframes revealCell {
             0% { opacity: 0; transform: scale(0.8); }
             100% { opacity: 1; transform: scale(1); }
@@ -282,24 +294,29 @@
 <body>
     <div class="raindrop-wrapper"></div>
     <div class="header-container">
-        <h1>Cartoon Guesser</h1>
+        <!-- SEO: H1 with primary keyword -->
+        <h1>Cartoon Guessing Game</h1>
         <div class="navbar">
-            <button class="btn" onmousedown="handleModeClick(event, '/')">Daily Mode</button>
-            <button class="btn" onmousedown="handleModeClick(event, '/unlimited/')">Unlimited Mode</button>
-            <button class="btn" onmousedown="handleModeClick(event, '/characters/')">All Characters</button>
-            <a href="{% url 'suggest' %}"><button class="btn"><span class="icon">✨</span>Suggest</button></a>
+            <!-- Tooltips added with title attribute -->
+            <button class="btn" onmousedown="handleModeClick(event, '/')" title="Guess one new character daily">Daily Mode</button>
+            <button class="btn" onmousedown="handleModeClick(event, '/unlimited/')" title="Guess unlimited characters">Unlimited Mode</button>
+            <button class="btn" onmousedown="handleModeClick(event, '/characters/')" title="View all characters in the game">All Characters</button>
+            <a href="{% url 'suggest' %}"><button class="btn" title="Suggest a new character or show"><span class="icon">✨</span>Suggest</button></a>
             {% if user.is_authenticated %}
-                <a href="{% url 'exclusions' %}"><button class="btn">Exclusions</button></a>
+                <a href="{% url 'exclusions' %}"><button class="btn" title="Manage excluded shows/characters">Exclusions</button></a>
                 <form method="post" action="{% url 'logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn">Logout</button>
+                    <button type="submit" class="btn" title="Log out of your account">Logout</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}"><button class="btn">Login</button></a>
-                <a href="{% url 'register' %}"><button class="btn">Register</button></a>
+                <a href="{% url 'login' %}"><button class="btn" title="Log in to your account">Login</button></a>
+                <a href="{% url 'register' %}"><button class="btn" title="Create a new account">Register</button></a>
             {% endif %}
+            <!-- SEO: Internal link to About page -->
+            <a href="/about/"><button class="btn" title="Learn more about the game">About</button></a>
         </div>
-        <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s?{% else %}Guess as many characters as you can!{% endif %}</p>
+        <!-- SEO: Keyword-rich description -->
+        <p>{% if mode == 'daily' %}A new character every day. Can you guess today’s in this fun <strong>cartoon guessing game</strong>?{% else %}Guess as many cartoon characters as you can in this exciting <strong>animation quiz</strong>!{% endif %}</p>
         <div class="timer-container">
             <span id="timer">Next Daily Character: --:--:--</span>
         </div>
@@ -309,10 +326,11 @@
                 <input type="text" id="guess-input" placeholder="Enter character name" autocomplete="off">
                 <div id="autocomplete-list"></div>
             </div>
-            <button class="btn" id="guess-button" onclick="submitGuess()">Guess</button>
-            <button class="btn" id="hint-button" onclick="requestHint()" disabled>Hint</button>
-            <button class="btn" onclick="giveUp()">Give Up</button>
-            <button class="btn" onclick="resetGame()">Reset</button>
+            <!-- Tooltips for input buttons -->
+            <button class="btn" id="guess-button" onclick="submitGuess()" title="Submit your character guess">Guess</button>
+            <button class="btn" id="hint-button" onclick="requestHint()" disabled title="After 5 guesses display a category">Hint</button>
+            <button class="btn" onclick="giveUp()" title="End the game and see the answer">Give Up</button>
+            <button class="btn" onclick="resetGame()" title="Reset guesses">Reset</button>
         </div>
     </div>
     
@@ -347,6 +365,11 @@
     <audio id="win-sound" src="{% static 'success.mp3' %}" preload="auto"></audio>
     <audio id="lose-sound" src="{% static 'sad-trombone.mp3' %}" preload="auto"></audio>
 
+    <!-- SEO: Footer with keywords and links -->
+    <footer style="margin-top: 20px; color: #b0b0b0;">
+        <p>Play the <strong>Cartoon Guessing Game</strong> - Guess your favorite animated characters daily! <a href="/about/" style="color: #00ccff;">Learn more</a></p>
+    </footer>
+
     <script>
         let guesses, allCharacters;
         const mode = "{{ mode }}";
@@ -379,7 +402,6 @@
         guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
         updateHintButton();
 
-        // Raindrop animation setup
         function createRaindrop() {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
@@ -401,22 +423,17 @@
             tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
             tomorrow.setUTCHours(0, 0, 0, 0);
             const timeLeft = tomorrow - now;
-
             const hours = Math.floor(timeLeft / (1000 * 60 * 60));
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
             timerDisplay.textContent = `${mode === 'daily' ? 'Next Daily Character' : 'Time Remaining'}: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
         setInterval(updateTimer, 1000);
         updateTimer();
 
         function handleModeClick(event, url) {
-            if (event.button === 1) { // Middle mouse button
-                window.open(url, '_blank');
-            } else if (event.button === 0) { // Left click
-                window.location.href = url;
-            }
+            if (event.button === 1) { window.open(url, '_blank'); }
+            else if (event.button === 0) { window.location.href = url; }
         }
 
         input.addEventListener('input', function() {
@@ -427,7 +444,6 @@
                 autocompleteList.style.display = 'none';
                 return;
             }
-
             const matches = allCharacters.filter(item => item.name.toLowerCase().includes(value));
             if (matches.length > 0) {
                 matches.forEach((match, index) => {
@@ -451,7 +467,6 @@
         input.addEventListener('keydown', function(e) {
             const items = autocompleteList.querySelectorAll('.autocomplete-item');
             if (items.length === 0) return;
-
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
@@ -513,8 +528,7 @@
                 console.log("Applying hint:", data.hint.field, data.hint.value);
                 knownValues[data.hint.field] = data.hint.value;
             } else {
-                // Update only for exact matches
-                if (data.network && !data.network_partial) knownValues.network = data.network_value;  // Exact match only
+                if (data.network && !data.network_partial) knownValues.network = data.network_value;
                 if (data.show) knownValues.show = data.show_value;
                 if (data.main_correct) knownValues.is_main = data.is_main ? 'Main' : 'Side';
                 if (data.release_year) knownValues.release_year = data.year_value;
@@ -543,7 +557,6 @@
                 gender: knownValues.gender !== '?' ? 'correct' : ''
             });
 
-            // Insert new guess row
             const row = document.createElement('div');
             row.className = 'grid';
             let yearIndicator = '';
@@ -600,34 +613,10 @@
                     alert(data.error);
                     return;
                 }
-                const row = document.createElement('div');
-                row.className = 'grid';
-                let yearIndicator = '';
-                if (!data.release_year) {
-                    yearIndicator = data.year_value < data.daily_year ? ' ↑' : ' ↓';
-                }
-                row.innerHTML = `
-                    <div class="cell"><img src="${data.image_url || 'https://via.placeholder.com/80'}" alt="${data.name}"></div>
-                    <div class="cell ${data.correct ? 'correct' : 'wrong'}"><span class="icon">👤</span>${data.name}</div>
-                    <div class="cell ${data.network ? 'correct' : (data.network_partial ? 'partial' : 'wrong')}"><span class="icon">📺</span>${data.network_value}</div>
-                    <div class="cell ${data.show ? 'correct' : 'wrong'}"><span class="icon">🎬</span>${data.show_value}</div>
-                    <div class="cell ${data.main_correct ? 'correct' : 'wrong'}"><span class="icon">⭐</span>${data.is_main ? 'Main' : 'Side'}</div>
-                    <div class="cell ${data.release_year ? 'correct' : (data.year_within_3 ? 'partial' : 'wrong')}"><span class="icon">📅</span>${data.year_value}${yearIndicator}</div>
-                    <div class="cell ${data.airing_correct ? 'correct' : 'wrong'}"><span class="icon">⏳</span>${data.still_airing ? 'Yes' : 'No'}</div>
-                    <div class="cell ${data.gender ? 'correct' : 'wrong'}"><span class="icon">🚻</span>${data.gender_value}</div>
-                `;
-                guessesContainer.insertBefore(row, guessesContainer.firstChild);
                 guessCount = data.guess_count;
                 guessCounter.textContent = `Guesses: ${guessCount}${mode === 'daily' ? '/15' : ''}`;
                 updateKnownResults(data);
                 updateHintButton();
-
-                const cells = row.querySelectorAll('.cell');
-                cells.forEach((cell, index) => {
-                    setTimeout(() => {
-                        cell.classList.add('reveal');
-                    }, index * 200);
-                });
 
                 if (data.correct) {
                     setTimeout(() => {
@@ -638,9 +627,8 @@
                         guessCount = 0;
                         hintUsed = false;
                         guessCounter.textContent = 'Guesses: 0';
-                        let knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
+                        knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
                         updateKnownResults({});
-                        updateHintButton();
                     }
                 } else if (mode === 'daily' && guessCount >= 15) {
                     setTimeout(() => {

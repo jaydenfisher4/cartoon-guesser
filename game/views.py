@@ -429,3 +429,6 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def about(request):
+    return render(request, 'game/about.html')
