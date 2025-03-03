@@ -10,8 +10,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 import json
-from django.core.files.base import ContentFile
-import base64
+from django.views.decorators.csrf import csrf_exempt
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -454,3 +453,25 @@ def about(request):
 
 def recent_changes(request):
     return render(request, 'game/recent_changes.html')
+
+@csrf_exempt
+def report_image_restriction(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+    
+    name = request.POST.get('name')
+    restricted = request.POST.get('restricted') == 'true'
+    
+    try:
+        character = CartoonCharacter.objects.get(name=name)
+        if character.image_restricted != restricted:
+            character.image_restricted = restricted
+            character.save()
+            logger.info(f"Updated {name} image_restricted to {restricted}")
+        return JsonResponse({'success': True})
+    except CartoonCharacter.DoesNotExist:
+        logger.error(f"Character {name} not found")
+        return JsonResponse({'success': False, 'error': 'Character not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error updating {name}: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

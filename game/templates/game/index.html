@@ -1174,6 +1174,81 @@
                 alert('Failed to save profile picture.');
             });
         }
+
+        function testImageRestrictions() {
+            const characters = allCharacters.filter(char => char.image_url);
+            console.log("Testing image restrictions for", characters.length, "characters");
+
+            characters.forEach((char, index) => {
+                setTimeout(() => {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.src = char.image_url;
+
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 1;
+                        canvas.height = 1;
+                        const ctx = canvas.getContext('2d');
+                        try {
+                            ctx.drawImage(img, 0, 0, 1, 1);
+                            console.log(`${char.name}: Image OK`);
+                            reportImageStatus(char.name, false);
+                        } catch (e) {
+                            console.warn(`${char.name}: Restricted (${e.message})`);
+                            reportImageStatus(char.name, true);
+                        }
+                    };
+
+                    img.onerror = () => {
+                        console.warn(`${char.name}: Failed to load`);
+                        reportImageStatus(char.name, true);
+                    };
+                }, index * 100);
+            });
+        }
+
+        function reportImageStatus(name, restricted) {
+            fetch('/report-image-restriction/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `name=${encodeURIComponent(name)}&restricted=${restricted}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`${name} restriction updated: ${restricted}`);
+                } else {
+                    console.error(`Failed to update ${name}: ${data.error}`);
+                }
+            })
+            .catch(error => console.error(`Error reporting ${name}:`, error));
+        }
+
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('test_images') === 'true') {
+                console.log("Running image restriction test...");
+                testImageRestrictions();
+            }
+        });
+
+        characterSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            characterSelect.innerHTML = '<option value="">Select a character</option>';
+            const filteredCharacters = allCharacters.filter(char => char.name.toLowerCase().includes(query));
+            filteredCharacters.forEach(char => {
+                const option = document.createElement('option');
+                option.value = char.image_url;
+                option.textContent = char.name;
+                characterSelect.appendChild(option);
+            });
+        });
+
+
     </script>
 </body>
 </html>

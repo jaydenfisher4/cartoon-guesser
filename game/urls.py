@@ -15,5 +15,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('about/', views.about, name='about'),
     path('recent-changes/', views.recent_changes, name='recent_changes'),
-     path('set-profile-picture/', views.set_profile_picture, name='set_profile_picture'),
+    path('set-profile-picture/', views.set_profile_picture, name='set_profile_picture'),
+    path('report-image-restriction/', views.report_image_restriction, name='report_image_restriction')
 ]
