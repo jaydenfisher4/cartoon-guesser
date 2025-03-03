@@ -1,4 +1,6 @@
+# game/admin.py
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
 from .models import Show, CartoonCharacter, CartoonSuggestion, UserPreference
 
 class ShowAdmin(admin.ModelAdmin):
@@ -6,14 +8,30 @@ class ShowAdmin(admin.ModelAdmin):
     search_fields = ('name', 'network')
     list_filter = ('still_airing',)  # Filter shows by still_airing
 
+class ImageRestrictedFilter(SimpleListFilter):
+    title = 'Image Status'
+    parameter_name = 'image_restricted'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('restricted', 'Restricted Only'),
+            ('unrestricted', 'Unrestricted Only'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'restricted':
+            return queryset.filter(image_restricted=True)
+        if self.value() == 'unrestricted':
+            return queryset.filter(image_restricted=False)
+        return queryset
+
+
 class CartoonCharacterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'show', 'get_network', 'get_release_year', 'get_still_airing', 'gender', 'is_main')
-    list_filter = ('show', 'is_main', 'show__still_airing', 'show__release_year')
+    list_display = ('name', 'show', 'get_network', 'get_release_year', 'get_still_airing', 'gender', 'is_main', 'image_restricted')
+    list_filter = ('show', 'is_main', 'show__still_airing', 'show__release_year', ImageRestrictedFilter)
     search_fields = ('name', 'show__name', 'show__network')
-    fields = ('name', 'show', 'gender', 'image_url', 'is_main')  # Fields for editing
+    fields = ('name', 'show', 'gender', 'image_url', 'is_main', 'image_restricted')  # Fields for editing
     raw_id_fields = ('show',)  # Keep raw_id_fields for adding shows via popup
-    # Optional: Use autocomplete_fields instead of raw_id_fields
-    # autocomplete_fields = ('show',)
 
     # Custom methods to display Show fields in list_display
     def get_network(self, obj):

@@ -91,6 +91,8 @@ def index(request):
         show__in=excluded_shows
     ).exclude(
         id__in=excluded_chars
+    ).exclude(
+        image_restricted=True
     )
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     guesses = request.session.get('guesses-daily', [])
@@ -123,7 +125,10 @@ def unlimited(request):
         show__in=excluded_shows
     ).exclude(
         id__in=excluded_chars
+    ).exclude(
+        image_restricted=True
     )
+    
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     request.session['last_mode'] = 'unlimited'
     request.session.setdefault('hint_used-unlimited', False)

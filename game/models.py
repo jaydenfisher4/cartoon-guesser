@@ -17,6 +17,10 @@ class CartoonCharacter(models.Model):
     is_main = models.BooleanField(default=True)
     gender = models.CharField(max_length=20)
     image_url = models.URLField(max_length=999, blank=True, null=True)
+    image_restricted = models.BooleanField(
+        default=False,
+        help_text="Check if the image cannot be loaded due to server restrictions."
+    )
 
     def __str__(self):
         return self.name

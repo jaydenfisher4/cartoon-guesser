@@ -619,13 +619,10 @@
     <div id="profile-modal">
         <div class="modal-content">
             <h2>Customize Profile Picture</h2>
-            <input type="text" id="character-search" placeholder="Search characters..." autocomplete="off">
-            <select id="character-select" onchange="loadCharacterImage()">
-                <option value="">Select a character</option>
-                {% for character in all_characters %}
-                    <option value="{{ character.image_url }}">{{ character.name }}</option>
-                {% endfor %}
-            </select>
+            <div style="position: relative;">
+                <input type="text" id="character-search" placeholder="Search characters..." autocomplete="off">
+                <div id="character-list" style="position: absolute; top: 100%; left: 0; width: 100%; background: #252525; border: 1px solid #404040; border-radius: 5px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+            </div>
             <div id="crop-container">
                 <img id="character-image" src="" alt="Selected Character" crossOrigin="anonymous">
                 <div id="crop-circle"></div>
@@ -992,8 +989,9 @@
 
         // Profile Picture Modal
         let cropX = 0, cropY = 0, scale = 1;
+        let selectedCharacter = null;
 
-        // Dragging setup (run once on page load)
+        // Dragging setup
         const cropper = document.getElementById('crop-circle');
         let isDragging = false;
         let startX, startY;
@@ -1017,7 +1015,11 @@
 
         function openProfileModal() {
             document.getElementById('profile-modal').style.display = 'flex';
-            loadCharacterImage();
+            document.getElementById('character-search').value = '';
+            document.getElementById('character-list').style.display = 'none';
+            selectedCharacter = null;
+            document.getElementById('character-image').src = '';
+            document.getElementById('profile-preview').src = '';
             initCropper();
         }
 
@@ -1025,25 +1027,50 @@
             document.getElementById('profile-modal').style.display = 'none';
         }
 
-        function loadCharacterImage() {
-            const select = document.getElementById('character-select');
-            const image = document.getElementById('character-image');
-            const preview = document.getElementById('profile-preview');
-            const selectedUrl = select.value;
-            if (!selectedUrl) {
-                image.src = '';
-                preview.src = '';
+        const characterSearch = document.getElementById('character-search');
+        const characterList = document.getElementById('character-list');
+
+        characterSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            characterList.innerHTML = '';
+            if (!query) {
+                characterList.style.display = 'none';
                 return;
             }
-            image.src = selectedUrl;
+            const filteredCharacters = allCharacters.filter(char => char.name.toLowerCase().includes(query));
+            if (filteredCharacters.length > 0) {
+                filteredCharacters.forEach(char => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `<img src="${char.image_url || 'https://via.placeholder.com/20'}" alt="${char.name}"> ${char.name}`;
+                    item.addEventListener('click', () => {
+                        selectedCharacter = char;
+                        characterSearch.value = char.name;
+                        loadCharacterImage(char.image_url);
+                        characterList.style.display = 'none';
+                    });
+                    characterList.appendChild(item);
+                });
+                characterList.style.display = 'block';
+            } else {
+                characterList.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!characterSearch.contains(e.target) && !characterList.contains(e.target)) {
+                characterList.style.display = 'none';
+            }
+        });
+
+        function loadCharacterImage(imageUrl) {
+            const image = document.getElementById('character-image');
+            image.src = imageUrl;
             image.onload = () => {
                 cropX = 0;
                 cropY = 0;
                 scale = 1;
                 updateCropper();
-            };
-            image.onerror = () => {
-                alert('Failed to load the image. It may not support cropping due to server restrictions.');
             };
         }
 
@@ -1068,6 +1095,7 @@
             const image = document.getElementById('character-image');
             const cropper = document.getElementById('crop-circle');
             const preview = document.getElementById('profile-preview');
+            if (!image.src) return;
             cropper.style.left = `${cropX}px`;
             cropper.style.top = `${cropY}px`;
             image.style.transform = `scale(${scale})`;
@@ -1101,30 +1129,27 @@
                 preview.src = canvas.toDataURL();
             } catch (e) {
                 console.error('Canvas tainted error:', e);
-                alert('Cannot crop this image due to security restrictions. Saving the original URL instead.');
-                preview.src = image.src;
+                preview.src = image.src; // Fallback to original URL
             }
         }
 
-        async function saveProfilePicture() {
-            const preview = document.getElementById('profile-preview');
-            const imageUrl = preview.src;
-            if (!imageUrl) {
-                alert('Please select and crop an image first.');
+        function saveProfilePicture() {
+            if (!selectedCharacter) {
+                alert('Please select a character first.');
                 return;
             }
-
-            try {
-                const response = await fetch('/set-profile-picture/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: 'image_url=' + encodeURIComponent(imageUrl)
-                });
-                const data = await response.json();
-
+            const preview = document.getElementById('profile-preview');
+            const imageUrl = preview.src;
+            fetch('/set-profile-picture/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'image_url=' + encodeURIComponent(imageUrl)
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
                     const btn = document.querySelector('.account-btn');
                     let profileImg = btn.querySelector('img');
@@ -1143,26 +1168,12 @@
                 } else {
                     alert('Error: ' + (data.error || 'Unknown error'));
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to save profile picture.');
-            }
-        }
-
-        const characterSearch = document.getElementById('character-search');
-        const characterSelect = document.getElementById('character-select');
-
-        characterSearch.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            characterSelect.innerHTML = '<option value="">Select a character</option>';
-            const filteredCharacters = allCharacters.filter(char => char.name.toLowerCase().includes(query));
-            filteredCharacters.forEach(char => {
-                const option = document.createElement('option');
-                option.value = char.image_url;
-                option.textContent = char.name;
-                characterSelect.appendChild(option);
             });
-        });
+        }
     </script>
 </body>
 </html>
