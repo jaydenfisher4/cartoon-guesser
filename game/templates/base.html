@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- SEO Metadata -->
+    <meta name="google-site-verification" content="sdv-XVynGmX-gziYGl0dJg3AkBuvm-lqokpzM10T_bU" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C909CPRTVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-C909CPRTVP');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block meta %}{% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="raindrop-wrapper"></div>
+    <div class="header-container">
+        <button class="btn suggest-btn {% if request.path == '/suggest/' %}active{% endif %}" onmousedown="handleModeClick(event, '/suggest/')" title="Suggest a new character or show">Suggestions</button>
+        <h1>
+            {% block title %}
+                Cartoon Guessing Game
+                {% if request.path == '/' %}<span class="mode-indicator">(Daily)</span>{% endif %}
+                {% if request.path == '/unlimited/' %}<span class="mode-indicator">(Unlimited)</span>{% endif %}
+            {% endblock %}
+        </h1>
+        <div class="timer-container">
+            <span id="timer">Next Daily Character: --:--:--</span>
+        </div>
+        <button class="hamburger" onclick="toggleNav()">☰</button>
+        <nav class="navbar">
+            <button class="btn {% if request.path == '/' %}active{% endif %}" onmousedown="handleModeClick(event, '/')" title="Guess one new character daily">Daily Mode</button>
+            <button class="btn {% if request.path == '/unlimited/' %}active{% endif %}" onmousedown="handleModeClick(event, '/unlimited/')" title="Guess unlimited characters">Unlimited Mode</button>
+            <button class="btn {% if request.path == '/characters/' %}active{% endif %}" onmousedown="handleModeClick(event, '/characters/')" title="View all characters">All Characters</button>
+            <button class="btn {% if request.path == '/recent-changes/' %}active{% endif %}" onmousedown="handleModeClick(event, '/recent-changes/')" title="See recent updates">Recent Changes</button>
+            <button class="btn {% if request.path == '/about/' %}active{% endif %}" onmousedown="handleModeClick(event, '/about/')" title="Learn about the game">About</button>
+        </nav>
+        <div class="account-container">
+            <div class="account-btn {% if not user.is_authenticated or not user.userpreference.profile_picture %}no-image{% endif %}" onclick="toggleAccountDropdown()">
+                {% if user.is_authenticated and user.userpreference.profile_picture %}
+                    <img src="{{ user.userpreference.profile_picture }}" alt="Profile">
+                {% endif %}
+            </div>
+            <div class="account-dropdown" id="account-dropdown">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" onclick="toggleAccountDropdown()">Profile</a>
+                    <a href="{% url 'search_users' %}" onclick="toggleAccountDropdown()">Search Users</a>
+                    <a href="{% url 'exclusions' %}" onclick="toggleAccountDropdown()">Exclusions</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" onclick="toggleAccountDropdown()">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" onclick="toggleAccountDropdown()">Login</a>
+                    <a href="{% url 'register' %}" onclick="toggleAccountDropdown()">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>Play the <strong>Cartoon Guessing Game</strong> - Your daily <strong>cartoon trivia</strong> fix! <a href="{% url 'index' %}">Home</a></p>
+    </footer>
+
+    {{ all_characters|json_script:"all-characters"|safe }}
+    <script src="{% static 'scripts.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>Search Users - Cartoon Guesser</title>
+{% endblock %}
+
+{% block title %}Search Users{% endblock %}
+
+{% block content %}
+    <div class="search-container">
+        <h2>Search Users</h2>
+        <form method="get" action="{% url 'search_users' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by username..." class="search-input">
+            <button type="submit" class="btn">Search</button>
+        </form>
+        {% if users %}
+            <ul class="user-list">
+                {% for user in users %}
+                    <li>
+                        <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No users found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .search-container { max-width: 600px; margin: 20px auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); text-align: center; }
+        h2 { color: var(--primary); font-size: 2em; margin-bottom: 20px; }
+        .search-input { width: 70%; padding: 12px; margin: 10px 0; background: #333333; border: 2px solid #404040; color: var(--text); border-radius: 5px; font-size: 1em; }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        .user-list { list-style: none; padding: 0; text-align: left; }
+        .user-list li { font-size: 1.2em; margin: 10px 0; }
+        .user-list a { color: var(--primary); text-decoration: none; }
+        .user-list a:hover { color: var(--primary-hover); }
+    </style>
+{% endblock %}

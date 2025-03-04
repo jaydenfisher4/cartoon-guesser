@@ -1,155 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- SEO Metadata -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
     <title>Suggest a Character, Show, or Feedback - Cartoon Guessing Game</title>
     <meta name="description" content="Suggest a new cartoon show, a missing character from an existing show, or share feedback for the Cartoon Guessing Game! Help us improve our animation quiz community.">
     <meta name="keywords" content="cartoon guessing game suggestion, suggest cartoon character, animation quiz feedback">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        html {
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
-            background-attachment: fixed;
-            background-size: 100% 100%;
-            height: 100%;
-            overflow-y: scroll;
-            scrollbar-width: thin;
-            scrollbar-color: #00ccff #252525;
-        }
-        html::-webkit-scrollbar {
-            width: 12px;
-        }
-        html::-webkit-scrollbar-track {
-            background: #252525;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: #00ccff;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb:hover {
-            background: #00b3e6;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: #e0e0e0;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
-        .raindrop-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -2;
-        }
-        .raindrop {
-            position: absolute;
-            width: 2px;
-            height: 10px;
-            background: rgba(0, 204, 255, 0.5);
-            border-radius: 50% 50% 10% 10%;
-            box-shadow: 0 0 4px rgba(0, 204, 255, 0.2);
-            animation: fallRaindrop 3s linear forwards;
-            pointer-events: none;
-        }
-        @keyframes fallRaindrop {
-            0% { opacity: 0; transform: translateY(-10vh); }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(110vh); }
-        }
-        h2 {
-            color: #00ccff;
-            font-size: 2em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-        }
-        .suggestion-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background: rgba(37, 37, 37, 0.85);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            transition: box-shadow 0.3s ease;
-        }
-        .suggestion-container:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        label {
-            color: #b0b0b0;
-            font-size: 1.1em;
-            text-align: left;
-        }
-        input, textarea, select {
-            padding: 12px;
-            font-size: 1.1em;
-            border: 2px solid #404040;
-            border-radius: 5px;
-            background-color: #333333;
-            color: #e0e0e0;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #00ccff;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 1.1em;
-            background-color: #00ccff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-        button:hover {
-            background-color: #00b3e6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
-        }
-        a {
-            color: #00ccff;
-            text-decoration: none;
-            font-size: 1.1em;
-            margin-top: 15px;
-            display: inline-block;
-            transition: color 0.3s ease;
-        }
-        a:hover {
-            color: #00b3e6;
-        }
-        .errorlist {
-            color: #d32f2f;
-            list-style: none;
-            padding: 0;
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="raindrop-wrapper"></div>
+{% endblock %}
+
+{% block title %}Suggest a Character, Show, or Feedback{% endblock %}
+
+{% block content %}
     <div class="suggestion-container">
         <h2>Suggest a Character, Show, or Feedback</h2>
         <form method="post" id="suggestion-form">
@@ -178,39 +38,37 @@
             <label for="id_description">Additional Details (optional):</label>
             {{ form.description }}
             {{ form.description.errors }}
-            <button type="submit"><span class="icon">✨</span>Submit Suggestion</button>
+            <button type="submit" class="btn"><span class="icon">✨</span>Submit Suggestion</button>
         </form>
         <a href="{% url 'index' %}">Back to Game</a>
     </div>
+{% endblock %}
 
+{% block extra_css %}
+    <style>
+        .suggestion-container { max-width: 600px; margin: 0 auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        h2 { color: var(--primary); font-size: 2em; margin-bottom: 20px; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        label { color: var(--text-muted); font-size: 1.1em; text-align: left; }
+        input, textarea, select { padding: 12px; font-size: 1.1em; border: 2px solid #404040; border-radius: 5px; background-color: #333333; color: var(--text); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        textarea { resize: vertical; min-height: 100px; }
+        a { color: var(--primary); font-size: 1.1em; margin-top: 15px; display: block; text-align: center; }
+        a:hover { color: var(--primary-hover); }
+        .errorlist { color: #d32f2f; list-style: none; padding: 0; margin: 5px 0; }
+    </style>
+{% endblock %}
+
+{% block extra_js %}
     <script>
-        function createRaindrop() {
-            const raindrop = document.createElement('div');
-            raindrop.className = 'raindrop';
-            const position = Math.random();
-            if (position < 0.5) {
-                raindrop.style.left = `${Math.random() * 20}%`;
-            } else {
-                raindrop.style.left = `${80 + Math.random() * 20}%`;
-            }
-            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
-            document.querySelector('.raindrop-wrapper').appendChild(raindrop);
-            setTimeout(() => raindrop.remove(), 4000);
-        }
-        setInterval(createRaindrop, 150);
+        document.getElementById('id_suggestion_type').addEventListener('change', toggleFields);
+        toggleFields();
 
         function toggleFields() {
             const type = document.getElementById('id_suggestion_type').value;
-            const showFields = document.getElementById('show-fields');
-            const characterFields = document.getElementById('character-fields');
-            const feedbackFields = document.getElementById('feedback-fields');
-            showFields.style.display = type === 'show' ? 'block' : 'none';
-            characterFields.style.display = type === 'character' ? 'block' : 'none';
-            feedbackFields.style.display = type === 'feedback' ? 'block' : 'none';
+            document.getElementById('show-fields').style.display = type === 'show' ? 'block' : 'none';
+            document.getElementById('character-fields').style.display = type === 'character' ? 'block' : 'none';
+            document.getElementById('feedback-fields').style.display = type === 'feedback' ? 'block' : 'none';
         }
-
-        // Initialize field visibility on page load
-        toggleFields();
     </script>
-</body>
-</html>
+{% endblock %}

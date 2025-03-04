@@ -2,7 +2,6 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from .models import Show, CartoonCharacter, CartoonSuggestion, UserPreference
-
 class ShowAdmin(admin.ModelAdmin):
     list_display = ('name', 'network', 'release_year', 'still_airing')
     search_fields = ('name', 'network')

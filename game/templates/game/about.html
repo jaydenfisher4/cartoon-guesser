@@ -1,234 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- SEO: Verification and Analytics -->
-    <meta name="google-site-verification" content="sdv-XVynGmX-gziYGl0dJg3AkBuvm-lqokpzM10T_bU" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C909CPRTVP"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-C909CPRTVP');
-    </script>
+{% extends 'base.html' %}
+{% load static %}
 
-    <!-- SEO: Adsense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520" crossorigin="anonymous"></script>
-
-    <!-- SEO: Favicon -->
-    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-
-    <meta charset="UTF-8">
-    <!-- SEO: Mobile Responsiveness -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO: Optimized Title and Description -->
+{% block meta %}
     <title>About the Cartoon Guessing Game - How to Play and Guess Cartoon Characters</title>
     <meta name="description" content="Learn how to play the Cartoon Guessing Game! Guess cartoon characters from your favorite shows with clues revealed after each attempt. Fun, challenging, and free!">
-    <!-- SEO: Keywords -->
     <meta name="keywords" content="cartoon guessing game, guess cartoon characters, animation quiz, cartoon trivia, daily cartoon game, cartoondle, how to play cartoon guessing">
-    <!-- SEO: Open Graph for Social Sharing -->
     <meta property="og:title" content="About the Cartoon Guessing Game - How to Play and Guess Cartoon Characters">
     <meta property="og:description" content="Discover the Cartoon Guessing Game! Guess animated characters with clues after each try in this fun, free quiz.">
     <meta property="og:url" content="http://cartoonguesser.pythonanywhere.com/about/">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="/static/favicon.ico">
+    <meta property="og:image" content="{% static 'favicon.ico' %}">
+{% endblock %}
 
-    <!-- Styling Consistent with Index -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        html {
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
-            background-attachment: fixed;
-            background-size: 100% 100%;
-            height: 100%;
-            overflow-y: scroll;
-            scrollbar-width: thin;
-            scrollbar-color: #00ccff #252525;
-        }
-        html::-webkit-scrollbar { width: 12px; }
-        html::-webkit-scrollbar-track { background: #252525; border-radius: 6px; }
-        html::-webkit-scrollbar-thumb { background: #00ccff; border-radius: 6px; }
-        html::-webkit-scrollbar-thumb:hover { background: #00b3e6; }
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: #e0e0e0;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
-        .raindrop-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -2;
-        }
-        .raindrop {
-            position: absolute;
-            width: 2px;
-            height: 10px;
-            background: rgba(0, 204, 255, 0.5);
-            border-radius: 50% 50% 10% 10%;
-            box-shadow: 0 0 4px rgba(0, 204, 255, 0.2);
-            animation: fallRaindrop 3s linear forwards;
-            pointer-events: none;
-        }
-        @keyframes fallRaindrop {
-            0% { opacity: 0; transform: translateY(-10vh); }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(110vh); }
-        }
-        h1 {
-            color: #00ccff;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-            transition: transform 0.3s ease;
-        }
-        h1:hover { transform: scale(1.05); }
-        p {
-            color: #b0b0b0;
-            font-size: 1.2em;
-            margin: 5px 0;
-        }
-        .header-container {
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-            background: rgba(37, 37, 37, 0.85);
-            transition: box-shadow 0.3s ease;
-        }
-        .header-container:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); }
-        .navbar {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-            padding: 10px;
-        }
-        .btn {
-            padding: 12px 24px;
-            font-size: 1.1em;
-            background-color: #00ccff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            position: relative;
-        }
-        .btn:hover {
-            background-color: #00b3e6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 204, 255, 0.3);
-        }
-        .btn.active {
-            background-color: #00b3e6;
-            cursor: default;
-        }
-        .btn[title]:hover::after {
-            content: attr(title);
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            white-space: nowrap;
-            z-index: 10;
-        }
-        .content-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            color: #e0e0e0;
-            text-align: left;
-        }
-        .content-container h2 {
-            color: #00ccff;
-            margin-top: 20px;
-            font-size: 1.8em;
-        }
-        .content-container p {
-            line-height: 1.6;
-            color: #e0e0e0;
-            font-size: 1.1em;
-        }
-        .content-container ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            margin: 10px 0;
-        }
-        .content-container a {
-            color: #00ccff;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .content-container a:hover {
-            color: #00b3e6;
-        }
-        footer {
-            margin-top: 20px;
-            color: #b0b0b0;
-            font-size: 1em;
-        }
-        footer a {
-            color: #00ccff;
-            text-decoration: none;
-        }
-        footer a:hover {
-            color: #00b3e6;
-        }
-    </style>
-</head>
-<body>
-    <!-- Background Raindrop Effect -->
-    <div class="raindrop-wrapper"></div>
+{% block title %}About the Cartoon Guessing Game{% endblock %}
 
-    <!-- Header with Navigation -->
-    <div class="header-container">
-        <h1>About the Cartoon Guessing Game</h1>
-        <div class="navbar">
-            <button class="btn" onmousedown="handleModeClick(event, '/')" title="Guess one new character daily">Daily Mode</button>
-            <button class="btn" onmousedown="handleModeClick(event, '/unlimited/')" title="Guess unlimited characters">Unlimited Mode</button>
-            <button class="btn" onmousedown="handleModeClick(event, '/characters/')" title="View all characters in the game">All Characters</button>
-            <a href="/suggest/"><button class="btn" title="Suggest a new character or show"><span class="icon">✨</span>Suggest</button></a>
-            <button class="btn active" title="You are here">About</button>
-        </div>
-    </div>
-
-    <!-- Main Content -->
+{% block content %}
     <div class="content-container">
         <h2>Welcome to the Cartoon Guessing Game!</h2>
-        <p>
-            Dive into the Cartoon Guessing Game, a thrilling and interactive <strong>animation quiz</strong> designed to test your knowledge of animated characters from classic and modern shows. Whether you’re a fan of SpongeBob, Aang, or Finn, this game offers a fun and challenging way to rediscover your favorite cartoons!
-        </p>
-
+        <p>Dive into the Cartoon Guessing Game, a thrilling and interactive <strong>animation quiz</strong> designed to test your knowledge of animated characters from classic and modern shows. Whether you’re a fan of SpongeBob, Aang, or Finn, this game offers a fun and challenging way to rediscover your favorite cartoons!</p>
         <h2>How to Play the Cartoon Guessing Game</h2>
-        <p>
-            The Cartoon Guessing Game challenges you to identify a mystery cartoon character one guess at a time. Here’s how it works: you start by typing the name of a character you think might be the answer. With each guess, the game reveals more clues about the correct character, helping you narrow it down until you either guess correctly, give up, or run out of attempts.
-        </p>
-        <p>
-            After each guess, you’ll get feedback based on several categories:
-        </p>
+        <p>The Cartoon Guessing Game challenges you to identify a mystery cartoon character one guess at a time. Here’s how it works: you start by typing the name of a character you think might be the answer. With each guess, the game reveals more clues about the correct character, helping you narrow it down until you either guess correctly, give up, or run out of attempts.</p>
+        <p>After each guess, you’ll get feedback based on several categories:</p>
         <ul>
             <li><strong>Network:</strong> The TV network that aired the show (e.g., Nickelodeon, Cartoon Network).</li>
             <li><strong>Show:</strong> The name of the cartoon series.</li>
@@ -237,61 +29,28 @@
             <li><strong>Still Airing:</strong> Whether the show is still producing new episodes.</li>
             <li><strong>Gender:</strong> The character’s gender.</li>
         </ul>
-        <p>
-            For example, if you guess "SpongeBob" and the mystery character is "Aang," the game might reveal that you got the <strong>network</strong> right (both are from Nickelodeon), but the show, character type, and other details differ. These clues guide your next guess. In <strong>Daily Mode</strong>, you have 15 attempts to identify the character, while <strong>Unlimited Mode</strong> lets you keep guessing without limits.
-        </p>
-
+        <p>For example, if you guess "SpongeBob" and the mystery character is "Aang," the game might reveal that you got the <strong>network</strong> right (both are from Nickelodeon), but the show, character type, and other details differ. These clues guide your next guess. In <strong>Daily Mode</strong>, you have 15 attempts to identify the character, while <strong>Unlimited Mode</strong> lets you keep guessing without limits.</p>
         <h2>Game Modes Explained</h2>
-        <p>
-            The Cartoon Guessing Game offers two exciting ways to play:
-        </p>
+        <p>The Cartoon Guessing Game offers two exciting ways to play:</p>
         <ul>
             <li><strong>Daily Mode:</strong> A new mystery character appears every day. You have 15 guesses to figure it out, making it a perfect daily challenge for cartoon fans.</li>
             <li><strong>Unlimited Mode:</strong> Guess as many characters as you want with no attempt limit—ideal for binge-playing or honing your skills.</li>
         </ul>
-        <p>
-            Plus, you can explore the full list of characters, suggest new ones to add, and even manage exclusions if you’re logged in. It’s a dynamic <strong>cartoon trivia</strong> experience tailored to your preferences!
-        </p>
-
+        <p>Plus, you can explore the full list of characters, suggest new ones to add, and even manage exclusions if you’re logged in. It’s a dynamic <strong>cartoon trivia</strong> experience tailored to your preferences!</p>
         <h2>Why You’ll Love This Animation Quiz</h2>
-        <p>
-            From casual viewers to die-hard animation enthusiasts, the Cartoon Guessing Game has something for everyone. With a vast library of characters spanning decades—from classics like <em>The Flintstones</em> to modern hits like <em>Adventure Time</em>—you’ll rediscover old favorites and maybe even stumble upon new ones. Challenge your friends to see who can guess the character in fewer tries, or aim to beat your personal best in this addictive <strong>daily cartoon game</strong>.
-        </p>
-
+        <p>From casual viewers to die-hard animation enthusiasts, the Cartoon Guessing Game has something for everyone. With a vast library of characters spanning decades—from classics like <em>The Flintstones</em> to modern hits like <em>Adventure Time</em>—you’ll rediscover old favorites and maybe even stumble upon new ones. Challenge your friends to see who can guess the character in fewer tries, or aim to beat your personal best in this addictive <strong>daily cartoon game</strong>.</p>
         <h2>Start Guessing Today!</h2>
-        <p>
-            Ready to test your cartoon knowledge? Jump into the Cartoon Guessing Game now and see how many characters you can identify! <a href="/">Play now</a> and join the fun!
-        </p>
+        <p>Ready to test your cartoon knowledge? Jump into the Cartoon Guessing Game now and see how many characters you can identify! <a href="{% url 'index' %}">Play now</a> and join the fun!</p>
     </div>
+{% endblock %}
 
-    <!-- SEO: Footer -->
-    <footer>
-        <p>
-            Play the Cartoon Guessing Game - Your daily dose of <strong>cartoon trivia</strong> awaits! <a href="/">Home</a>
-        </p>
-    </footer>
-
-    <!-- Raindrop Effect Script -->
-    <script>
-        function createRaindrop() {
-            const raindrop = document.createElement('div');
-            raindrop.className = 'raindrop';
-            const position = Math.random();
-            if (position < 0.5) {
-                raindrop.style.left = `${Math.random() * 20}%`;
-            } else {
-                raindrop.style.left = `${80 + Math.random() * 20}%`;
-            }
-            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
-            document.querySelector('.raindrop-wrapper').appendChild(raindrop);
-            setTimeout(() => raindrop.remove(), 4000);
-        }
-        setInterval(createRaindrop, 150);
-
-        function handleModeClick(event, url) {
-            if (event.button === 1) { window.open(url, '_blank'); }
-            else if (event.button === 0) { window.location.href = url; }
-        }
-    </script>
-</body>
-</html>
+{% block extra_css %}
+    <style>
+        .content-container { max-width: 800px; margin: 0 auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); text-align: left; }
+        .content-container h2 { color: var(--primary); font-size: 1.8em; margin-top: 20px; }
+        .content-container p { line-height: 1.6; font-size: 1.1em; }
+        .content-container ul { list-style-type: disc; padding-left: 20px; margin: 10px 0; }
+        .content-container a { color: var(--primary); text-decoration: none; }
+        .content-container a:hover { color: var(--primary-hover); }
+    </style>
+{% endblock %}

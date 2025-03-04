@@ -67,3 +67,36 @@ class UserPreference(models.Model):
 
     def __str__(self):
         return f"Preferences for {self.user.username}"
+    
+class DailyGameHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    character_name = models.CharField(max_length=100)
+    won = models.BooleanField()
+    guess_count = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date} - {self.character_name}"
+    
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(User, related_name='sent_requests', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(User, related_name='received_requests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')
+
+    def __str__(self):
+        return f"{self.from_user.username} -> {self.to_user.username}"
+
+class Friendship(models.Model):
+    user1 = models.ForeignKey(User, related_name='friendships1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name='friendships2', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user1', 'user2')
+
+    def __str__(self):
+        return f"{self.user1.username} - {self.user2.username}"

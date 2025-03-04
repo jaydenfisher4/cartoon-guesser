@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404 
 from django.http import JsonResponse
-from .models import CartoonCharacter, UserPreference, Show
-from datetime import date
+from .models import CartoonCharacter, UserPreference, Show, DailyGameHistory, FriendRequest, Friendship
+from datetime import date, datetime, timedelta
 import hashlib
 import random
 import logging
@@ -11,13 +11,13 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from django.db.models import Count, Min, Q
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_user_exclusions(request):
-    """Helper to get user's excluded shows and characters as QuerySets."""
     if request.user.is_authenticated:
         try:
             prefs = UserPreference.objects.get(user=request.user)
@@ -27,20 +27,19 @@ def get_user_exclusions(request):
     return Show.objects.none(), CartoonCharacter.objects.none()
 
 def get_daily_character(request, excluded_shows=None, excluded_chars=None):
-    """Get the daily character, filtered by user exclusions."""
     if excluded_shows is None or excluded_chars is None:
         excluded_shows, excluded_chars = get_user_exclusions(request)
-    
+
     characters = CartoonCharacter.objects.select_related('show').exclude(
         show__in=excluded_shows
     ).exclude(
         id__in=excluded_chars
     )
-    
+
     count = characters.count()
     if count == 0:
         return None
-    
+
     today = date.today().isoformat()
     index = int(hashlib.md5(today.encode()).hexdigest(), 16) % count
     try:
@@ -51,10 +50,9 @@ def get_daily_character(request, excluded_shows=None, excluded_chars=None):
         return None
 
 def get_random_character(request, exclude_ids=None, excluded_shows=None, excluded_chars=None):
-    """Get a random character, filtered by exclusions."""
     if excluded_shows is None or excluded_chars is None:
         excluded_shows, excluded_chars = get_user_exclusions(request)
-    
+
     characters = CartoonCharacter.objects.select_related('show').exclude(
         show__in=excluded_shows
     ).exclude(
@@ -62,29 +60,40 @@ def get_random_character(request, exclude_ids=None, excluded_shows=None, exclude
     ).exclude(
         id__in=exclude_ids or []
     )
-    
+
     character = characters.order_by('?').first()
     if character:
         logger.debug(f"Random character selected: {character.name}")
     return character
 
 def index(request):
+    if request.GET.get('reset'):  # For testing
+        request.session.flush()
+        return redirect('index')
+
     today = date.today().isoformat()
     session_date = request.session.get('daily_character_date')
     daily_character_id = request.session.get('daily_character_id')
-    
-    if session_date == today and daily_character_id:
+    game_over = request.session.get('daily_game_over', False)
+
+    if session_date == today and game_over:
+        guesses = request.session.get('guesses-daily', [])
         try:
             daily_character = CartoonCharacter.objects.get(id=daily_character_id)
+            return redirect('win' if guesses and guesses[-1] == daily_character.name else 'lose')
         except CartoonCharacter.DoesNotExist:
-            daily_character = None
-    else:
+            pass  # Proceed to reset if character not found
+
+    if session_date != today or not daily_character_id or not game_over:
         excluded_shows, excluded_chars = get_user_exclusions(request)
         daily_character = get_daily_character(request, excluded_shows, excluded_chars)
         if daily_character:
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
-    
+            request.session['daily_game_over'] = False
+        else:
+            daily_character = None
+
     excluded_shows, excluded_chars = get_user_exclusions(request)
     all_characters = CartoonCharacter.objects.select_related('show').exclude(
         show__in=excluded_shows
@@ -127,7 +136,6 @@ def unlimited(request):
     ).exclude(
         image_restricted=True
     )
-    
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     request.session['last_mode'] = 'unlimited'
     request.session.setdefault('hint_used-unlimited', False)
@@ -179,23 +187,15 @@ def characters_list(request):
 def guess(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request'}, status=400)
-    
+
     mode = request.POST.get('mode', 'daily')
     guess_name = request.POST.get('guess', '').strip()
-    reset = request.POST.get('reset', 'false') == 'true'
-
-    if reset:
-        if mode == 'daily':
-            request.session['guesses-daily'] = []
-            request.session['hint_used-daily'] = False
-        else:
-            request.session['guesses-unlimited'] = []
-            request.session['guessed_ids-unlimited'] = []
-            request.session.pop('current_character_id-unlimited', None)
-            request.session['hint_used-unlimited'] = False
-        return JsonResponse({'status': 'reset'})
 
     if mode == 'daily':
+        today = date.today().isoformat()
+        session_date = request.session.get('daily_character_date')
+        if session_date != today or request.session.get('daily_game_over', False):
+            return JsonResponse({'error': 'Daily game is over for today'}, status=400)
         current_character = get_daily_character(request)
         guesses_key = 'guesses-daily'
         hint_key = 'hint_used-daily'
@@ -214,8 +214,8 @@ def guess(request):
         guessed_char = CartoonCharacter.objects.get(name__iexact=guess_name)
         guess_networks = set(guessed_char.network.split(', '))
         target_networks = set(current_character.network.split(', '))
-        network_exact = (guess_networks == target_networks)  # True only for exact match
-        network_partial = bool(guess_networks & target_networks) and not network_exact  # True for partial match
+        network_exact = (guess_networks == target_networks)
+        network_partial = bool(guess_networks & target_networks) and not network_exact
         main_match = guessed_char.is_main == current_character.is_main
         airing_match = guessed_char.still_airing == current_character.still_airing
         year_match = guessed_char.release_year == current_character.release_year
@@ -225,9 +225,9 @@ def guess(request):
 
         result = {
             'name': guessed_char.name,
-            'network': network_exact,  
+            'network': network_exact,
             'network_value': guessed_char.network,
-            'network_partial': network_partial, 
+            'network_partial': network_partial,
             'show': show_match,
             'show_value': guessed_char.show.name if guessed_char.show else None,
             'is_main': guessed_char.is_main,
@@ -252,16 +252,23 @@ def guess(request):
             if mode == 'unlimited' and result['correct']:
                 guessed_ids.append(current_character.id)
                 request.session[guessed_ids_key] = guessed_ids
+            elif mode == 'daily' and (result['correct'] or len(guesses) >= 15):
+                request.session['daily_game_over'] = True
+                DailyGameHistory.objects.create(
+                    user=request.user,
+                    date=date.today(),
+                    character_name=current_character.name,
+                    won=result['correct'],
+                    guess_count=len(guesses)
+                )
 
         logger.info(f"Guess response: {json.dumps(result)}")
-        if result['correct']:
-            return JsonResponse({'redirect': '/win/?mode=' + mode})
-        elif mode == 'daily' and len(guesses) >= 15:
-            return JsonResponse({'redirect': '/lose/?mode=' + mode})
+        if result['correct'] or (mode == 'daily' and len(guesses) >= 15):
+            return JsonResponse({'redirect': f"/{'win' if result['correct'] else 'lose'}/?mode={mode}"})
         return JsonResponse(result)
     except CartoonCharacter.DoesNotExist:
         return JsonResponse({'error': 'Character not found'}, status=404)
-
+    
 def hint(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -278,6 +285,9 @@ def hint(request):
         return JsonResponse({'error': 'Not enough guesses for a hint'}, status=400)
 
     if mode == 'daily':
+        today = date.today().isoformat()
+        if request.session.get('daily_character_date') != today or request.session.get('daily_game_over', False):
+            return JsonResponse({'error': 'Daily game is over'}, status=400)
         current_character = get_daily_character(request)
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
@@ -339,8 +349,11 @@ def hint(request):
 
 def win(request):
     mode = request.GET.get('mode', 'daily')
+    today = date.today().isoformat()
     if mode == 'daily':
         daily_character = get_daily_character(request)
+        if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
+            return redirect('index')
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
@@ -355,14 +368,18 @@ def win(request):
 
     context = {
         'character': daily_character,
-        'mode': mode
+        'mode': mode,
     }
     return render(request, 'game/win.html', context)
 
 def lose(request):
     mode = request.GET.get('mode', 'daily')
+    gave_up = request.GET.get('gave_up', 'false') == 'true'
+    today = date.today().isoformat()
     if mode == 'daily':
         daily_character = get_daily_character(request)
+        if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
+            return redirect('index')
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
@@ -377,7 +394,8 @@ def lose(request):
 
     context = {
         'character': daily_character,
-        'mode': mode
+        'mode': mode,
+        'gave_up': gave_up
     }
     return render(request, 'game/lose.html', context)
 
@@ -427,12 +445,12 @@ def get_characters(request, show_id):
 @login_required
 def set_profile_picture(request):
     if request.method == 'POST':
-        image_url = request.POST.get('image_url')  # Base64 data from frontend
+        image_url = request.POST.get('image_url')
         if image_url:
             preference, created = UserPreference.objects.get_or_create(user=request.user)
-            preference.profile_picture = image_url  # Save base64 string directly
+            preference.profile_picture = image_url
             preference.save()
-            return JsonResponse({'success': True, 'url': image_url})  # Return base64 for frontend
+            return JsonResponse({'success': True, 'url': image_url})
         return JsonResponse({'success': False, 'error': 'No image data'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
@@ -458,10 +476,10 @@ def recent_changes(request):
 def report_image_restriction(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
-    
+
     name = request.POST.get('name')
     restricted = request.POST.get('restricted') == 'true'
-    
+
     try:
         character = CartoonCharacter.objects.get(name=name)
         if character.image_restricted != restricted:
@@ -475,3 +493,110 @@ def report_image_restriction(request):
     except Exception as e:
         logger.error(f"Error updating {name}: {str(e)}")
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+@login_required
+def profile(request, username=None):
+    if username:
+        try:
+            profile_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return redirect('profile')
+    else:
+        profile_user = request.user
+
+    prefs, _ = UserPreference.objects.get_or_create(user=profile_user)
+    
+    # Daily streak
+    history = DailyGameHistory.objects.filter(user=profile_user).order_by('-date')
+    daily_streak = 0
+    current_date = date.today()
+    for entry in history:
+        if entry.date == current_date and entry.won:
+            daily_streak += 1
+            current_date -= timedelta(days=1)
+        elif entry.date > current_date:
+            continue
+        else:
+            break
+    
+    # Best score
+    best_score = DailyGameHistory.objects.filter(user=profile_user, won=True).aggregate(Min('guess_count'))['guess_count__min']
+    
+    # Total wins
+    total_daily_wins = DailyGameHistory.objects.filter(user=profile_user, won=True).count()
+    total_unlimited_wins = len(request.session.get('guessed_ids-unlimited', [])) if profile_user == request.user else 0
+    
+    # Favorite character
+    favorite_character = DailyGameHistory.objects.filter(user=profile_user, won=True).values('character_name').annotate(count=Count('character_name')).order_by('-count').first()
+    favorite_character_name = favorite_character['character_name'] if favorite_character else None
+
+    # Friend status
+    is_friend = Friendship.objects.filter(
+        Q(user1=request.user, user2=profile_user) | Q(user1=profile_user, user2=request.user)
+    ).exists()
+    has_sent_request = FriendRequest.objects.filter(from_user=request.user, to_user=profile_user, accepted=False).exists()
+    received_request = FriendRequest.objects.filter(from_user=profile_user, to_user=request.user, accepted=False).first()
+    has_received_request = received_request is not None
+
+    # Fetch friends with their profile pictures
+    friendships = Friendship.objects.filter(
+        Q(user1=profile_user) | Q(user2=profile_user)
+    ).select_related('user1__userpreference', 'user2__userpreference')
+    friend_list = []
+    for friendship in friendships:
+        friend = friendship.user2 if friendship.user1 == profile_user else friendship.user1
+        friend_list.append({
+            'username': friend.username,
+            'profile_picture': friend.userpreference.profile_picture if hasattr(friend, 'userpreference') else None
+        })
+
+    context = {
+        'profile_user': profile_user,
+        'daily_streak': daily_streak,
+        'best_score': best_score,
+        'total_daily_wins': total_daily_wins,
+        'total_unlimited_wins': total_unlimited_wins if profile_user == request.user else None,
+        'favorite_character': favorite_character_name,
+        'daily_history': history[:10],
+        'is_friend': is_friend,
+        'has_sent_request': has_sent_request,
+        'has_received_request': has_received_request,
+        'received_request': received_request,
+        'friend_list': friend_list,  # Updated to include profile_picture
+        'is_own_profile': profile_user == request.user,
+    }
+    return render(request, 'game/profile.html', context)
+
+@login_required
+def search_users(request):
+    query = request.GET.get('q', '')
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+    context = {
+        'users': users,
+        'query': query,
+    }
+    return render(request, 'game/search_users.html', context)
+
+@login_required
+def send_friend_request(request, username):
+    to_user = get_object_or_404(User, username=username)
+    if to_user == request.user:
+        return redirect('profile')
+    if not FriendRequest.objects.filter(from_user=request.user, to_user=to_user).exists():
+        FriendRequest.objects.create(from_user=request.user, to_user=to_user)
+    return redirect('profile', username=username)
+
+@login_required
+def accept_friend_request(request, request_id):
+    friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user)
+    if not friend_request.accepted:
+        friend_request.accepted = True
+        friend_request.save()
+        Friendship.objects.create(user1=request.user, user2=friend_request.from_user)
+    return redirect('profile')
+
+@login_required
+def reject_friend_request(request, request_id):
+    friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user)
+    friend_request.delete()
+    return redirect('profile')

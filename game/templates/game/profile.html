@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>{{ profile_user.username }}'s Profile - Cartoon Guesser</title>
+{% endblock %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-picture" {% if is_own_profile %}id="profile-picture"{% endif %}>
+                {% if profile_user.userpreference.profile_picture %}
+                    <img src="{{ profile_user.userpreference.profile_picture }}" alt="Profile Picture">
+                {% else %}
+                    <span>👤</span>
+                {% endif %}
+            </div>
+            <h2>{{ profile_user.username }}</h2>
+            {% if not is_own_profile %}
+                {% if not is_friend and not has_sent_request and not has_received_request %}
+                    <a href="{% url 'send_friend_request' profile_user.username %}" class="btn">Send Friend Request</a>
+                {% elif has_received_request %}
+                    <a href="{% url 'accept_friend_request' received_request.id %}" class="btn">Accept Friend Request</a>
+                    <a href="{% url 'reject_friend_request' received_request.id %}" class="btn">Reject Friend Request</a>
+                    <p>Friend Request Sent</p>
+                {% elif is_friend %}
+                    <p>Friends</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="stats">
+            <h3>Stats</h3>
+            <p><strong>Daily Streak:</strong> {{ daily_streak }}</p>
+            <p><strong>Best Score (Least Guesses):</strong> {{ best_score|default:"N/A" }}</p>
+            <p><strong>Total Daily Wins:</strong> {{ total_daily_wins }}</p>
+            {% if total_unlimited_wins is not none %}
+                <p><strong>Total Unlimited Wins:</strong> {{ total_unlimited_wins }}</p>
+            {% endif %}
+            <p><strong>Favorite Character:</strong> {{ favorite_character|default:"N/A" }}</p>
+        </div>
+        <div class="history">
+            <h3>Daily Match History</h3>
+            {% if daily_history %}
+                <ul>
+                    {% for entry in daily_history %}
+                        <li>{{ entry.date }}: {{ entry.character_name }} - {% if entry.won %}Won{% else %}Lost{% endif %} ({{ entry.guess_count }} guesses)</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No daily matches yet!</p>
+            {% endif %}
+        </div>
+        <div class="friends">
+            <h3>Friends</h3>
+            {% if friend_list %}
+                <ul>
+                    {% for friend in friend_list %}
+                        <li>
+                            <a href="{% url 'profile' friend.username %}" class="friend-profile-link">
+                                <div class="friend-picture">
+                                    {% if friend.profile_picture %}
+                                        <img src="{{ friend.profile_picture }}" alt="{{ friend.username }}'s Profile Picture">
+                                    {% else %}
+                                        <span>👤</span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                            <span class="friend-name">{{ friend.username }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No friends yet!</p>
+            {% endif %}
+        </div>
+        {% if is_own_profile %}
+            <div id="profile-modal" style="display: none;">
+                <div class="modal-content">
+                    <h2>Customize Profile Picture</h2>
+                    <div style="position: relative;">
+                        <input type="text" id="character-search" placeholder="Search characters..." autocomplete="off">
+                        <div id="character-search-autocomplete-list"></div>
+                    </div>
+                    <div id="crop-container">
+                        <img id="character-image" src="" alt="Selected Character" crossOrigin="anonymous">
+                        <div id="crop-circle"></div>
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="btn" onclick="zoomIn()">Zoom In</button>
+                        <button class="btn" onclick="zoomOut()">Zoom Out</button>
+                    </div>
+                    <img id="profile-preview" src="" alt="Preview">
+                    <button class="btn" onclick="saveProfilePicture()">Save</button>
+                    <button class="btn" onclick="closeProfileModal()">Cancel</button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .profile-container { max-width: 800px; margin: 20px auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); text-align: center; }
+        .profile-header { margin-bottom: 20px; }
+        .profile-picture { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--primary); margin: 0 auto 10px; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .profile-picture img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-picture span { font-size: 2em; color: var(--primary); }
+        h2 { color: var(--primary); font-size: 2em; margin: 0; }
+        h3 { color: var(--primary); font-size: 1.5em; margin-top: 20px; }
+        .stats p, .friends p { font-size: 1.2em; color: var(--text-muted); margin: 5px 0; }
+        .history ul, .friends ul { list-style: none; padding: 0; text-align: left; }
+        .history li, .friends li { font-size: 1.1em; color: var(--text-muted); margin: 5px 0; }
+        #profile-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 100; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 8px; max-width: 600px; width: 90%; text-align: center; }
+        #character-search { width: 100%; padding: 12px; margin: 10px 0; background: #333333; border: 2px solid #404040; color: var(--text); border-radius: 5px; font-size: 1em; }
+        #character-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        #character-search-autocomplete-list { position: absolute; top: 100%; left: 0; width: 100%; background-color: #252525; border: 1px solid #404040; border-radius: 5px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); font-size: 1em; }
+        #character-search-autocomplete-list .autocomplete-item { padding: 8px; cursor: pointer; color: var(--text); display: flex; align-items: center; transition: background-color 0.2s ease; }
+        #character-search-autocomplete-list .autocomplete-item:hover, #character-search-autocomplete-list .autocomplete-item.selected { background-color: #333333; }
+        #character-search-autocomplete-list .autocomplete-item img { width: 20px; height: auto; margin-right: 10px; border-radius: 3px; object-fit: contain; }
+        #crop-container { position: relative; width: 300px; height: 300px; margin: 10px auto; overflow: hidden; }
+        #character-image { max-width: 100%; max-height: 100%; display: block; }
+        #crop-circle { position: absolute; width: 100px; height: 100px; border: 2px dashed var(--primary); border-radius: 50%; cursor: move; background: rgba(0, 204, 255, 0.2); }
+        #profile-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 10px auto; display: block; }
+        .zoom-controls { margin: 10px 0; }
+        .friends ul { display: flex; flex-wrap: wrap; justify-content: center; }
+        .friends li { display: flex; align-items: center; margin: 10px; }
+        .friend-profile-link { text-decoration: none; }
+        .friend-picture { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-right: 10px; }
+        .friend-picture img { width: 100%; height: 100%; object-fit: cover; }
+        .friend-picture span { font-size: 1.5em; color: var(--primary); }
+        .friend-name { font-size: 1.2em; color: var(--text-muted); }
+        .friend-profile-link:hover .friend-name { color: var(--primary); }
+        @media (max-width: 768px) {
+            #crop-container { width: 200px; height: 200px; }
+            #crop-circle { width: 80px; height: 80px; }
+            #profile-preview { width: 80px; height: 80px; }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_js %}
+    {% if is_own_profile %}
+    <script>
+        let cropX = 0, cropY = 0, scale = 1, selectedCharacter = null;
+        const cropper = document.getElementById('crop-circle');
+        let isDragging = false, startX, startY;
+
+        document.getElementById('profile-picture').addEventListener('click', () => {
+            document.getElementById('profile-modal').style.display = 'flex';
+        });
+
+        cropper.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - cropX;
+            startY = e.clientY - cropY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            cropX = Math.max(0, Math.min(200, e.clientX - startX));
+            cropY = Math.max(0, Math.min(200, e.clientY - startY));
+            updateCropper();
+        });
+
+        document.addEventListener('mouseup', () => isDragging = false);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const allCharacters = JSON.parse(document.getElementById('all-characters')?.textContent || '[]');
+            console.log('allCharacters length for profile:', allCharacters.length);
+            console.log('allCharacters for profile:', allCharacters);
+            if (allCharacters.length === 0) console.error('No characters available for profile picture change');
+            setupAutocomplete('character-search', allCharacters, () => {
+                selectedCharacter = allCharacters.find(char => char.name === document.getElementById('character-search').value);
+                loadCharacterImage(selectedCharacter?.image_url);
+            });
+            initCropper();
+        });
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function loadCharacterImage(imageUrl) {
+            const image = document.getElementById('character-image');
+            image.src = imageUrl || '';
+            image.onload = () => {
+                cropX = 0;
+                cropY = 0;
+                scale = 1;
+                updateCropper();
+            };
+        }
+
+        function initCropper() {
+            cropX = 0;
+            cropY = 0;
+            scale = 1;
+            updateCropper();
+        }
+
+        function zoomIn() {
+            scale = Math.min(scale + 0.1, 2);
+            updateCropper();
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale - 0.1, 0.5);
+            updateCropper();
+        }
+
+        function updateCropper() {
+            const image = document.getElementById('character-image');
+            const cropper = document.getElementById('crop-circle');
+            const preview = document.getElementById('profile-preview');
+            if (!image.src) return;
+            cropper.style.left = `${cropX}px`;
+            cropper.style.top = `${cropY}px`;
+            image.style.transform = `scale(${scale})`;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(50, 50, 50, 0, Math.PI * 2);
+            ctx.clip();
+
+            const imgRect = image.getBoundingClientRect();
+            const cropRect = cropper.getBoundingClientRect();
+            const sx = ((cropRect.left - imgRect.left) / imgRect.width) * image.naturalWidth;
+            const sy = ((cropRect.top - imgRect.top) / imgRect.height) * image.naturalHeight;
+            const sWidth = (100 / imgRect.width) * image.naturalWidth / scale;
+            const sHeight = (100 / imgRect.height) * image.naturalHeight / scale;
+
+            try {
+                ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, 100, 100);
+                preview.src = canvas.toDataURL();
+            } catch (e) {
+                console.error('Canvas error:', e);
+                preview.src = image.src;
+            }
+        }
+
+        function saveProfilePicture() {
+            if (!selectedCharacter) return alert('Please select a character.');
+            const preview = document.getElementById('profile-preview');
+            fetch('/set-profile-picture/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: `image_url=${encodeURIComponent(preview.src)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector('.profile-picture img')?.setAttribute('src', data.url) || 
+                    (document.querySelector('.profile-picture').innerHTML = `<img src="${data.url}" alt="Profile Picture">`);
+                    closeProfileModal();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => console.error('Save error:', error));
+        }
+    </script>
+    {% endif %}
+{% endblock %}

@@ -1,82 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520"
-     crossorigin="anonymous"></script>
-     
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+
+{% block meta %}
     <title>Exclusions - Cartoon Guesser</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
-            color: #e0e0e0;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .exclusions-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background: rgba(37, 37, 37, 0.85);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-        h2 {
-            color: #00ccff;
-            margin-bottom: 20px;
-        }
-        .show-item {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .character-list {
-            margin-left: 20px;
-            display: none;
-        }
-        .toggle-characters {
-            background: none;
-            border: none;
-            color: #00ccff;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .toggle-characters:hover {
-            text-decoration: underline;
-        }
-        .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #00ccff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            margin: 5px;
-        }
-        .btn:hover {
-            background-color: #00b3e6;
-            transform: translateY(-2px);
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        .button-group {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-    </style>
-</head>
-<body>
+{% endblock %}
+
+{% block title %}Exclusions{% endblock %}
+
+{% block content %}
     <div class="exclusions-container">
         <h2>Exclusions</h2>
         <form method="post" action="{% url 'exclusions' %}">
@@ -89,8 +19,7 @@
                 {% for show in all_shows %}
                     <div class="show-item">
                         <label>
-                            <input type="checkbox" name="excluded_shows" value="{{ show.id }}"
-                                   {% if show in preferences.excluded_shows.all %}checked{% endif %}>
+                            <input type="checkbox" name="excluded_shows" value="{{ show.id }}" {% if show in preferences.excluded_shows.all %}checked{% endif %}>
                             {{ show.name }}
                         </label>
                         <button type="button" class="toggle-characters" data-show-id="{{ show.id }}">Toggle Characters</button>
@@ -101,52 +30,56 @@
             <button type="submit" class="btn">Save Exclusions</button>
         </form>
     </div>
+{% endblock %}
 
+{% block extra_css %}
+    <style>
+        .exclusions-container { max-width: 600px; margin: 0 auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        h2 { color: var(--primary); margin-bottom: 20px; }
+        .show-item { margin-bottom: 15px; text-align: left; }
+        .character-list { margin-left: 20px; display: none; }
+        .toggle-characters { background: none; border: none; color: var(--primary); cursor: pointer; margin-left: 10px; }
+        .toggle-characters:hover { text-decoration: underline; }
+        .button-group { margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="checkbox"] { margin-right: 10px; }
+    </style>
+{% endblock %}
+
+{% block extra_js %}
     <script>
-        function toggleCharacters(divId, showId) {
-            const element = document.getElementById(divId);
-            if (element.style.display === "none" || element.innerHTML === "") {
-                fetch(`/get_characters/${showId}/`, {
-                    headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    element.innerHTML = '';
-                    data.characters.forEach(char => {
-                        const label = document.createElement('label');
-                        label.innerHTML = `
-                            <input type="checkbox" name="excluded_characters" value="${char.id}"
-                                   ${char.excluded ? 'checked' : ''}> ${char.name}
-                        `;
-                        element.appendChild(label);
-                    });
-                    element.style.display = "block";
-                })
-                .catch(error => console.error('Error loading characters:', error));
-            } else {
-                element.style.display = "none";
-            }
-        }
-
         document.querySelectorAll('.toggle-characters').forEach(button => {
-            button.addEventListener('click', function() {
-                const showId = this.getAttribute('data-show-id');
+            button.addEventListener('click', () => {
+                const showId = button.getAttribute('data-show-id');
                 const divId = `chars-${showId}`;
                 toggleCharacters(divId, showId);
             });
         });
 
+        function toggleCharacters(divId, showId) {
+            const element = document.getElementById(divId);
+            if (element.style.display === "none" || !element.innerHTML) {
+                fetch(`/get_characters/${showId}/`, { headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                .then(response => response.json())
+                .then(data => {
+                    element.innerHTML = '';
+                    data.characters.forEach(char => {
+                        element.innerHTML += `<label><input type="checkbox" name="excluded_characters" value="${char.id}" ${char.excluded ? 'checked' : ''}> ${char.name}</label>`;
+                    });
+                    element.style.display = "block";
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                element.style.display = "none";
+            }
+        }
+
         function selectAll() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = true;
-            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
         }
 
         function deselectAll() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
     </script>
-</body>
-</html>
+{% endblock %}

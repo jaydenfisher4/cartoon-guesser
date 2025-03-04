@@ -16,5 +16,11 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('recent-changes/', views.recent_changes, name='recent_changes'),
     path('set-profile-picture/', views.set_profile_picture, name='set_profile_picture'),
-    path('report-image-restriction/', views.report_image_restriction, name='report_image_restriction')
+    path('report-image-restriction/', views.report_image_restriction, name='report_image_restriction'),
+    path('profile/', views.profile, name='profile'),
+    path('profile/<str:username>/', views.profile, name='profile'),
+    path('search-users/', views.search_users, name='search_users'),
+    path('send-friend-request/<str:username>/', views.send_friend_request, name='send_friend_request'),
+    path('accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
+    path('reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),
 ]

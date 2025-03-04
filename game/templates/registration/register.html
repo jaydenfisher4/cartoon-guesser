@@ -1,36 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+
+{% block meta %}
     <title>Register - Cartoon Guesser</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Reuse login.html styles */
-        html { background: linear-gradient(135deg, #2a2a2a, #1f2a44); height: 100%; }
-        body { font-family: 'Roboto', sans-serif; color: #e0e0e0; text-align: center; margin: 0; padding: 20px; }
-        .register-container { max-width: 400px; margin: 0 auto; padding: 20px; background: rgba(37, 37, 37, 0.85); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
-        h2 { color: #00ccff; font-size: 2em; margin-bottom: 20px; }
-        form { display: flex; flex-direction: column; gap: 15px; }
-        label { color: #b0b0b0; font-size: 1.1em; text-align: left; }
-        input { padding: 12px; font-size: 1.1em; border: 2px solid #404040; border-radius: 5px; background-color: #333333; color: #e0e0e0; }
-        input:focus { outline: none; border-color: #00ccff; box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
-        button { padding: 12px 24px; font-size: 1.1em; background-color: #00ccff; color: #1a1a1a; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #00b3e6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4); }
-        a { color: #00ccff; text-decoration: none; font-size: 1.1em; margin-top: 15px; display: inline-block; }
-        a:hover { color: #00b3e6; }
-    </style>
-</head>
-<body>
+{% endblock %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
     <div class="register-container">
         <h2>Register</h2>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Register</button>
+            <button type="submit" class="btn">Register</button>
         </form>
         <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
         <a href="{% url 'index' %}">Back to Game</a>
     </div>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .register-container { max-width: 400px; margin: 0 auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        h2 { color: var(--primary); font-size: 2em; margin-bottom: 20px; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        label { color: var(--text-muted); font-size: 1.1em; text-align: left; }
+        input { padding: 12px; font-size: 1.1em; border: 2px solid #404040; border-radius: 5px; background-color: #333333; color: var(--text); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        p { color: var(--text-muted); margin-top: 15px; }
+        a { color: var(--primary); font-size: 1.1em; margin-top: 15px; display: inline-block; }
+        a:hover { color: var(--primary-hover); }
+    </style>
+{% endblock %}

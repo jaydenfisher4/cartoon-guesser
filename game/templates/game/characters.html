@@ -1,189 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4507921436426520"
-     crossorigin="anonymous"></script>
-     
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+
+{% block meta %}
     <title>All Characters - Cartoon Guesser</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        html {
-            background: linear-gradient(135deg, #2a2a2a, #1f2a44);
-            background-attachment: fixed;
-            background-size: 100% 100%;
-            height: 100%;
-            overflow-y: scroll;
-            scrollbar-width: thin;
-            scrollbar-color: #00ccff #252525;
-        }
-        html::-webkit-scrollbar {
-            width: 12px;
-        }
-        html::-webkit-scrollbar-track {
-            background: #252525;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: #00ccff;
-            border-radius: 6px;
-        }
-        html::-webkit-scrollbar-thumb:hover {
-            background: #00b3e6;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: #e0e0e0;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
-        .raindrop-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -2; /* Further behind all content */
-        }
-        .raindrop {
-            position: absolute;
-            width: 2px;
-            height: 10px;
-            background: rgba(0, 204, 255, 0.5);
-            border-radius: 50% 50% 10% 10%;
-            box-shadow: 0 0 4px rgba(0, 204, 255, 0.2);
-            animation: fallRaindrop 3s linear forwards;
-            pointer-events: none;
-        }
-        @keyframes fallRaindrop {
-            0% { opacity: 0; transform: translateY(-10vh); }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(110vh); }
-        }
-        h1 {
-            color: #00ccff;
-            font-size: 2.5em;
-            text-shadow: 0 0 5px rgba(0, 204, 255, 0.5);
-            transition: transform 0.3s ease;
-        }
-        h1:hover {
-            transform: scale(1.05);
-        }
-        .controls {
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            background: rgba(37, 37, 37, 0.85);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: box-shadow 0.3s ease;
-        }
-        .controls:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        input, select {
-            padding: 10px;
-            font-size: 1.1em;
-            border: 2px solid #404040;
-            border-radius: 5px;
-            background-color: #333333;
-            color: #e0e0e0;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #00ccff;
-            box-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 1.1em;
-            background-color: #00ccff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-        button:hover {
-            background-color: #00b3e6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 204, 255, 0.4);
-        }
-        .character-list {
-            max-width: 1200px;
-            margin: 30px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 10px;
-        }
-        .character-card {
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            text-align: left;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .character-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-        }
-        .character-card img {
-            max-width: 100px;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .character-card p {
-            margin: 5px 0;
-            font-size: 1em;
-            color: #b0b0b0;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="raindrop-wrapper"></div>
+{% endblock %}
+
+{% block title %}All Characters{% endblock %}
+
+{% block content %}
     <div class="controls">
-        <h1>All Characters</h1>
         <input type="text" id="search-input" placeholder="Search by name...">
         <select id="show-filter">
             <option value="">All Shows</option>
-            {% for show in shows %}
-                <option value="{{ show }}">{{ show }}</option>
-            {% endfor %}
+            {% for show in shows %}<option value="{{ show }}">{{ show }}</option>{% endfor %}
         </select>
         <select id="network-filter">
             <option value="">All Networks</option>
-            {% for network in single_networks %}
-                <option value="{{ network }}">{{ network }}</option>
-            {% endfor %}
+            {% for network in single_networks %}<option value="{{ network }}">{{ network }}</option>{% endfor %}
         </select>
         <select id="secondary-network-filter">
             <option value="">Any Secondary Network</option>
-            {% for network in single_networks %}
-                <option value="{{ network }}">{{ network }}</option>
-            {% endfor %}
+            {% for network in single_networks %}<option value="{{ network }}">{{ network }}</option>{% endfor %}
         </select>
         <select id="year-filter">
             <option value="">All Years</option>
-            {% for year in years %}
-                <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
+            {% for year in years %}<option value="{{ year }}">{{ year }}</option>{% endfor %}
         </select>
         <select id="main-filter">
             <option value="">Main/Side</option>
@@ -217,7 +57,7 @@
             <option value="gender-asc">Gender (A-Z)</option>
             <option value="gender-desc">Gender (Z-A)</option>
         </select>
-        <button id="back-to-game">Back to Game</button>
+        <button class="btn" id="back-to-game">Back to Game</button>
     </div>
     <div class="character-list" id="character-list">
         {% for character in characters %}
@@ -243,130 +83,79 @@
             <p>No characters found.</p>
         {% endfor %}
     </div>
+{% endblock %}
 
+{% block extra_css %}
+    <style>
+        .controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
+        input, select { padding: 12px; font-size: 1.1em; border: 2px solid #404040; border-radius: 5px; background-color: #333333; color: var(--text); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        .character-list { max-width: 1200px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 10px; }
+        .character-card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); text-align: left; }
+        .character-card img { max-width: 100px; height: auto; border-radius: 5px; margin-bottom: 10px; }
+        .character-card p { margin: 5px 0; font-size: 1em; color: var(--text-muted); }
+    </style>
+{% endblock %}
+
+{% block extra_js %}
     <script>
-        const searchInput = document.getElementById('search-input');
-        const showFilter = document.getElementById('show-filter');
-        const networkFilter = document.getElementById('network-filter');
-        const secondaryNetworkFilter = document.getElementById('secondary-network-filter');
-        const yearFilter = document.getElementById('year-filter');
-        const mainFilter = document.getElementById('main-filter');
-        const airingFilter = document.getElementById('airing-filter');
-        const genderFilter = document.getElementById('gender-filter');
-        const sortBy = document.getElementById('sort-by');
-        const characterList = document.getElementById('character-list');
-        const backButton = document.getElementById('back-to-game');
-        const cards = Array.from(characterList.getElementsByClassName('character-card'));
         const lastMode = "{{ last_mode }}";
+        const cards = Array.from(document.getElementById('character-list').getElementsByClassName('character-card'));
 
-        // Raindrop animation setup
-        function createRaindrop() {
-            const raindrop = document.createElement('div');
-            raindrop.className = 'raindrop';
-            const position = Math.random();
-            if (position < 0.5) {
-                raindrop.style.left = `${Math.random() * 20}%`; // Left margin
-            } else {
-                raindrop.style.left = `${80 + Math.random() * 20}%`; // Right margin
-            }
-            raindrop.style.animationDuration = `${2 + Math.random() * 2}s`;
-            document.querySelector('.raindrop-wrapper').appendChild(raindrop);
-            setTimeout(() => raindrop.remove(), 4000);
-        }
-        setInterval(createRaindrop, 150);
+        document.getElementById('search-input').addEventListener('input', filterAndSort);
+        ['show-filter', 'network-filter', 'secondary-network-filter', 'year-filter', 'main-filter', 'airing-filter', 'gender-filter', 'sort-by'].forEach(id => {
+            document.getElementById(id).addEventListener('change', filterAndSort);
+        });
+        document.getElementById('back-to-game').addEventListener('click', () => window.location.href = lastMode === 'daily' ? '/' : '/unlimited/');
 
         function filterAndSort() {
-            const search = searchInput.value.toLowerCase();
-            const show = showFilter.value.toLowerCase();
-            const network = networkFilter.value.toLowerCase();
-            const secondaryNetwork = secondaryNetworkFilter.value.toLowerCase();
-            const year = yearFilter.value;
-            const main = mainFilter.value.toLowerCase();
-            const airing = airingFilter.value.toLowerCase();
-            const gender = genderFilter.value.toLowerCase();
-            const [sortField, sortDir] = sortBy.value.split('-');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filters = {
+                show: document.getElementById('show-filter').value.toLowerCase(),
+                network: document.getElementById('network-filter').value.toLowerCase(),
+                secondaryNetwork: document.getElementById('secondary-network-filter').value.toLowerCase(),
+                year: document.getElementById('year-filter').value,
+                main: document.getElementById('main-filter').value.toLowerCase(),
+                airing: document.getElementById('airing-filter').value.toLowerCase(),
+                gender: document.getElementById('gender-filter').value.toLowerCase()
+            };
+            const [sortField, sortDir] = document.getElementById('sort-by').value.split('-');
 
             let filteredCards = cards.filter(card => {
                 const networks = card.dataset.networks.split(', ').map(n => n.trim());
-                const matchesPrimaryNetwork = !network || networks.includes(network);
-                const matchesSecondaryNetwork = !secondaryNetwork || networks.includes(secondaryNetwork);
-                // Exclude characters where data-excluded is "true"
                 return (
                     card.dataset.excluded !== "true" &&
                     (!search || card.dataset.name.includes(search)) &&
-                    (!show || card.dataset.show === show) &&
-                    matchesPrimaryNetwork &&
-                    matchesSecondaryNetwork &&
-                    (!year || card.dataset.year === year) &&
-                    (!main || card.dataset.main === main) &&
-                    (!airing || card.dataset.airing === airing) &&
-                    (!gender || card.dataset.gender === gender)
+                    (!filters.show || card.dataset.show === filters.show) &&
+                    (!filters.network || networks.includes(filters.network)) &&
+                    (!filters.secondaryNetwork || networks.includes(filters.secondaryNetwork)) &&
+                    (!filters.year || card.dataset.year === filters.year) &&
+                    (!filters.main || card.dataset.main === filters.main) &&
+                    (!filters.airing || card.dataset.airing === filters.airing) &&
+                    (!filters.gender || card.dataset.gender === filters.gender)
                 );
             });
 
             filteredCards.sort((a, b) => {
                 let aValue, bValue;
                 switch (sortField) {
-                    case 'name':
-                        aValue = a.dataset.name;
-                        bValue = b.dataset.name;
-                        break;
-                    case 'show':
-                        aValue = a.dataset.show;
-                        bValue = b.dataset.show;
-                        break;
-                    case 'network':
-                        aValue = a.dataset.networks;
-                        bValue = b.dataset.networks;
-                        break;
-                    case 'year':
-                        aValue = parseInt(a.dataset.year);
-                        bValue = parseInt(b.dataset.year);
-                        break;
-                    case 'main':
-                        aValue = a.dataset.main === 'true' ? 1 : 0;
-                        bValue = b.dataset.main === 'true' ? 1 : 0;
-                        break;
-                    case 'airing':
-                        aValue = a.dataset.airing === 'true' ? 1 : 0;
-                        bValue = b.dataset.airing === 'true' ? 1 : 0;
-                        break;
-                    case 'gender':
-                        aValue = a.dataset.gender;
-                        bValue = b.dataset.gender;
-                        break;
+                    case 'name': aValue = a.dataset.name; bValue = b.dataset.name; break;
+                    case 'show': aValue = a.dataset.show; bValue = b.dataset.show; break;
+                    case 'network': aValue = a.dataset.networks; bValue = b.dataset.networks; break;
+                    case 'year': aValue = parseInt(a.dataset.year); bValue = parseInt(b.dataset.year); break;
+                    case 'main': aValue = a.dataset.main === 'true' ? 1 : 0; bValue = b.dataset.main === 'true' ? 1 : 0; break;
+                    case 'airing': aValue = a.dataset.airing === 'true' ? 1 : 0; bValue = b.dataset.airing === 'true' ? 1 : 0; break;
+                    case 'gender': aValue = a.dataset.gender; bValue = b.dataset.gender; break;
                 }
-                if (sortDir === 'asc') {
-                    return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-                } else {
-                    return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-                }
+                return sortDir === 'asc' ? (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) : (aValue > bValue ? -1 : aValue < bValue ? 1 : 0);
             });
 
-            characterList.innerHTML = '';
-            filteredCards.forEach(card => {
-                characterList.appendChild(card);
-            });
-            if (filteredCards.length === 0) {
-                characterList.innerHTML = '<p>No characters found.</p>';
-            }
+            const list = document.getElementById('character-list');
+            list.innerHTML = '';
+            filteredCards.forEach(card => list.appendChild(card));
+            if (!filteredCards.length) list.innerHTML = '<p>No characters found.</p>';
         }
-
-        searchInput.addEventListener('input', filterAndSort);
-        showFilter.addEventListener('change', filterAndSort);
-        networkFilter.addEventListener('change', filterAndSort);
-        secondaryNetworkFilter.addEventListener('change', filterAndSort);
-        yearFilter.addEventListener('change', filterAndSort);
-        mainFilter.addEventListener('change', filterAndSort);
-        airingFilter.addEventListener('change', filterAndSort);
-        genderFilter.addEventListener('change', filterAndSort);
-        sortBy.addEventListener('change', filterAndSort);
-
-        backButton.addEventListener('click', function() {
-            window.location.href = lastMode === 'daily' ? '/' : '/unlimited/';
-        });
 
         filterAndSort();
     </script>
-</body>
-</html>
+{% endblock %}
