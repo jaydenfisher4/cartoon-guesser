@@ -91,6 +91,8 @@ def index(request):
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
             request.session['daily_game_over'] = False
+            request.session['guesses-daily'] = []  # Reset guesses for new day
+            request.session['hint_used-daily'] = False
         else:
             daily_character = None
 
@@ -105,11 +107,11 @@ def index(request):
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     guesses = request.session.get('guesses-daily', [])
     request.session['last_mode'] = 'daily'
-    request.session.setdefault('hint_used-daily', False)
+
     context = {
         'character': daily_character,
-        'guesses': guesses,
-        'all_characters': all_characters_data,
+        'guesses': json.dumps(guesses),
+        'all_characters': json.dumps(all_characters_data),
         'mode': 'daily'
     }
     return render(request, 'game/index.html', context)
@@ -124,6 +126,8 @@ def unlimited(request):
         current_character = get_random_character(request, guessed_ids, excluded_shows, excluded_chars)
         if current_character:
             request.session['current_character_id-unlimited'] = current_character.id
+            request.session['guesses-unlimited'] = []  # Reset guesses for new character
+            request.session['hint_used-unlimited'] = False
         else:
             current_character = None
     else:
@@ -138,12 +142,11 @@ def unlimited(request):
     )
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     request.session['last_mode'] = 'unlimited'
-    request.session.setdefault('hint_used-unlimited', False)
 
     context = {
         'character': current_character,
-        'guesses': guesses,
-        'all_characters': all_characters_data,
+        'guesses': json.dumps(guesses),
+        'all_characters': json.dumps(all_characters_data),
         'mode': 'unlimited'
     }
     return render(request, 'game/index.html', context)
@@ -252,15 +255,20 @@ def guess(request):
             if mode == 'unlimited' and result['correct']:
                 guessed_ids.append(current_character.id)
                 request.session[guessed_ids_key] = guessed_ids
+                request.session[guesses_key] = []  # Reset guesses for next character
+                request.session[hint_key] = False
             elif mode == 'daily' and (result['correct'] or len(guesses) >= 15):
                 request.session['daily_game_over'] = True
-                DailyGameHistory.objects.create(
-                    user=request.user,
-                    date=date.today(),
-                    character_name=current_character.name,
-                    won=result['correct'],
-                    guess_count=len(guesses)
-                )
+                request.session[guesses_key] = []  # Reset guesses for next game
+                request.session[hint_key] = False
+                if request.user.is_authenticated:
+                    DailyGameHistory.objects.create(
+                        user=request.user,
+                        date=date.today(),
+                        character_name=current_character.name,
+                        won=result['correct'],
+                        guess_count=len(guesses)
+                    )
 
         logger.info(f"Guess response: {json.dumps(result)}")
         if result['correct'] or (mode == 'daily' and len(guesses) >= 15):
@@ -268,7 +276,7 @@ def guess(request):
         return JsonResponse(result)
     except CartoonCharacter.DoesNotExist:
         return JsonResponse({'error': 'Character not found'}, status=404)
-    
+
 def hint(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -354,10 +362,12 @@ def win(request):
         daily_character = get_daily_character(request)
         if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
             return redirect('index')
+        request.session['guesses-daily'] = []  # Reset guesses after win
+        request.session['hint_used-daily'] = False
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-        request.session['guesses-unlimited'] = []
+        request.session['guesses-unlimited'] = []  # Reset guesses for next character
         request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
@@ -380,10 +390,12 @@ def lose(request):
         daily_character = get_daily_character(request)
         if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
             return redirect('index')
+        request.session['guesses-daily'] = []  # Reset guesses after loss
+        request.session['hint_used-daily'] = False
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-        request.session['guesses-unlimited'] = []
+        request.session['guesses-unlimited'] = []  # Reset guesses for next character
         request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
@@ -493,7 +505,7 @@ def report_image_restriction(request):
     except Exception as e:
         logger.error(f"Error updating {name}: {str(e)}")
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    
+
 @login_required
 def profile(request, username=None):
     if username:
@@ -547,7 +559,7 @@ def profile(request, username=None):
         friend = friendship.user2 if friendship.user1 == profile_user else friendship.user1
         friend_list.append({
             'username': friend.username,
-            'profile_picture': friend.userpreference.profile_picture if hasattr(friend, 'userpreference') else None
+            'profile_picture': friend.userpreference.profile_picture if hasattr(friend, 'userpreference') and friend.userpreference.profile_picture else None
         })
 
     context = {
@@ -562,7 +574,7 @@ def profile(request, username=None):
         'has_sent_request': has_sent_request,
         'has_received_request': has_received_request,
         'received_request': received_request,
-        'friend_list': friend_list,  # Updated to include profile_picture
+        'friend_list': friend_list,
         'is_own_profile': profile_user == request.user,
     }
     return render(request, 'game/profile.html', context)
@@ -570,12 +582,26 @@ def profile(request, username=None):
 @login_required
 def search_users(request):
     query = request.GET.get('q', '')
-    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
     context = {
-        'users': users,
         'query': query,
     }
     return render(request, 'game/search_users.html', context)
+
+@login_required
+def search_users_autocomplete(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return JsonResponse({'users': []})
+    
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]  # Limit to 10
+    user_data = [
+        {
+            'username': user.username,
+            'profile_picture': user.userpreference.profile_picture if hasattr(user, 'userpreference') and user.userpreference.profile_picture else None
+        }
+        for user in users
+    ]
+    return JsonResponse({'users': user_data})
 
 @login_required
 def send_friend_request(request, username):

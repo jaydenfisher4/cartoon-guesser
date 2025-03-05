@@ -98,7 +98,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.guesses = JSON.parse(document.getElementById('guesses-data')?.textContent || '[]');
             window.allCharacters = JSON.parse(document.getElementById('all-characters')?.textContent || '[]');
-            window.guessCount = window.guesses.length;
+            // Initialize guessCount to 0 for a new game, override with server data if present
+            window.guessCount = 0;
+            window.guesses.forEach(guess => {
+                if (!guess.correct) window.guessCount++; // Only count incorrect guesses
+            });
             window.knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
             window.hintUsed = false;
             window.guessCounter = document.getElementById('guess-counter');
@@ -109,15 +113,88 @@
 
             console.log('DOM loaded, initializing game');
             console.log('allCharacters length:', window.allCharacters.length);
-            console.log('allCharacters:', window.allCharacters);
+            console.log('Initial guessCount:', window.guessCount);
             initGame();
             if (window.allCharacters.length === 0) console.error('No characters loaded for autocomplete');
             setupAutocomplete('guess-input', window.allCharacters, submitGuess);
             updateHintButton();
+
+            // Populate guesses container with existing guesses
+            window.guesses.forEach(guess => updateKnownResults(guess));
         });
 
         function initGame() {
             window.guessCounter.textContent = `Guesses: ${window.guessCount}${window.mode === 'daily' ? '/15' : ''}`;
+        }
+
+        function resetGame() {
+            window.guessCount = 0;
+            window.hintUsed = false;
+            window.guessesContainer.innerHTML = '';
+            window.knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
+            window.guessCounter.textContent = `Guesses: ${window.guessCount}${window.mode === 'daily' ? '/15' : ''}`;
+            window.knownResults.innerHTML = `
+                <div class="cell">?</div>
+                <div class="cell"><span class="icon">👤</span>?</div>
+                <div class="cell"><span class="icon">📺</span>?</div>
+                <div class="cell"><span class="icon">🎬</span>?</div>
+                <div class="cell"><span class="icon">⭐</span>?</div>
+                <div class="cell"><span class="icon">📅</span>?</div>
+                <div class="cell"><span class="icon">⏳</span>?</div>
+                <div class="cell"><span class="icon">🚻</span>?</div>
+            `;
+            updateHintButton();
+            document.getElementById('guess-input').value = '';
+        }
+
+        function submitGuess() {
+            const guess = document.getElementById('guess-input')?.value.trim();
+            if (!guess || (window.mode === 'daily' && window.guessCount >= 15)) return;
+
+            console.log('Submitting guess:', guess);
+            fetch('/guess/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '{{ csrf_token }}' },
+                body: `guess=${encodeURIComponent(guess)}&mode=${window.mode}`
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Guess response:', data);
+                if (data.redirect) return window.location.href = data.redirect;
+                if (data.error) return alert(data.error);
+
+                window.guessCount = data.guess_count;
+                window.guessCounter.textContent = `Guesses: ${window.guessCount}${window.mode === 'daily' ? '/15' : ''}`;
+                updateKnownResults(data);
+                updateHintButton();
+
+                if (data.correct) {
+                    setTimeout(() => playSound('win-sound'), 100);
+                    if (window.mode === 'daily') {
+                        resetGame(); // Reset after win in daily mode
+                    } else {
+                        window.guessesContainer.innerHTML = '';
+                        window.guessCount = 0;
+                        window.hintUsed = false;
+                        window.guessCounter.textContent = 'Guesses: 0';
+                        window.knownValues = { name: '?', network: '?', show: '?', is_main: '?', release_year: '?', still_airing: '?', gender: '?', image: '?' };
+                        updateKnownResults({});
+                    }
+                } else if (window.mode === 'daily' && window.guessCount >= 15) {
+                    setTimeout(() => playSound('lose-sound'), 100);
+                    resetGame(); // Reset after loss in daily mode
+                }
+                document.getElementById('guess-input').value = '';
+            })
+            .catch(error => console.error('Guess error:', error));
+        }
+
+        function giveUp() {
+            playSound('lose-sound');
+            window.location.href = `/lose/?mode=${window.mode}&gave_up=true`;
         }
     </script>
 {% endblock %}

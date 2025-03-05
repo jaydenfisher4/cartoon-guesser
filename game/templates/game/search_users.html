@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block meta %}
-    <title>Search Users - Cartoon Guesser</title>
+    <title>Search Users - Cartoon Guessing Game</title>
 {% endblock %}
 
 {% block title %}Search Users{% endblock %}
@@ -10,33 +10,115 @@
 {% block content %}
     <div class="search-container">
         <h2>Search Users</h2>
-        <form method="get" action="{% url 'search_users' %}">
-            <input type="text" name="q" value="{{ query }}" placeholder="Search by username..." class="search-input">
-            <button type="submit" class="btn">Search</button>
-        </form>
-        {% if users %}
-            <ul class="user-list">
-                {% for user in users %}
-                    <li>
-                        <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No users found.</p>
-        {% endif %}
+        <div class="user-search-wrapper">
+            <input type="text" id="user-search" placeholder="Search for users..." value="{{ query }}" autocomplete="off">
+            <div id="user-search-autocomplete-list"></div>
+        </div>
     </div>
 {% endblock %}
 
 {% block extra_css %}
     <style>
-        .search-container { max-width: 600px; margin: 20px auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); text-align: center; }
-        h2 { color: var(--primary); font-size: 2em; margin-bottom: 20px; }
-        .search-input { width: 70%; padding: 12px; margin: 10px 0; background: #333333; border: 2px solid #404040; color: var(--text); border-radius: 5px; font-size: 1em; }
-        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
-        .user-list { list-style: none; padding: 0; text-align: left; }
-        .user-list li { font-size: 1.2em; margin: 10px 0; }
-        .user-list a { color: var(--primary); text-decoration: none; }
-        .user-list a:hover { color: var(--primary-hover); }
+        .search-container { max-width: 600px; margin: 20px auto; padding: 20px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); text-align: center; }
+        .search-container h2 { color: var(--primary); font-size: 1.8em; margin-bottom: 20px; }
+        .user-search-wrapper { position: relative; }
+        #user-search { width: 100%; padding: 12px; background: #333333; border: 2px solid #404040; color: var(--text); border-radius: 5px; font-size: 1.2em; }
+        #user-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 8px rgba(0, 204, 255, 0.5); }
+        #user-search-autocomplete-list { position: absolute; top: 100%; left: 0; width: 100%; background-color: #252525; border: 1px solid #404040; border-radius: 5px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+        #user-search-autocomplete-list .autocomplete-item { padding: 10px; cursor: pointer; color: var(--text); display: flex; align-items: center; transition: background-color 0.2s ease; }
+        #user-search-autocomplete-list .autocomplete-item:hover, #user-search-autocomplete-list .autocomplete-item.selected { background-color: #333333; }
+        #user-search-autocomplete-list .autocomplete-item img { width: 30px; height: auto; margin-right: 12px; border-radius: 50%; object-fit: cover; }
+        #user-search-autocomplete-list .autocomplete-item span { font-size: 1em; margin-right: 12px; color: var(--primary); }
     </style>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setupUserSearch();
+        });
+
+        function setupUserSearch() {
+            const searchInput = document.getElementById('user-search');
+            const autocompleteList = document.getElementById('user-search-autocomplete-list');
+            let selectedIndex = -1;
+
+            searchInput.addEventListener('input', debounce(async () => {
+                const query = searchInput.value.trim();
+                if (query.length < 1) {
+                    autocompleteList.innerHTML = '';
+                    autocompleteList.style.display = 'none';
+                    return;
+                }
+
+                const response = await fetch(`/search-users-autocomplete/?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                const users = data.users;
+
+                if (users.length === 0) {
+                    autocompleteList.innerHTML = '<div class="autocomplete-item">No users found</div>';
+                    autocompleteList.style.display = 'block';
+                    return;
+                }
+
+                autocompleteList.innerHTML = users.map(user => `
+                    <div class="autocomplete-item" data-username="${user.username}">
+                        ${user.profile_picture ? `<img src="${user.profile_picture}" alt="${user.username}'s picture">` : '<span>👤</span>'}
+                        ${user.username}
+                    </div>
+                `).join('');
+                autocompleteList.style.display = 'block';
+                selectedIndex = -1;
+
+                // Click to redirect
+                autocompleteList.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const username = item.getAttribute('data-username');
+                        if (username) window.location.href = `/profile/${username}/`;
+                    });
+                });
+            }, 300));
+
+            // Keyboard navigation
+            searchInput.addEventListener('keydown', (e) => {
+                const items = autocompleteList.querySelectorAll('.autocomplete-item');
+                if (!items.length) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                    updateSelection(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, -1);
+                    updateSelection(items);
+                } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    const username = items[selectedIndex].getAttribute('data-username');
+                    if (username) window.location.href = `/profile/${username}/`;
+                }
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+                    autocompleteList.style.display = 'none';
+                }
+            });
+
+            function updateSelection(items) {
+                items.forEach((item, index) => {
+                    item.classList.toggle('selected', index === selectedIndex);
+                });
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+        }
+    </script>
 {% endblock %}

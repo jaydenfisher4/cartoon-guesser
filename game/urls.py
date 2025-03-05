@@ -20,6 +20,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/<str:username>/', views.profile, name='profile'),
     path('search-users/', views.search_users, name='search_users'),
+    path('search-users-autocomplete/', views.search_users_autocomplete, name='search_users_autocomplete'),
     path('send-friend-request/<str:username>/', views.send_friend_request, name='send_friend_request'),
     path('accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),

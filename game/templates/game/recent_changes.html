@@ -18,6 +18,12 @@
     <div class="content-container">
         <h2>Latest Updates</h2>
 
+        <h3>March 5, 2025</h3>
+        <ul>
+            <li>Enhanced <a href="{% url 'search_users' %}" title="Search and connect with other players">Search Users</a> link with improved autocomplete and profile picture previews for a better friend-finding experience.</li>
+            <li>Fixed a bug that prevented guesses from resetting after a win or loss in daily mode, ensuring a fresh start for each new game.</li>
+        </ul>
+
         <h3>March 3, 2025</h3>
         <ul>
             <li>Reworked backend for better performance.</li>
@@ -53,7 +59,7 @@
         .content-container h3 { color: var(--primary); font-size: 1.5em; margin-top: 20px; }
         .content-container ul { list-style-type: disc; padding-left: 20px; margin: 10px 0 20px 0; }
         .content-container li { line-height: 1.6; font-size: 1.1em; }
-        .content-container a { color: var(--primary); text-decoration: none; }
-        .content-container a:hover { color: var(--primary-hover); }
+        .content-container a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        .content-container a:hover { color: var(--primary-hover); text-decoration: underline; }
     </style>
 {% endblock %}
