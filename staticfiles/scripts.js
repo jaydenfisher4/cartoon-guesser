@@ -174,7 +174,11 @@ function submitGuess() {
 }
 
 function updateKnownResults(data) {
+    if (!data || typeof data !== 'object') return;
+    console.log('Updating known results with:', data);
+
     if (data.correct) {
+        console.log('Correct guess, setting known values');
         window.knownValues = {
             name: data.name,
             network: data.network_value,
@@ -186,8 +190,10 @@ function updateKnownResults(data) {
             image: data.image_url || '?'
         };
     } else if (data.hint) {
+        console.log('Applying hint:', data.hint);
         window.knownValues[data.hint.field] = data.hint.value;
     } else {
+        console.log('Incorrect guess, updating partial matches');
         if (data.network && !data.network_partial) window.knownValues.network = data.network_value;
         if (data.show) window.knownValues.show = data.show_value;
         if (data.main_correct) window.knownValues.is_main = data.is_main ? 'Main' : 'Side';
@@ -195,6 +201,8 @@ function updateKnownResults(data) {
         if (data.airing_correct) window.knownValues.still_airing = data.still_airing ? 'Yes' : 'No';
         if (data.gender) window.knownValues.gender = data.gender_value;
     }
+
+    console.log('Rendering known results');
     window.knownResults.innerHTML = `
         <div class="cell">${window.knownValues.image !== '?' ? `<img src="${window.knownValues.image}" alt="Character" style="max-width: 80px;">` : '?'}</div>
         <div class="cell ${window.knownValues.name !== '?' ? 'correct' : ''}"><span class="icon">👤</span>${window.knownValues.name}</div>
@@ -207,6 +215,7 @@ function updateKnownResults(data) {
     `;
 
     if (!data.correct && !data.hint) {
+        console.log('Adding guess row');
         const row = document.createElement('div');
         row.className = 'grid';
         let yearIndicator = data.release_year ? '' : (data.year_value < data.daily_year ? ' ↑' : ' ↓');
@@ -250,3 +259,5 @@ function giveUp() {
     playSound('lose-sound');
     window.location.href = `/lose/?mode=${window.mode}&gave_up=true`;
 }
+
+// DOMContentLoaded setup moved to index.html for initialization

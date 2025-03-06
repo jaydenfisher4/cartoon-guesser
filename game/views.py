@@ -67,7 +67,7 @@ def get_random_character(request, exclude_ids=None, excluded_shows=None, exclude
     return character
 
 def index(request):
-    if request.GET.get('reset'):  # For testing
+    if request.GET.get('reset'):
         request.session.flush()
         return redirect('index')
 
@@ -82,7 +82,7 @@ def index(request):
             daily_character = CartoonCharacter.objects.get(id=daily_character_id)
             return redirect('win' if guesses and guesses[-1] == daily_character.name else 'lose')
         except CartoonCharacter.DoesNotExist:
-            pass  # Proceed to reset if character not found
+            pass
 
     if session_date != today or not daily_character_id or not game_over:
         excluded_shows, excluded_chars = get_user_exclusions(request)
@@ -91,27 +91,17 @@ def index(request):
             request.session['daily_character_id'] = daily_character.id
             request.session['daily_character_date'] = today
             request.session['daily_game_over'] = False
-            request.session['guesses-daily'] = []  # Reset guesses for new day
+            request.session['guesses-daily'] = []
             request.session['hint_used-daily'] = False
         else:
             daily_character = None
 
-    excluded_shows, excluded_chars = get_user_exclusions(request)
-    all_characters = CartoonCharacter.objects.select_related('show').exclude(
-        show__in=excluded_shows
-    ).exclude(
-        id__in=excluded_chars
-    ).exclude(
-        image_restricted=True
-    )
-    all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
     guesses = request.session.get('guesses-daily', [])
     request.session['last_mode'] = 'daily'
 
     context = {
         'character': daily_character,
         'guesses': json.dumps(guesses),
-        'all_characters': json.dumps(all_characters_data),
         'mode': 'daily'
     }
     return render(request, 'game/index.html', context)
@@ -141,6 +131,8 @@ def unlimited(request):
         image_restricted=True
     )
     all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
+    logger.info(f"Number of characters for autocomplete (unlimited): {len(all_characters)}")
+    logger.info(f"Sample characters (unlimited): {all_characters_data[:5]}")
     request.session['last_mode'] = 'unlimited'
 
     context = {
