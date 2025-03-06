@@ -244,6 +244,7 @@ def guess(request):
                 request.session[hint_key] = False
             elif mode == 'daily' and (result['correct'] or len(guesses) >= 15):
                 request.session['daily_game_over'] = True
+                request.session['daily_game_won'] = result['correct']  # Store win/loss state
                 request.session[guesses_key] = []
                 request.session[hint_key] = False
                 if request.user.is_authenticated:
