@@ -27,5 +27,5 @@ def all_characters(request):
     logger.info(f"Context processor - Number of characters: {len(all_chars)}")
     logger.info(f"Context processor - Sample characters: {all_characters_data[:5]}")
     return {
-        'all_characters': all_characters_data  # Return list directly, not JSON
+        'all_characters': all_characters_data
     }

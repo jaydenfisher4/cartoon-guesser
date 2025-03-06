@@ -116,29 +116,22 @@ def unlimited(request):
         current_character = get_random_character(request, guessed_ids, excluded_shows, excluded_chars)
         if current_character:
             request.session['current_character_id-unlimited'] = current_character.id
-            request.session['guesses-unlimited'] = []  # Reset guesses for new character
+            request.session['guesses-unlimited'] = []
             request.session['hint_used-unlimited'] = False
         else:
             current_character = None
     else:
-        current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
+        try:
+            current_character = CartoonCharacter.objects.get(id=current_character_id)
+        except CartoonCharacter.DoesNotExist:
+            current_character = None
+            del request.session['current_character_id-unlimited']
 
-    all_characters = CartoonCharacter.objects.select_related('show').exclude(
-        show__in=excluded_shows
-    ).exclude(
-        id__in=excluded_chars
-    ).exclude(
-        image_restricted=True
-    )
-    all_characters_data = [{'name': char.name, 'image_url': char.image_url} for char in all_characters]
-    logger.info(f"Number of characters for autocomplete (unlimited): {len(all_characters)}")
-    logger.info(f"Sample characters (unlimited): {all_characters_data[:5]}")
     request.session['last_mode'] = 'unlimited'
 
     context = {
         'character': current_character,
         'guesses': json.dumps(guesses),
-        'all_characters': json.dumps(all_characters_data),
         'mode': 'unlimited'
     }
     return render(request, 'game/index.html', context)
@@ -247,11 +240,11 @@ def guess(request):
             if mode == 'unlimited' and result['correct']:
                 guessed_ids.append(current_character.id)
                 request.session[guessed_ids_key] = guessed_ids
-                request.session[guesses_key] = []  # Reset guesses for next character
+                request.session[guesses_key] = []
                 request.session[hint_key] = False
             elif mode == 'daily' and (result['correct'] or len(guesses) >= 15):
                 request.session['daily_game_over'] = True
-                request.session[guesses_key] = []  # Reset guesses for next game
+                request.session[guesses_key] = []
                 request.session[hint_key] = False
                 if request.user.is_authenticated:
                     DailyGameHistory.objects.create(
@@ -354,12 +347,12 @@ def win(request):
         daily_character = get_daily_character(request)
         if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
             return redirect('index')
-        request.session['guesses-daily'] = []  # Reset guesses after win
+        request.session['guesses-daily'] = []
         request.session['hint_used-daily'] = False
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-        request.session['guesses-unlimited'] = []  # Reset guesses for next character
+        request.session['guesses-unlimited'] = []
         request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
@@ -382,12 +375,12 @@ def lose(request):
         daily_character = get_daily_character(request)
         if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
             return redirect('index')
-        request.session['guesses-daily'] = []  # Reset guesses after loss
+        request.session['guesses-daily'] = []
         request.session['hint_used-daily'] = False
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         daily_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
-        request.session['guesses-unlimited'] = []  # Reset guesses for next character
+        request.session['guesses-unlimited'] = []
         request.session['hint_used-unlimited'] = False
         guessed_ids = request.session.get('guessed_ids-unlimited', [])
         new_character = get_random_character(request, guessed_ids)
@@ -510,7 +503,6 @@ def profile(request, username=None):
 
     prefs, _ = UserPreference.objects.get_or_create(user=profile_user)
     
-    # Daily streak
     history = DailyGameHistory.objects.filter(user=profile_user).order_by('-date')
     daily_streak = 0
     current_date = date.today()
@@ -523,18 +515,14 @@ def profile(request, username=None):
         else:
             break
     
-    # Best score
     best_score = DailyGameHistory.objects.filter(user=profile_user, won=True).aggregate(Min('guess_count'))['guess_count__min']
     
-    # Total wins
     total_daily_wins = DailyGameHistory.objects.filter(user=profile_user, won=True).count()
     total_unlimited_wins = len(request.session.get('guessed_ids-unlimited', [])) if profile_user == request.user else 0
     
-    # Favorite character
     favorite_character = DailyGameHistory.objects.filter(user=profile_user, won=True).values('character_name').annotate(count=Count('character_name')).order_by('-count').first()
     favorite_character_name = favorite_character['character_name'] if favorite_character else None
 
-    # Friend status
     is_friend = Friendship.objects.filter(
         Q(user1=request.user, user2=profile_user) | Q(user1=profile_user, user2=request.user)
     ).exists()
@@ -542,7 +530,6 @@ def profile(request, username=None):
     received_request = FriendRequest.objects.filter(from_user=profile_user, to_user=request.user, accepted=False).first()
     has_received_request = received_request is not None
 
-    # Fetch friends with their profile pictures
     friendships = Friendship.objects.filter(
         Q(user1=profile_user) | Q(user2=profile_user)
     ).select_related('user1__userpreference', 'user2__userpreference')
@@ -585,7 +572,7 @@ def search_users_autocomplete(request):
     if not query:
         return JsonResponse({'users': []})
     
-    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]  # Limit to 10
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)[:10]
     user_data = [
         {
             'username': user.username,
