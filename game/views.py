@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404 
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .models import CartoonCharacter, UserPreference, Show, DailyGameHistory, FriendRequest, Friendship
 from datetime import date, datetime, timedelta
@@ -244,7 +244,7 @@ def guess(request):
                 request.session[hint_key] = False
             elif mode == 'daily' and (result['correct'] or len(guesses) >= 15):
                 request.session['daily_game_over'] = True
-                request.session['daily_game_won'] = result['correct']  # Store win/loss state
+                request.session['daily_game_won'] = result['correct']
                 request.session[guesses_key] = []
                 request.session[hint_key] = False
                 if request.user.is_authenticated:
@@ -341,6 +341,45 @@ def hint(request):
     logger.info(f"Hint response: {json.dumps({'hint': {'field': hint_field, 'value': value}})}")
     return JsonResponse({'hint': {'field': hint_field, 'value': value}})
 
+def give_up(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+    mode = request.POST.get('mode', 'daily')
+    if mode == 'daily':
+        today = date.today().isoformat()
+        session_date = request.session.get('daily_character_date')
+        if session_date != today:
+            return JsonResponse({'error': 'No active daily game'}, status=400)
+        request.session['daily_game_over'] = True
+        request.session['daily_game_won'] = False
+        request.session['guesses-daily'] = []
+        request.session['hint_used-daily'] = False
+        if request.user.is_authenticated:
+            current_character = get_daily_character(request)
+            if current_character:
+                DailyGameHistory.objects.create(
+                    user=request.user,
+                    date=date.today(),
+                    character_name=current_character.name,
+                    won=False,
+                    guess_count=len(request.session.get('guesses-daily', []))
+                )
+    else:
+        current_character_id = request.session.get('current_character_id-unlimited')
+        if not current_character_id:
+            return JsonResponse({'error': 'No active unlimited game'}, status=400)
+        request.session['guesses-unlimited'] = []
+        request.session['hint_used-unlimited'] = False
+        guessed_ids = request.session.get('guessed_ids-unlimited', [])
+        new_character = get_random_character(request, guessed_ids)
+        if new_character:
+            request.session['current_character_id-unlimited'] = new_character.id
+        else:
+            del request.session['current_character_id-unlimited']
+
+    return JsonResponse({'redirect': f'/lose/?mode={mode}&gave_up=true'})
+
 def win(request):
     mode = request.GET.get('mode', 'daily')
     today = date.today().isoformat()
@@ -374,7 +413,7 @@ def lose(request):
     today = date.today().isoformat()
     if mode == 'daily':
         daily_character = get_daily_character(request)
-        if request.session.get('daily_character_date') != today or not request.session.get('daily_game_over', False):
+        if request.session.get('daily_character_date') != today and not gave_up:
             return redirect('index')
         request.session['guesses-daily'] = []
         request.session['hint_used-daily'] = False

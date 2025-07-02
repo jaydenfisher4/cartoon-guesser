@@ -87,7 +87,7 @@
         <div id="guesses-container"></div>
     </div>
 
-    <form style="display: none;">
+    <form style="display: none;" id="csrf-form">
         {% csrf_token %}
     </form>
     {{ guesses|json_script:"guesses-data"|safe }}
@@ -159,6 +159,39 @@
             } else {
                 console.error('guessCounter is undefined, cannot set textContent');
             }
+        }
+
+        function giveUp() {
+            const loseSound = document.getElementById('lose-sound');
+            setTimeout(() => {
+                loseSound.play().catch(error => console.log("Lose sound error:", error));
+            }, 100);
+
+            fetch('/give-up/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: 'mode=' + encodeURIComponent(window.mode)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || `HTTP error! Status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => {
+                console.error('Give up fetch error:', error);
+                alert(error.message);
+            });
         }
     </script>
 {% endblock %}
