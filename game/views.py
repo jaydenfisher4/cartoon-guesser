@@ -371,12 +371,6 @@ def give_up(request):
             return JsonResponse({'error': 'No active unlimited game'}, status=400)
         request.session['guesses-unlimited'] = []
         request.session['hint_used-unlimited'] = False
-        guessed_ids = request.session.get('guessed_ids-unlimited', [])
-        new_character = get_random_character(request, guessed_ids)
-        if new_character:
-            request.session['current_character_id-unlimited'] = new_character.id
-        else:
-            del request.session['current_character_id-unlimited']
 
     return JsonResponse({'redirect': f'/lose/?mode={mode}&gave_up=true'})
 
