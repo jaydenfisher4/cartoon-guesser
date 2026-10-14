@@ -17,6 +17,12 @@ from django.db.models import Count, Min, Q
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def privacy_policy(request):
+    return render(request, 'game/privacy_policy.html')
+
+def cookie_policy(request):
+    return render(request, 'game/cookie_policy.html')
+
 def get_user_exclusions(request):
     if request.user.is_authenticated:
         try:
