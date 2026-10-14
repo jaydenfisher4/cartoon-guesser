@@ -25,4 +25,6 @@ urlpatterns = [
     path('accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),
     path('give-up/', views.give_up, name='give_up'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
 ]
