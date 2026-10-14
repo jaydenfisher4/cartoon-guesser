@@ -3,14 +3,14 @@
     {% if guess_history %}
         <div class="guess-history-scroll">
             <div class="guess-history-grid guess-history-header">
-                <div class="guess-history-cell">Image</div>
-                <div class="guess-history-cell">Name</div>
-                <div class="guess-history-cell">Network</div>
-                <div class="guess-history-cell">Show</div>
-                <div class="guess-history-cell">Main/Side</div>
-                <div class="guess-history-cell">Year</div>
-                <div class="guess-history-cell">Airing</div>
-                <div class="guess-history-cell">Gender</div>
+                <div class="guess-history-cell"><span class="icon">🖼️</span>Image</div>
+                <div class="guess-history-cell"><span class="icon">👤</span>Name</div>
+                <div class="guess-history-cell"><span class="icon">📺</span>Network</div>
+                <div class="guess-history-cell"><span class="icon">🎬</span>Show</div>
+                <div class="guess-history-cell"><span class="icon">⭐</span>Main/Side</div>
+                <div class="guess-history-cell"><span class="icon">📅</span>Year</div>
+                <div class="guess-history-cell"><span class="icon">⏳</span>Airing</div>
+                <div class="guess-history-cell"><span class="icon">🚻</span>Gender</div>
             </div>
             {% for guess in guess_history reversed %}
                 <div class="guess-history-grid">
@@ -21,13 +21,13 @@
                             ?
                         {% endif %}
                     </div>
-                    <div class="guess-history-cell {% if guess.correct %}is-correct{% else %}is-wrong{% endif %}">{{ guess.name }}</div>
-                    <div class="guess-history-cell {% if guess.network %}is-correct{% elif guess.network_partial %}is-partial{% else %}is-wrong{% endif %}">{{ guess.network_value }}</div>
-                    <div class="guess-history-cell {% if guess.show %}is-correct{% else %}is-wrong{% endif %}">{{ guess.show_value }}</div>
-                    <div class="guess-history-cell {% if guess.main_correct %}is-correct{% else %}is-wrong{% endif %}">{% if guess.is_main %}Main{% else %}Side{% endif %}</div>
-                    <div class="guess-history-cell {% if guess.release_year %}is-correct{% elif guess.year_within_3 %}is-partial{% else %}is-wrong{% endif %}">{{ guess.year_value }}{% if not guess.release_year %}{% if guess.year_value < guess.daily_year %} &uarr;{% else %} &darr;{% endif %}{% endif %}</div>
-                    <div class="guess-history-cell {% if guess.airing_correct %}is-correct{% else %}is-wrong{% endif %}">{% if guess.still_airing %}Yes{% else %}No{% endif %}</div>
-                    <div class="guess-history-cell {% if guess.gender %}is-correct{% else %}is-wrong{% endif %}">{{ guess.gender_value }}</div>
+                    <div class="guess-history-cell {% if guess.correct %}is-correct{% else %}is-wrong{% endif %}"><span class="icon">👤</span>{{ guess.name }}</div>
+                    <div class="guess-history-cell {% if guess.network %}is-correct{% elif guess.network_partial %}is-partial{% else %}is-wrong{% endif %}"><span class="icon">📺</span>{{ guess.network_value }}</div>
+                    <div class="guess-history-cell {% if guess.show %}is-correct{% else %}is-wrong{% endif %}"><span class="icon">🎬</span>{{ guess.show_value }}</div>
+                    <div class="guess-history-cell {% if guess.main_correct %}is-correct{% else %}is-wrong{% endif %}"><span class="icon">⭐</span>{% if guess.is_main %}Main{% else %}Side{% endif %}</div>
+                    <div class="guess-history-cell {% if guess.release_year %}is-correct{% elif guess.year_within_3 %}is-partial{% else %}is-wrong{% endif %}"><span class="icon">📅</span>{{ guess.year_value }}{% if not guess.release_year %}{% if guess.year_value < guess.daily_year %} &uarr;{% else %} &darr;{% endif %}{% endif %}</div>
+                    <div class="guess-history-cell {% if guess.airing_correct %}is-correct{% else %}is-wrong{% endif %}"><span class="icon">⏳</span>{% if guess.still_airing %}Yes{% else %}No{% endif %}</div>
+                    <div class="guess-history-cell {% if guess.gender %}is-correct{% else %}is-wrong{% endif %}"><span class="icon">🚻</span>{{ guess.gender_value }}</div>
                 </div>
             {% endfor %}
         </div>
