@@ -340,3 +340,69 @@ footer a:hover {
         font-size: 1.2em;
     }
 }
+
+.guess-history {
+    max-width: 1030px;
+    margin: 30px auto;
+    text-align: left;
+}
+
+.guess-history h2 {
+    color: var(--primary);
+    font-size: 1.4em;
+    margin: 0 0 12px;
+}
+
+.guess-history-scroll {
+    overflow-x: auto;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 8px;
+}
+
+.guess-history-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(7, minmax(80px, 1fr));
+    gap: 8px;
+    min-width: 800px;
+    margin-bottom: 8px;
+}
+
+.guess-history-cell {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #404040;
+    border-radius: 5px;
+    background: #333333;
+    overflow-wrap: anywhere;
+}
+
+.guess-history-header .guess-history-cell {
+    justify-content: center;
+    color: var(--primary);
+    background: #252525;
+    font-weight: bold;
+}
+
+.guess-history-cell img {
+    max-width: 60px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.guess-history-cell.is-correct {
+    color: white;
+    background: #2e7d32;
+}
+
+.guess-history-cell.is-wrong {
+    color: white;
+    background: #d32f2f;
+}
+
+.guess-history-cell.is-partial {
+    color: white;
+    background: #f9a825;
+}

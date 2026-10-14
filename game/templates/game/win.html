@@ -13,6 +13,7 @@
     <img src="{{ character.image_url|default:'https://via.placeholder.com/200' }}" alt="{{ character.name }}">
     <p><strong>{{ character.name }}</strong></p>
     <p>From: <em>{{ character.show }}</em> on {{ character.network }}</p>
+    {% include 'game/guess_history.html' %}
     {% if mode == 'daily' %}
         <p>Next game available in: <span id="countdown"></span></p>
     {% else %}

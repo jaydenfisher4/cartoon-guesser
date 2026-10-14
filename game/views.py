@@ -98,6 +98,7 @@ def index(request):
             request.session['daily_character_date'] = today
             request.session['daily_game_over'] = False
             request.session['guesses-daily'] = []
+            request.session['guess-history-daily'] = []
             request.session['hint_used-daily'] = False
         else:
             daily_character = None
@@ -123,6 +124,7 @@ def unlimited(request):
         if current_character:
             request.session['current_character_id-unlimited'] = current_character.id
             request.session['guesses-unlimited'] = []
+            request.session['guess-history-unlimited'] = []
             request.session['hint_used-unlimited'] = False
         else:
             current_character = None
@@ -192,12 +194,14 @@ def guess(request):
             return JsonResponse({'error': 'Daily game is over for today'}, status=400)
         current_character = get_daily_character(request)
         guesses_key = 'guesses-daily'
+        history_key = 'guess-history-daily'
         hint_key = 'hint_used-daily'
         guessed_ids_key = None
     else:
         current_character_id = request.session.get('current_character_id-unlimited')
         current_character = CartoonCharacter.objects.get(id=current_character_id) if current_character_id else None
         guesses_key = 'guesses-unlimited'
+        history_key = 'guess-history-unlimited'
         hint_key = 'hint_used-unlimited'
         guessed_ids_key = 'guessed_ids-unlimited'
         guessed_ids = request.session.get(guessed_ids_key, [])
@@ -240,6 +244,10 @@ def guess(request):
             'mode': mode,
             'current_character_id': current_character.id if mode == 'unlimited' else None
         }
+        history = request.session.get(history_key, [])
+        history.append(result)
+        request.session[history_key] = history
+
         if guess_name not in guesses:
             guesses.append(guess_name)
             request.session[guesses_key] = guesses[:15]
@@ -382,6 +390,7 @@ def give_up(request):
 
 def win(request):
     mode = request.GET.get('mode', 'daily')
+    guess_history = request.session.get(f'guess-history-{mode}', [])
     today = date.today().isoformat()
     if mode == 'daily':
         daily_character = get_daily_character(request)
@@ -403,12 +412,14 @@ def win(request):
 
     context = {
         'character': daily_character,
+        'guess_history': guess_history,
         'mode': mode,
     }
     return render(request, 'game/win.html', context)
 
 def lose(request):
     mode = request.GET.get('mode', 'daily')
+    guess_history = request.session.get(f'guess-history-{mode}', [])
     gave_up = request.GET.get('gave_up', 'false') == 'true'
     today = date.today().isoformat()
     if mode == 'daily':
@@ -431,6 +442,7 @@ def lose(request):
 
     context = {
         'character': daily_character,
+        'guess_history': guess_history,
         'mode': mode,
         'gave_up': gave_up
     }
